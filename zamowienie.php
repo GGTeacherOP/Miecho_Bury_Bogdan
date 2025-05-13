@@ -69,6 +69,7 @@
                     <li><a href="kontakt.php">Kontakt</a></li>
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
+                    <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                 </ul>
             </nav>
         </div>
