@@ -86,14 +86,7 @@
                 <div class="kontakt-formularz">
                     <h3><i class="fas fa-envelope"></i> Formularz kontaktowy</h3>
                     <form class="contact-form">
-                        <div class="form-group">
-                            <label for="imie">Imię i nazwisko</label>
-                            <input type="text" id="imie" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Adres email</label>
-                            <input type="email" id="email" required>
-                        </div>
+                        
                         <div class="form-group">
                             <label for="temat">Temat wiadomości</label>
                             <select id="temat" required>
