@@ -86,10 +86,7 @@
                     <div class="obraz-o-nas" style="flex: 1; background: #f5f5f5; padding: 30px; border-radius: 8px;">
                         <h3 style="color: #c00; margin-bottom: 20px;">Dodaj swoją opinię</h3>
                         <form class="contact-form">
-                            <div class="form-group">
-                                <label for="name">Imię i nazwisko</label>
-                                <input type="text" id="name" required>
-                            </div>
+                            
                             <div class="form-group">
                                 <label for="opinion">Twoja opinia</label>
                                 <textarea id="opinion" rows="4" required></textarea>
