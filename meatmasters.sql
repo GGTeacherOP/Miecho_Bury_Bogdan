@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Maj 13, 2025 at 12:43 AM
+-- Generation Time: Maj 13, 2025 at 07:07 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -18,8 +18,62 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `meatmasters1`
+-- Database: `meatmasters`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `dostawy`
+--
+
+CREATE TABLE `dostawy` (
+  `id` int(11) NOT NULL,
+  `data_dostawy` datetime NOT NULL,
+  `dostawca` varchar(100) NOT NULL,
+  `numer_faktury` varchar(50) NOT NULL,
+  `status` enum('oczekiwana','zrealizowana','anulowana') NOT NULL DEFAULT 'oczekiwana',
+  `pracownik_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dostawy`
+--
+
+INSERT INTO `dostawy` (`id`, `data_dostawy`, `dostawca`, `numer_faktury`, `status`, `pracownik_id`) VALUES
+(1, '2025-05-10 08:00:00', 'Mięsny Raj', 'FV/2025/05/001', 'zrealizowana', 10),
+(2, '2025-05-12 09:30:00', 'Drób Polski', 'FV/2025/05/002', 'zrealizowana', 11),
+(3, '2025-05-15 11:15:00', 'Wołowina Premium', 'FV/2025/05/015', 'oczekiwana', NULL),
+(4, '2025-05-18 07:45:00', 'Wieprzowina Lux', 'FV/2025/05/028', 'zrealizowana', 12);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `dostawy_towary`
+--
+
+CREATE TABLE `dostawy_towary` (
+  `dostawa_id` int(11) NOT NULL,
+  `towar_id` int(11) NOT NULL,
+  `ilosc_kg` decimal(10,2) NOT NULL,
+  `cena_zakupu_zl_kg` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dostawy_towary`
+--
+
+INSERT INTO `dostawy_towary` (`dostawa_id`, `towar_id`, `ilosc_kg`, `cena_zakupu_zl_kg`) VALUES
+(1, 1, 50.00, 75.00),
+(1, 2, 100.00, 22.50),
+(1, 4, 30.00, 28.00),
+(1, 7, 80.00, 24.00),
+(2, 5, 120.00, 18.50),
+(2, 8, 90.00, 14.00),
+(3, 1, 40.00, 82.00),
+(3, 4, 25.00, 35.00),
+(4, 2, 60.00, 25.00),
+(4, 7, 70.00, 26.50);
 
 -- --------------------------------------------------------
 
@@ -92,6 +146,34 @@ INSERT INTO `pracownicy` (`id`, `imie`, `nazwisko`, `email`, `telefon`, `stanowi
 (10, 'Joanna', 'Woźniak', 'j.wozniak@mięsna.pl', '511234567', 'Magazynier', '2020-08-10', 4500.00),
 (11, 'Robert', 'Kozłowski', 'r.kozlowski@mięsna.pl', '512345678', 'Magazynier', '2021-09-30', 4600.00),
 (12, 'Ewa', 'Jankowska', 'e.jankowska@mięsna.pl', '513456789', 'Magazynier', '2022-07-01', 4550.00);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `reklamacje`
+--
+
+CREATE TABLE `reklamacje` (
+  `id` int(11) NOT NULL,
+  `zamowienie_id` int(11) NOT NULL,
+  `klient_id` int(11) NOT NULL,
+  `pracownik_id` int(11) DEFAULT NULL,
+  `data_zgloszenia` datetime NOT NULL,
+  `tresc` text NOT NULL,
+  `status` enum('otwarta','w_trakcie','rozpatrzona','odrzucona') NOT NULL DEFAULT 'otwarta',
+  `decyzja` text DEFAULT NULL,
+  `data_rozpatrzenia` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reklamacje`
+--
+
+INSERT INTO `reklamacje` (`id`, `zamowienie_id`, `klient_id`, `pracownik_id`, `data_zgloszenia`, `tresc`, `status`, `decyzja`, `data_rozpatrzenia`) VALUES
+(1, 1, 1, 5, '2025-05-15 14:30:00', 'Otrzymałem rostbef o nieprzyjemnym zapachu, podejrzewam, że był nieświeży', 'rozpatrzona', 'Przyznano reklamację - wysłano nową partię produktu', '2025-05-16 10:00:00'),
+(2, 3, 7, NULL, '2025-05-16 09:45:00', 'W zamówieniu brakuje 2kg mięsa do kebabu, a opakowanie było naruszone', 'w_trakcie', NULL, NULL),
+(3, 5, 12, 2, '2025-05-17 16:20:00', 'Schab był zbyt tłusty jak na deklarowaną jakość premium', 'odrzucona', 'Produkt spełnia normy jakościowe - reklamacja odrzucona', '2025-05-18 09:15:00'),
+(4, 7, 10, NULL, '2025-05-20 11:10:00', 'Filet z kurczaka miał nietypowy kolor i konsystencję', 'otwarta', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -199,6 +281,20 @@ INSERT INTO `zamowienia_towary` (`zamowienie_id`, `towar_id`, `ilosc_kg`, `cena_
 --
 
 --
+-- Indeksy dla tabeli `dostawy`
+--
+ALTER TABLE `dostawy`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
+
+--
+-- Indeksy dla tabeli `dostawy_towary`
+--
+ALTER TABLE `dostawy_towary`
+  ADD PRIMARY KEY (`dostawa_id`,`towar_id`),
+  ADD KEY `towar_id` (`towar_id`);
+
+--
 -- Indeksy dla tabeli `klienci`
 --
 ALTER TABLE `klienci`
@@ -211,6 +307,15 @@ ALTER TABLE `klienci`
 ALTER TABLE `pracownicy`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indeksy dla tabeli `reklamacje`
+--
+ALTER TABLE `reklamacje`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `zamowienie_id` (`zamowienie_id`),
+  ADD KEY `klient_id` (`klient_id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
 
 --
 -- Indeksy dla tabeli `towary`
@@ -238,6 +343,12 @@ ALTER TABLE `zamowienia_towary`
 --
 
 --
+-- AUTO_INCREMENT for table `dostawy`
+--
+ALTER TABLE `dostawy`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `klienci`
 --
 ALTER TABLE `klienci`
@@ -248,6 +359,12 @@ ALTER TABLE `klienci`
 --
 ALTER TABLE `pracownicy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `reklamacje`
+--
+ALTER TABLE `reklamacje`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `towary`
@@ -264,6 +381,27 @@ ALTER TABLE `zamowienia`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `dostawy`
+--
+ALTER TABLE `dostawy`
+  ADD CONSTRAINT `dostawy_ibfk_1` FOREIGN KEY (`pracownik_id`) REFERENCES `pracownicy` (`id`);
+
+--
+-- Constraints for table `dostawy_towary`
+--
+ALTER TABLE `dostawy_towary`
+  ADD CONSTRAINT `dostawy_towary_ibfk_1` FOREIGN KEY (`dostawa_id`) REFERENCES `dostawy` (`id`),
+  ADD CONSTRAINT `dostawy_towary_ibfk_2` FOREIGN KEY (`towar_id`) REFERENCES `towary` (`id`);
+
+--
+-- Constraints for table `reklamacje`
+--
+ALTER TABLE `reklamacje`
+  ADD CONSTRAINT `reklamacje_ibfk_1` FOREIGN KEY (`zamowienie_id`) REFERENCES `zamowienia` (`id`),
+  ADD CONSTRAINT `reklamacje_ibfk_2` FOREIGN KEY (`klient_id`) REFERENCES `klienci` (`id`),
+  ADD CONSTRAINT `reklamacje_ibfk_3` FOREIGN KEY (`pracownik_id`) REFERENCES `pracownicy` (`id`);
 
 --
 -- Constraints for table `towary`
