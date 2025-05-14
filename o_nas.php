@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style-o_nas.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
 </head>
 <body>
     <header>
@@ -32,7 +31,7 @@
     </header>
 
     <section class="sekcja-glowna">
-        <div class="kontener" data-aos="fade-up">
+        <div class="kontener">
             <h1>Poznaj naszą historię</h1>
             <p class="podtytul">10 lat doświadczenia w dostarczaniu najwyższej jakości mięsa</p>
             <div class="kontener-przyciskow">
@@ -40,25 +39,22 @@
                 <a href="kontakt.php" class="przycisk przycisk-odwrocony">Skontaktuj się</a>
             </div>
         </div>
-        <div class="przewijaj-w-dol">
-            <i class="fas fa-chevron-down"></i>
-        </div>
     </section>
 
     <main>
         <section class="o-nas-sekcja">
             <div class="o-nas-kontener">
-                <h2 class="o-nas-tytul" data-aos="fade-up">O nas</h2>
+                <h2 class="o-nas-tytul">O nas</h2>
                 
                 <div class="o-nas-zawartosc">
                     <div class="o-nas-tekst">
-                        <article class="o-nas-artykul" data-aos="fade-right">
+                        <article class="o-nas-artykul">
                             <h2><i class="fas fa-building"></i> O firmie</h2>
                             <p>Nasza hurtownia działa od ponad 10 lat, obsługując setki klientów w całej Polsce. Specjalizujemy się w hurtowej sprzedaży mięsa do kebaba, wołowiny, wieprzowiny oraz drobiu.</p>
                             <p>Współpracujemy z najlepszymi zakładami mięsnymi i producentami, dzięki czemu gwarantujemy najwyższą jakość naszych produktów.</p>
                         </article>
 
-                        <article class="o-nas-artykul" data-aos="fade-right" data-aos-delay="100">
+                        <article class="o-nas-artykul">
                             <h2><i class="fas fa-trophy"></i> Nasze osiągnięcia</h2>
                             <ul class="o-nas-lista lista-osiagniec">
                                 <li>Obsługa ponad 1200 lokali gastronomicznych w Polsce</li>
@@ -68,7 +64,7 @@
                             </ul>
                         </article>
 
-                        <article class="o-nas-artykul" data-aos="fade-right" data-aos-delay="200">
+                        <article class="o-nas-artykul">
                             <h2><i class="fas fa-star"></i> Dlaczego my?</h2>
                             <ul class="o-nas-lista lista-dlaczego-my">
                                 <li>Sprawdzeni dostawcy i surowce najwyższej jakości</li>
@@ -77,79 +73,47 @@
                                 <li>Certyfikaty HACCP i przestrzeganie standardów sanitarnych</li>
                             </ul>
                         </article>
-
-                        <div class="o-nas-statystyki" data-aos="fade-up">
-                            <div class="statystyka">
-                                <div class="liczba" data-count="10">0</div>
-                                <div class="podpis">Lat doświadczenia</div>
-                            </div>
-                            <div class="statystyka">
-                                <div class="liczba" data-count="1200">0</div>
-                                <div class="podpis">Zadowolonych klientów</div>
-                            </div>
-                            <div class="statystyka">
-                                <div class="liczba" data-count="12">0</div>
-                                <div class="podpis">Chłodni transportowych</div>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="o-nas-obraz" data-aos="fade-left">
+                    <div class="o-nas-obraz">
                         <img src="firma.png" alt="Hurtownia mięsa MeatMaster">
-                        <div class="o-nas-ramka"></div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="o-nas-zaufanie">
-            <div class="kontener">
-                <h2 data-aos="fade-up">Zaufali nam</h2>
-                <div class="partnerzy" data-aos="fade-up">
-                    <img src="partner1.png" alt="Partner 1">
-                    <img src="partner2.png" alt="Partner 2">
-                    <img src="partner3.png" alt="Partner 3">
-                    <img src="partner4.png" alt="Partner 4">
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <!-- Stopka pozostaje bez zmian -->
-    </footer>
-
-    <footer>
+   <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">
+                <!-- Kolumna kontaktowa -->
                 <div class="kolumna-stopki">
                     <h3>Kontakt</h3>
-                    <address>
-                        <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
-                        <p><i class="fas fa-phone"></i> +48 694 202 137</p>
-                        <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
-                    </address>
+                    <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
+                    <p><i class="fas fa-phone"></i> +48 694 202 137</p>
+                    <p><i class="fas fa-envelope"></i> kontaktujSieWariacieEssa@meatmaster.pl</p>
                 </div>
-              
+                <!-- Kolumna z godzinami otwarcia -->
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
-                    <ul class="godziny-otwarcia">
-                        <li>Pon-Pt: 6:00 - 22:00</li>
-                        <li>Sob: 7:00 - 14:00</li>
-                        <li>Niedz: Zamknięte</li>
-                    </ul>
+                    <p>Pon-Pt: 6:00 - 22:00</p>
+                    <p>Sob: 7:00 - 14:00</p>
+                    <p>Niedz: Zamknięte</p>
                 </div>
-               
+                <!-- Kolumna z linkami do social mediów -->
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <!-- Twitter jako X -->
+                        <a href="#" aria-label="Twitter" class="x-icon">X</a>
+                        <!-- TikTok -->
                         <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <!-- Instagram -->
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
-            
+            <!-- Prawa autorskie -->
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
             </div>
