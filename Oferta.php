@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oferta - MeatMaster Hurtownia Mięsa</title>
     <link rel="stylesheet" href="style_oferta.css">
+    <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Dodatkowe style aby linki wyglądały jak przyciski */
@@ -42,11 +43,11 @@
                     <li><a href="Strona_glowna.php">Strona główna</a></li>
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
-                    <li><a href="onas.php">O nas</a></li>
+                    <li><a href="o_nas.php">O nas</a></li>
                     <li><a href="kontakt.php">Kontakt</a></li>
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
-                    <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
+                    <li><a href="opinie.php">Opinie</a></li>
                 </ul>
             </nav>
         </div>
