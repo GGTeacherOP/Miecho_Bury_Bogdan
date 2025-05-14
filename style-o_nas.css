@@ -1,0 +1,153 @@
+.o-nas-sekcja {
+    padding: 80px 0;
+    background-color: #fff;
+    position: relative;
+}
+
+.o-nas-kontener {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Nagłówek sekcji */
+.o-nas-tytul {
+    text-align: center;
+    color: #c00;
+    font-size: 36px;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.o-nas-tytul::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: #c00;
+    margin: 15px auto 0;
+}
+
+/* Układ treści */
+.o-nas-zawartosc {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+}
+
+/* Tekstowa część */
+.o-nas-tekst {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Sekcje artykułów */
+.o-nas-artykul {
+    margin-bottom: 40px;
+}
+
+.o-nas-artykul h2 {
+    color: #c00;
+    font-size: 28px;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.o-nas-artykul h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #c00;
+}
+
+.o-nas-artykul p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+/* Listy */
+.o-nas-lista {
+    list-style: none;
+    margin: 20px 0;
+}
+
+.o-nas-lista li {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 12px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.lista-osiagniec li::before {
+    content: "\f00c"; /* Ikona Font Awesome - check */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #c00;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}
+
+.lista-dlaczego-my li::before {
+    content: "\f005"; /* Ikona Font Awesome - gwiazdka */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #c00;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}
+
+/* Zdjęcie */
+.o-nas-obraz {
+    flex: 1;
+    min-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.o-nas-obraz:hover {
+    transform: translateY(-5px);
+}
+
+.o-nas-obraz img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Zaproszenie do współpracy */
+.o-nas-zaproszenie {
+    font-size: 18px;
+    font-weight: 600;
+    color: #c00;
+    text-align: center;
+    padding: 20px;
+    background: rgba(204,0,0,0.05);
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .o-nas-zawartosc {
+        flex-direction: column;
+    }
+    
+    .o-nas-obraz {
+        order: -1;
+        margin-bottom: 30px;
+    }
+    
+    .o-nas-artykul h2 {
+        font-size: 24px;
+    }
+}
