@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <?php
     session_start();
     ?>
 
 </head>
+
 
 <body>
     <header>
@@ -22,7 +24,9 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="Strona_glowna.php">Strona główna</a></li>
+
+                <li><a href="Strona_glowna.php">Strona główna</a></li>
+
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
                     <li><a href="o_nas.php">O nas</a></li>
@@ -30,11 +34,13 @@
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
                     <li><a href="opinie.php">Opinie</a></li>
+
                     <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
                         <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
                     <?php else: ?>
                         <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
+
                 </ul>
             </nav>
         </div>
@@ -107,10 +113,11 @@
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
-
+                        
                         <a href="#" aria-label="Twitter" class="x-icon">X</a>
-
+                       
                         <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        
 
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>

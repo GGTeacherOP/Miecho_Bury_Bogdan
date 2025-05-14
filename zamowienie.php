@@ -68,7 +68,7 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="Strona_glowna.php">Strona główna</a></li>
+                <li><a href="Strona_glowna.php">Strona główna</a></li>
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
                     <li><a href="o_nas.php">O nas</a></li>
@@ -76,11 +76,13 @@
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
                     <li><a href="opinie.php">Opinie</a></li>
+
                     <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
                         <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
                     <?php else: ?>
                         <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
+
                 </ul>
             </nav>
         </div>
