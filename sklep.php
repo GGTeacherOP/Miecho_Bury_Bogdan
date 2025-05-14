@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sklep Online - MeatMaster</title>
-    
+
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="sklep_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?php
+    session_start();
+    ?>
 </head>
 
 <body>
@@ -28,8 +31,14 @@
                     <li><a href="kontakt.php">Kontakt</a></li>
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
-                    <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
+                    <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
+                        <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
+                    <?php else: ?>
+                        <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
+                    <?php endif; ?>
                     <li><a href="koszyk.php" id="cart-link"><i class="fas fa-shopping-cart"></i> Koszyk (<span id="cart-count">0</span>)</a></li>
+
+
                 </ul>
             </nav>
         </div>
