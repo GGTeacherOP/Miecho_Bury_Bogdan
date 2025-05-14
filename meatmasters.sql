@@ -3,6 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+-- Generation Time: Maj 11, 2025 at 04:01 PM
 -- Generation Time: Maj 13, 2025 at 07:07 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
@@ -82,7 +83,7 @@ INSERT INTO `dostawy_towary` (`dostawa_id`, `towar_id`, `ilosc_kg`, `cena_zakupu
 --
 
 CREATE TABLE `klienci` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `imie` varchar(50) NOT NULL,
   `nazwisko` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -91,61 +92,99 @@ CREATE TABLE `klienci` (
   `typ_konta` enum('klient indywidualny','firma/hurtownia','restauracja') NOT NULL DEFAULT 'klient indywidualny',
   `nazwa_firmy` varchar(100) DEFAULT NULL,
   `nip` varchar(15) DEFAULT NULL,
-  `data_rejestracji` timestamp NOT NULL DEFAULT current_timestamp()
+  `data_rejestracji` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `typ_konta` (`typ_konta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 --
 -- Dumping data for table `klienci`
 --
 
-INSERT INTO `klienci` (`id`, `imie`, `nazwisko`, `email`, `haslo`, `telefon`, `typ_konta`, `nazwa_firmy`, `nip`, `data_rejestracji`) VALUES
-(1, 'Jan', 'Kowalski', 'jan.kowalski@email.com', 'kowalJ1!', '123456789', 'klient indywidualny', NULL, NULL, '2023-01-14 23:00:00'),
-(2, 'Anna', 'Nowak', 'anna.nowak@email.com', 'NowakA2@', '987654321', 'klient indywidualny', NULL, NULL, '2023-02-19 23:00:00'),
-(3, 'Piotr', 'Wiśniewski', 'piotr.w@email.com', 'WisniaP3#', '555111222', 'klient indywidualny', NULL, NULL, '2023-03-09 23:00:00'),
-(4, 'Marek', 'Zieliński', 'biuro@zielpol.pl', 'ZielM4$', '601234567', 'firma/hurtownia', 'Hurtownia Zielpol', '1234567890', '2023-04-04 22:00:00'),
-(5, 'Katarzyna', 'Wójcik', 'office@elektroplus.com', 'Elektro5%', '605987654', 'firma/hurtownia', 'ElektroPlus Sp. z o.o.', '9876543210', '2023-05-11 22:00:00'),
-(6, 'Tomasz', 'Szymański', 'zamowienia@smak.com.pl', 'Smak6^', '607456789', 'firma/hurtownia', 'Dystrybutor Smak', '1122334455', '2023-06-17 22:00:00'),
-(7, 'Agnieszka', 'Dąbrowska', 'rezerwacje@podkogutem.pl', 'Kogut7&', '508123456', 'restauracja', 'Restauracja Pod Kogutem', '5566778899', '2023-07-21 22:00:00'),
-(8, 'Robert', 'Kozłowski', 'robert@bistro.pl', 'Bistro8*', '509876543', 'restauracja', 'Bistro U Roberta', '9988776655', '2023-08-14 22:00:00'),
-(9, 'Magdalena', 'Jankowska', 'kontakt@slodkikacik.pl', 'Kawi9(', '501234567', 'restauracja', 'Słodki Kącik', '4433221100', '2023-08-31 22:00:00'),
-(10, 'Adam', 'Mazur', 'adam.m@email.com', 'Mazur10)', '609876543', 'klient indywidualny', NULL, NULL, '2023-10-09 22:00:00'),
-(11, 'Ewa', 'Kwiatkowska', 'catering@smacznaewa.pl', 'Ewa11_', '604567890', 'firma/hurtownia', 'Smaczna Ewa Catering', '6677889900', '2023-11-24 23:00:00'),
-(12, 'Grzegorz', 'Lewandowski', 'pizza@bellaitalia.pl', 'Lewy12=', '603987654', 'restauracja', 'Bella Italia Pizzeria', '5544332211', '2023-12-04 23:00:00');
+INSERT INTO `klienci` (`imie`, `nazwisko`, `email`, `haslo`, `telefon`, `typ_konta`, `nazwa_firmy`, `nip`, `data_rejestracji`) VALUES
+('Jan', 'Kowalski', 'jan.kowalski@email.com', 'haslo1234', '123456789', 'klient indywidualny', NULL, NULL, '2023-01-14 10:00:00'),
+('Anna', 'Nowak', 'anna.nowak@email.com', 'haslo1233', '987654321', 'klient indywidualny', NULL, NULL, '2023-02-19 11:30:00'),
+('Piotr', 'Wiśniewski', 'piotr.w@email.com', 'haslo6123', '555111222', 'klient indywidualny', NULL, NULL, '2023-03-09 09:15:00'),
+('Marek', 'Zieliński', 'biuro@zielpol.pl', 'admin12', '601234567', 'firma/hurtownia', 'Hurtownia Zielpol', '1234567890', '2023-04-04 14:20:00'),
+('Katarzyna', 'Wójcik', 'office@elektroplus.com', 'admin41', '605987654', 'firma/hurtownia', 'ElektroPlus Sp. z o.o.', '9876543210', '2023-05-11 16:45:00'),
+('Tomasz', 'Szymański', 'zamowienia@smak.com.pl', 'admin17', '607456789', 'firma/hurtownia', 'Dystrybutor Smak', '1122334455', '2023-06-17 08:30:00'),
+('Agnieszka', 'Dąbrowska', 'rezerwacje@podkogutem.pl', 'resto31', '508123456', 'restauracja', 'Restauracja Pod Kogutem', '5566778899', '2023-07-21 12:00:00'),
+('Robert', 'Kozłowski', 'robert@bistro.pl', 'resto31', '509876543', 'restauracja', 'Bistro U Roberta', '9988776655', '2023-08-14 13:15:00'),
+('Magdalena', 'Jankowska', 'kontakt@slodkikacik.pl', 'resto11', '501234567', 'restauracja', 'Słodki Kącik', '4433221100', '2023-08-31 10:45:00'),
+('Adam', 'Mazur', 'adam.m@email.com', 'haslo1232', '609876543', 'klient indywidualny', NULL, NULL, '2023-10-09 15:30:00'),
+('Ewa', 'Kwiatkowska', 'catering@smacznaewa.pl', 'admin13', '604567890', 'firma/hurtownia', 'Smaczna Ewa Catering', '6677889900', '2023-11-24 11:20:00'),
+('Grzegorz', 'Lewandowski', 'pizza@bellaitalia.pl', 'resto321', '603987654', 'restauracja', 'Bella Italia Pizzeria', '5544332211', '2023-12-04 17:00:00'),
+('Barbara', 'Witkowska', 'barbara.w@email.com', 'haslo12333', '602345678', 'klient indywidualny', NULL, NULL, '2024-01-15 09:45:00'),
+('Michał', 'Kaczmarek', 'michal.k@email.com', 'haslo12321', '606789012', 'klient indywidualny', NULL, NULL, '2024-02-20 14:10:00'),
+('Aleksandra', 'Pawlak', 'dostawy@freshfood.pl', 'admin1111', '608901234', 'firma/hurtownia', 'Fresh Food Sp. z o.o.', '7788990011', '2024-03-05 08:20:00');
 
 -- --------------------------------------------------------
 
 --
 -- Struktura tabeli dla tabeli `pracownicy`
 --
-
 CREATE TABLE `pracownicy` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `imie` varchar(50) NOT NULL,
   `nazwisko` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
+  `haslo` varchar(100) NOT NULL,
   `telefon` varchar(20) DEFAULT NULL,
   `stanowisko` varchar(50) NOT NULL,
   `data_zatrudnienia` date NOT NULL,
-  `wynagrodzenie` decimal(10,2) NOT NULL
+  `wynagrodzenie` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
 -- Dumping data for table `pracownicy`
+INSERT INTO `pracownicy` (`imie`, `nazwisko`, `email`, `haslo`, `telefon`, `stanowisko`, `data_zatrudnienia`, `wynagrodzenie`) VALUES
+('Jan', 'Kowalski', 'j.kowalski@meatmasters.pl', 'Jan.123', '501234567', 'Kierownik', '2020-03-15', 8500.00),
+('Anna', 'Nowak', 'a.nowak@meatmasters.pl', 'Anna.123', '502345678', 'Kierownik', '2019-05-12', 8700.00),
+('Piotr', 'Wiśniewski', 'p.wisniewski@meatmasters.pl', 'Piotr.123', '503456789', 'Programista', '2021-06-20', 9500.00),
+('Katarzyna', 'Dąbrowska', 'k.dabrowska@meatmasters.pl', 'Katarzyna.123', '504567890', 'Programista', '2022-01-10', 9200.00),
+('Marek', 'Lewandowski', 'm.lewandowski@meatmasters.pl', 'Marek.123', '505678901', 'Pracownik linii pakowania', '2021-07-15', 4200.00),
+('Agnieszka', 'Wójcik', 'a.wojcik@meatmasters.pl', 'Agnieszka.123', '506789012', 'Pracownik linii pakowania', '2022-04-01', 4100.00),
+('Tomasz', 'Kamiński', 't.kaminski@meatmasters.pl', 'Tomasz.123', '507890123', 'Pracownik linii pakowania', '2020-11-18', 4300.00),
+('Magdalena', 'Zając', 'm.zajac@meatmasters.pl', 'Magdalena.123', '508901234', 'Pracownik linii pakowania', '2021-05-22', 4250.00),
+('Grzegorz', 'Szymański', 'g.szymanski@meatmasters.pl', 'Grzegorz.123', '509012345', 'Pracownik linii pakowania', '2022-03-01', 4150.00),
+('Joanna', 'Woźniak', 'j.wozniak@meatmasters.pl', 'Joanna.123', '511234567', 'Magazynier', '2020-08-10', 4500.00),
+('Robert', 'Kozłowski', 'r.kozlowski@meatmasters.pl', 'Robert.123', '512345678', 'Magazynier', '2021-09-30', 4600.00),
+('Ewa', 'Jankowska', 'e.jankowska@meatmasters.pl', 'Ewa.123', '513456789', 'Magazynier', '2022-07-01', 4550.00),
+('Paweł', 'Mazur', 'p.mazur@meatmasters.pl', 'Paweł.123', '514567890', 'Księgowy', '2020-02-10', 6800.00),
+('Monika', 'Krawczyk', 'm.krawczyk@meatmasters.pl', 'Monika.123', '515678901', 'Specjalista HR', '2021-04-15', 6200.00),
+('Łukasz', 'Jabłoński', 'l.jablonski@meatmasters.pl', 'Łukasz.123', '516789012', 'Logistyk', '2023-01-05', 5800.00);
+
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `reklamacje`
 --
 
-INSERT INTO `pracownicy` (`id`, `imie`, `nazwisko`, `email`, `telefon`, `stanowisko`, `data_zatrudnienia`, `wynagrodzenie`) VALUES
-(1, 'Jan', 'Kowalski', 'j.kowalski@mięsna.pl', '501234567', 'Kierownik', '2020-03-15', 8500.00),
-(2, 'Anna', 'Nowak', 'a.nowak@mięsna.pl', '502345678', 'Kierownik', '2019-05-12', 8700.00),
-(3, 'Piotr', 'Wiśniewski', 'p.wisniewski@mięsna.pl', '503456789', 'Programista', '2021-06-20', 9500.00),
-(4, 'Katarzyna', 'Dąbrowska', 'k.dabrowska@mięsna.pl', '504567890', 'Programista', '2022-01-10', 9200.00),
-(5, 'Marek', 'Lewandowski', 'm.lewandowski@mięsna.pl', '505678901', 'Pracownik linii pakowania', '2021-07-15', 4200.00),
-(6, 'Agnieszka', 'Wójcik', 'a.wojcik@mięsna.pl', '506789012', 'Pracownik linii pakowania', '2022-04-01', 4100.00),
-(7, 'Tomasz', 'Kamiński', 't.kaminski@mięsna.pl', '507890123', 'Pracownik linii pakowania', '2020-11-18', 4300.00),
-(8, 'Magdalena', 'Zając', 'm.zajac@mięsna.pl', '508901234', 'Pracownik linii pakowania', '2021-05-22', 4250.00),
-(9, 'Grzegorz', 'Szymański', 'g.szymanski@mięsna.pl', '509012345', 'Pracownik linii pakowania', '2022-03-01', 4150.00),
-(10, 'Joanna', 'Woźniak', 'j.wozniak@mięsna.pl', '511234567', 'Magazynier', '2020-08-10', 4500.00),
-(11, 'Robert', 'Kozłowski', 'r.kozlowski@mięsna.pl', '512345678', 'Magazynier', '2021-09-30', 4600.00),
-(12, 'Ewa', 'Jankowska', 'e.jankowska@mięsna.pl', '513456789', 'Magazynier', '2022-07-01', 4550.00);
+CREATE TABLE `reklamacje` (
+  `id` int(11) NOT NULL,
+  `zamowienie_id` int(11) NOT NULL,
+  `klient_id` int(11) NOT NULL,
+  `pracownik_id` int(11) DEFAULT NULL,
+  `data_zgloszenia` datetime NOT NULL,
+  `tresc` text NOT NULL,
+  `status` enum('otwarta','w_trakcie','rozpatrzona','odrzucona') NOT NULL DEFAULT 'otwarta',
+  `decyzja` text DEFAULT NULL,
+  `data_rozpatrzenia` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reklamacje`
+--
+
+INSERT INTO `reklamacje` (`id`, `zamowienie_id`, `klient_id`, `pracownik_id`, `data_zgloszenia`, `tresc`, `status`, `decyzja`, `data_rozpatrzenia`) VALUES
+(1, 1, 1, 5, '2025-05-15 14:30:00', 'Otrzymałem rostbef o nieprzyjemnym zapachu, podejrzewam, że był nieświeży', 'rozpatrzona', 'Przyznano reklamację - wysłano nową partię produktu', '2025-05-16 10:00:00'),
+(2, 3, 7, NULL, '2025-05-16 09:45:00', 'W zamówieniu brakuje 2kg mięsa do kebabu, a opakowanie było naruszone', 'w_trakcie', NULL, NULL),
+(3, 5, 12, 2, '2025-05-17 16:20:00', 'Schab był zbyt tłusty jak na deklarowaną jakość premium', 'odrzucona', 'Produkt spełnia normy jakościowe - reklamacja odrzucona', '2025-05-18 09:15:00'),
+(4, 7, 10, NULL, '2025-05-20 11:10:00', 'Filet z kurczaka miał nietypowy kolor i konsystencję', 'otwarta', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -282,6 +321,22 @@ INSERT INTO `zamowienia_towary` (`zamowienie_id`, `towar_id`, `ilosc_kg`, `cena_
 
 --
 -- Indeksy dla tabeli `dostawy`
+
+--
+ALTER TABLE `dostawy`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
+
+--
+-- Indeksy dla tabeli `dostawy_towary`
+--
+ALTER TABLE `dostawy_towary`
+  ADD PRIMARY KEY (`dostawa_id`,`towar_id`),
+  ADD KEY `towar_id` (`towar_id`);
+
+--
+-- Indeksy dla tabeli `klienci`
+
 --
 ALTER TABLE `dostawy`
   ADD PRIMARY KEY (`id`),
@@ -297,16 +352,16 @@ ALTER TABLE `dostawy_towary`
 --
 -- Indeksy dla tabeli `klienci`
 --
-ALTER TABLE `klienci`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+
 
 --
--- Indeksy dla tabeli `pracownicy`
+-- Indeksy dla tabeli `reklamacje`
 --
-ALTER TABLE `pracownicy`
+ALTER TABLE `reklamacje`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD KEY `zamowienie_id` (`zamowienie_id`),
+  ADD KEY `klient_id` (`klient_id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
 
 --
 -- Indeksy dla tabeli `reklamacje`
