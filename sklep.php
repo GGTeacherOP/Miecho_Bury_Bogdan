@@ -1,3 +1,47 @@
+<?php
+session_start();
+
+// Inicjalizacja koszyka jeśli nie istnieje
+if(!isset($_SESSION['koszyk'])) {
+    $_SESSION['koszyk'] = [];
+}
+
+// Obsługa dodawania do koszyka
+if(isset($_POST['dodaj_do_koszyka'])) {
+    $produkt_id = $_POST['produkt_id'];
+    $ilosc = (float)$_POST['ilosc'];
+    
+    // Dane produktów (w rzeczywistej aplikacji pobierane z bazy danych)
+    $produkty = [
+        '1' => ['nazwa' => 'Schab wieprzowy', 'cena' => 24.99, 'kategoria' => 'wieprzowina'],
+        '2' => ['nazwa' => 'Filet z kurczaka', 'cena' => 25.99, 'kategoria' => 'drobiowe'],
+        '5' => ['nazwa' => 'Karkówka wieprzowa', 'cena' => 27.99, 'kategoria' => 'wieprzowina'],
+        '7' => ['nazwa' => 'Rostbef wołowy', 'cena' => 89.99, 'kategoria' => 'wołowina'],
+        '8' => ['nazwa' => 'Mielonka wołowa', 'cena' => 34.99, 'kategoria' => 'wołowina'],
+        '9' => ['nazwa' => 'Udka z kurczaka', 'cena' => 18.99, 'kategoria' => 'drobiowe'],
+        '10' => ['nazwa' => 'Mieszanka do kebaba', 'cena' => 42.00, 'kategoria' => 'kebab'],
+        '11' => ['nazwa' => 'Mięso do kebaba drobiowe', 'cena' => 38.00, 'kategoria' => 'kebab']
+    ];
+    
+    if(isset($produkty[$produkt_id]) && $ilosc > 0) {
+        if(isset($_SESSION['koszyk'][$produkt_id])) {
+            $_SESSION['koszyk'][$produkt_id]['ilosc'] += $ilosc;
+        } else {
+            $_SESSION['koszyk'][$produkt_id] = [
+                'id' => $produkt_id,
+                'nazwa' => $produkty[$produkt_id]['nazwa'],
+                'cena' => $produkty[$produkt_id]['cena'],
+                'ilosc' => $ilosc,
+                'kategoria' => $produkty[$produkt_id]['kategoria']
+            ];
+        }
+    }
+    
+    header("Location: sklep.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pl">
 
@@ -10,9 +54,73 @@
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="sklep_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <?php
-    session_start();
-    ?>
+    <style>
+        /* Dodatkowe style dla koszyka */
+        #koszyk, #formularz-zamowienia {
+            display: none;
+            margin-top: 40px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .usun-produkt {
+            color: #d32f2f;
+            text-decoration: none;
+        }
+        
+        #cart-count {
+            background: #d32f2f;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            position: relative;
+            top: -8px;
+            right: -5px;
+        }
+        
+        .zamowienie-columns {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .dane-uzytkownika, .podsumowanie-zamowienia {
+            flex: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .dostawa-options, .platnosc-options {
+            margin-bottom: 20px;
+        }
+        
+        .podsumowanie-cena .wiersz {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .podsumowanie-cena .suma {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,9 +144,7 @@
                     <?php else: ?>
                         <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
-                    <li><a href="koszyk.php" id="cart-link"><i class="fas fa-shopping-cart"></i> Koszyk (<span id="cart-count">0</span>)</a></li>
-
-
+                    <li><a href="koszyk.php" id="cart-link"><i class="fas fa-shopping-cart"></i> Koszyk (<span id="cart-count"><?= array_sum(array_column($_SESSION['koszyk'], 'ilosc')) ?></span>)</a></li>
                 </ul>
             </nav>
         </div>
@@ -81,11 +187,14 @@
                         <div class="ceny">
                             <span class="cena-produktu">89.99 zł/kg</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-7">Ilość (kg):</label>
-                            <input type="number" id="ilosc-7" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="7">
+                            <div class="ilosc-container">
+                                <label for="ilosc-7">Ilość (kg):</label>
+                                <input type="number" id="ilosc-7" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
 
@@ -98,11 +207,14 @@
                         <div class="ceny">
                             <span class="cena-produktu">34.99 zł/kg</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-8">Ilość (kg):</label>
-                            <input type="number" id="ilosc-8" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="8">
+                            <div class="ilosc-container">
+                                <label for="ilosc-8">Ilość (kg):</label>
+                                <input type="number" id="ilosc-8" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
 
@@ -118,11 +230,14 @@
                             <span class="cena-stara">29.99 zł/kg</span>
                             <span class="cena-produktu">24.99 zł/kg</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-1">Ilość (kg):</label>
-                            <input type="number" id="ilosc-1" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="1">
+                            <div class="ilosc-container">
+                                <label for="ilosc-1">Ilość (kg):</label>
+                                <input type="number" id="ilosc-1" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
 
@@ -135,11 +250,14 @@
                         <div class="ceny">
                             <span class="cena-produktu">27.99 zł/kg</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-5">Ilość (kg):</label>
-                            <input type="number" id="ilosc-5" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="5">
+                            <div class="ilosc-container">
+                                <label for="ilosc-5">Ilość (kg):</label>
+                                <input type="number" id="ilosc-5" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
 
@@ -153,11 +271,14 @@
                         <div class="ceny">
                             <span class="cena-produktu">25.99 zł/kg</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-2">Ilość (kg):</label>
-                            <input type="number" id="ilosc-2" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="2">
+                            <div class="ilosc-container">
+                                <label for="ilosc-2">Ilość (kg):</label>
+                                <input type="number" id="ilosc-2" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
 
@@ -170,11 +291,14 @@
                         <div class="ceny">
                             <span class="cena-produktu">18.99 zł/kg</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-9">Ilość (kg):</label>
-                            <input type="number" id="ilosc-9" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="9">
+                            <div class="ilosc-container">
+                                <label for="ilosc-9">Ilość (kg):</label>
+                                <input type="number" id="ilosc-9" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
 
@@ -189,11 +313,14 @@
                         <div class="ceny">
                             <span class="cena-produktu">Zapytaj o ofertę</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-10">Ilość (kg):</label>
-                            <input type="number" id="ilosc-10" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="10">
+                            <div class="ilosc-container">
+                                <label for="ilosc-10">Ilość (kg):</label>
+                                <input type="number" id="ilosc-10" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
                 <div class="karta-produktu" data-kategoria="kebab">
@@ -206,18 +333,21 @@
                         <div class="ceny">
                             <span class="cena-produktu">Zapytaj o ofertę</span>
                         </div>
-                        <div class="ilosc-container">
-                            <label for="ilosc-11">Ilość (kg):</label>
-                            <input type="number" id="ilosc-11" min="0.5" step="0.1" value="1" class="ilosc">
-                        </div>
-                        <button class="przycisk-koszyk">Dodaj do koszyka</button>
+                        <form method="post" class="form-koszyk">
+                            <input type="hidden" name="produkt_id" value="11">
+                            <div class="ilosc-container">
+                                <label for="ilosc-11">Ilość (kg):</label>
+                                <input type="number" id="ilosc-11" name="ilosc" min="0.5" step="0.1" value="1" class="ilosc">
+                            </div>
+                            <button type="submit" name="dodaj_do_koszyka" class="przycisk-koszyk">Dodaj do koszyka</button>
+                        </form>
                     </div>
                 </div>
             </div>
 
 
             <!-- Koszyk -->
-            <section id="koszyk" class="sekcja-koszyk">
+            <section id="koszyk" class="sekcja-koszyk" <?= !empty($_SESSION['koszyk']) ? 'style="display:block;"' : '' ?>>
                 <div class="koszyk-container">
                     <h2 class="tytul-sekcji">Twój Koszyk</h2>
                     <div id="koszyk-tabela">
@@ -232,14 +362,35 @@
                                 </tr>
                             </thead>
                             <tbody id="koszyk-zawartosc">
+                                <?php if(empty($_SESSION['koszyk'])): ?>
                                 <tr id="koszyk-pusty">
                                     <td colspan="5">Twój koszyk jest pusty</td>
                                 </tr>
+                                <?php else: ?>
+                                    <?php 
+                                    $suma = 0;
+                                    foreach($_SESSION['koszyk'] as $id => $produkt): 
+                                        $wartosc = $produkt['cena'] * $produkt['ilosc'];
+                                        $suma += $wartosc;
+                                    ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($produkt['nazwa']) ?></td>
+                                        <td><?= number_format($produkt['cena'], 2) ?> zł/kg</td>
+                                        <td><?= number_format($produkt['ilosc'], 1) ?> kg</td>
+                                        <td><?= number_format($wartosc, 2) ?> zł</td>
+                                        <td>
+                                            <a href="usun_z_koszyka.php?id=<?= $id ?>" class="usun-produkt">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </tbody>
-                            <tfoot id="koszyk-podsumowanie" style="display: none;">
+                            <tfoot id="koszyk-podsumowanie" <?= !empty($_SESSION['koszyk']) ? 'style="display:table-row;"' : 'style="display:none;"' ?>>
                                 <tr>
                                     <td colspan="3">Suma:</td>
-                                    <td id="koszyk-suma">0.00 zł</td>
+                                    <td id="koszyk-suma"><?= isset($suma) ? number_format($suma, 2) : '0.00' ?> zł</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -304,7 +455,15 @@
                         <div class="podsumowanie-zamowienia">
                             <h3>Podsumowanie</h3>
                             <div id="podsumowanie-zawartosc">
-                                <p>Wybierz produkty w koszyku</p>
+                                <?php if(!empty($_SESSION['koszyk'])): ?>
+                                    <ul>
+                                    <?php foreach($_SESSION['koszyk'] as $produkt): ?>
+                                        <li><?= htmlspecialchars($produkt['nazwa']) ?> - <?= $produkt['ilosc'] ?> kg × <?= number_format($produkt['cena'], 2) ?> zł</li>
+                                    <?php endforeach; ?>
+                                    </ul>
+                                <?php else: ?>
+                                    <p>Wybierz produkty w koszyku</p>
+                                <?php endif; ?>
                             </div>
 
                             <h3>Sposób dostawy</h3>
@@ -342,15 +501,15 @@
                             <div class="podsumowanie-cena">
                                 <div class="wiersz">
                                     <span>Wartość produktów:</span>
-                                    <span id="wartosc-produktow">0.00 zł</span>
+                                    <span id="wartosc-produktow"><?= isset($suma) ? number_format($suma, 2) : '0.00' ?> zł</span>
                                 </div>
                                 <div class="wiersz">
                                     <span>Dostawa:</span>
-                                    <span id="koszt-dostawy">0.00 zł</span>
+                                    <span id="koszt-dostawy">15.00 zł</span>
                                 </div>
                                 <div class="wiersz suma">
                                     <span>Do zapłaty:</span>
-                                    <span id="suma-zamowienia">0.00 zł</span>
+                                    <span id="suma-zamowienia"><?= isset($suma) ? number_format($suma + 15, 2) : '15.00' ?> zł</span>
                                 </div>
                             </div>
 
@@ -392,8 +551,73 @@
         </div>
     </footer>
 
-    <script src="sklep.js"></script>
-   
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obsługa wyświetlania/ukrywania koszyka
+            const koszykSection = document.getElementById('koszyk');
+            const formularzZamowienia = document.getElementById('formularz-zamowienia');
+            
+            // Przycisk "Przejdź do zamówienia"
+            document.getElementById('przejdz-do-zamowienia').addEventListener('click', function(e) {
+                e.preventDefault();
+                koszykSection.style.display = 'none';
+                formularzZamowienia.style.display = 'block';
+            });
+            
+            // Przycisk "Kontynuuj zakupy"
+            document.getElementById('kontynuuj-zakupy').addEventListener('click', function(e) {
+                e.preventDefault();
+                koszykSection.style.display = 'none';
+            });
+            
+            // Obsługa zmiany metody dostawy
+            document.querySelectorAll('input[name="dostawa"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const kosztDostawy = this.value === 'kurier' ? 15 : this.value === 'paczkomat' ? 10 : 0;
+                    document.getElementById('koszt-dostawy').textContent = kosztDostawy.toFixed(2) + ' zł';
+                    
+                    const wartoscProduktow = parseFloat(document.getElementById('wartosc-produktow').textContent);
+                    document.getElementById('suma-zamowienia').textContent = (wartoscProduktow + kosztDostawy).toFixed(2) + ' zł';
+                });
+            });
+            
+            // Filtrowanie produktów
+            document.getElementById('kategoria').addEventListener('change', function() {
+                const kategoria = this.value;
+                document.querySelectorAll('.karta-produktu').forEach(karta => {
+                    if(kategoria === 'wszystkie' || karta.dataset.kategoria === kategoria) {
+                        karta.style.display = 'block';
+                    } else {
+                        karta.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Sortowanie produktów
+            document.getElementById('sortowanie').addEventListener('change', function() {
+                const sortowanie = this.value;
+                const kontener = document.querySelector('.siatka-produkty');
+                const karty = Array.from(document.querySelectorAll('.karta-produktu'));
+                
+                karty.sort((a, b) => {
+                    if(sortowanie === 'cena-rosnaco') {
+                        return parseFloat(a.querySelector('.cena-produktu').textContent) - 
+                               parseFloat(b.querySelector('.cena-produktu').textContent);
+                    } else if(sortowanie === 'cena-malejaco') {
+                        return parseFloat(b.querySelector('.cena-produktu').textContent) - 
+                               parseFloat(a.querySelector('.cena-produktu').textContent);
+                    } else if(sortowanie === 'nazwa') {
+                        return a.querySelector('.nazwa-produktu').textContent.localeCompare(
+                            b.querySelector('.nazwa-produktu').textContent
+                        );
+                    }
+                    return 0;
+                });
+                
+                // Usuń wszystkie karty i dodaj posortowane
+                karty.forEach(karta => kontener.appendChild(karta));
+            });
+        });
+    </script>
 </body>
-
 </html>
