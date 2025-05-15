@@ -47,6 +47,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['imie'] = $user['imie'];
             $_SESSION['nazwisko'] = $user['nazwisko'];
 
+            if ($rola === 'pracownik') {
+                $_SESSION['stanowisko'] = $user['stanowisko'];
+            } elseif ($rola === 'klient') {
+                $_SESSION['typ_konta'] = $user['typ_konta'];
+            }
+
             header("Location: Strona_glowna.php");
             exit();
         } else {
@@ -181,7 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <nav>
                 <ul>
 
-                <li><a href="Strona_glowna.php">Strona główna</a></li>
+                    <li><a href="Strona_glowna.php">Strona główna</a></li>
 
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
