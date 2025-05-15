@@ -189,6 +189,34 @@ INSERT INTO `reklamacje` (`id`, `zamowienie_id`, `klient_id`, `pracownik_id`, `d
 -- --------------------------------------------------------
 
 --
+-- Struktura tabeli dla tabeli `reklamacje`
+--
+
+CREATE TABLE `reklamacje` (
+  `id` int(11) NOT NULL,
+  `zamowienie_id` int(11) NOT NULL,
+  `klient_id` int(11) NOT NULL,
+  `pracownik_id` int(11) DEFAULT NULL,
+  `data_zgloszenia` datetime NOT NULL,
+  `tresc` text NOT NULL,
+  `status` enum('otwarta','w_trakcie','rozpatrzona','odrzucona') NOT NULL DEFAULT 'otwarta',
+  `decyzja` text DEFAULT NULL,
+  `data_rozpatrzenia` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reklamacje`
+--
+
+INSERT INTO `reklamacje` (`id`, `zamowienie_id`, `klient_id`, `pracownik_id`, `data_zgloszenia`, `tresc`, `status`, `decyzja`, `data_rozpatrzenia`) VALUES
+(1, 1, 1, 5, '2025-05-15 14:30:00', 'Otrzymałem rostbef o nieprzyjemnym zapachu, podejrzewam, że był nieświeży', 'rozpatrzona', 'Przyznano reklamację - wysłano nową partię produktu', '2025-05-16 10:00:00'),
+(2, 3, 7, NULL, '2025-05-16 09:45:00', 'W zamówieniu brakuje 2kg mięsa do kebabu, a opakowanie było naruszone', 'w_trakcie', NULL, NULL),
+(3, 5, 12, 2, '2025-05-17 16:20:00', 'Schab był zbyt tłusty jak na deklarowaną jakość premium', 'odrzucona', 'Produkt spełnia normy jakościowe - reklamacja odrzucona', '2025-05-18 09:15:00'),
+(4, 7, 10, NULL, '2025-05-20 11:10:00', 'Filet z kurczaka miał nietypowy kolor i konsystencję', 'otwarta', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Struktura tabeli dla tabeli `towary`
 --
 
@@ -293,6 +321,22 @@ INSERT INTO `zamowienia_towary` (`zamowienie_id`, `towar_id`, `ilosc_kg`, `cena_
 
 --
 -- Indeksy dla tabeli `dostawy`
+
+--
+ALTER TABLE `dostawy`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
+
+--
+-- Indeksy dla tabeli `dostawy_towary`
+--
+ALTER TABLE `dostawy_towary`
+  ADD PRIMARY KEY (`dostawa_id`,`towar_id`),
+  ADD KEY `towar_id` (`towar_id`);
+
+--
+-- Indeksy dla tabeli `klienci`
+
 --
 ALTER TABLE `dostawy`
   ADD PRIMARY KEY (`id`),
@@ -309,6 +353,15 @@ ALTER TABLE `dostawy_towary`
 -- Indeksy dla tabeli `klienci`
 --
 
+
+--
+-- Indeksy dla tabeli `reklamacje`
+--
+ALTER TABLE `reklamacje`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `zamowienie_id` (`zamowienie_id`),
+  ADD KEY `klient_id` (`klient_id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
 
 --
 -- Indeksy dla tabeli `reklamacje`

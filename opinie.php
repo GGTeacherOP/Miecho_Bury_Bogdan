@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <?php
     session_start();
     ?>
@@ -15,13 +16,16 @@
 
 <body>
     <header>
+
         <div class="kontener naglowek-kontener">
             <div class="logo">
                 <img src="Logo.png" alt="MeatMaster Logo">
             </div>
             <nav>
                 <ul>
-                    <li><a href="Strona_glowna.php">Strona główna</a></li>
+
+                <li><a href="Strona_glowna.php">Strona główna</a></li>
+
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
                     <li><a href="o_nas.php">O nas</a></li>
@@ -29,11 +33,13 @@
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
                     <li><a href="opinie.php">Opinie</a></li>
+
                     <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
                         <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
                     <?php else: ?>
                         <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
+
                 </ul>
             </nav>
         </div>
@@ -55,11 +61,13 @@
             <div class="kontener">
                 <h2 class="tytul-sekcji">Opinie naszych klientów</h2>
 
-
+                
+               
                 <div class="zawartosc-o-nas" style="align-items: flex-start;">
-
+                    
                     <div class="tekst-o-nas" style="flex: 1.5;">
                         <div class="siatka-opinii">
+                            
 
                             <div class="karta-opinii">
                                 <div class="tresc-opinii">
@@ -70,6 +78,7 @@
                                 </div>
                             </div>
 
+                            
 
                             <div class="karta-opinii">
                                 <div class="tresc-opinii">
@@ -79,7 +88,6 @@
                                     <i class="fas fa-user"></i> Monika L. – restauracja „GrillHouse”
                                 </div>
                             </div>
-
 
                             <div class="karta-opinii">
                                 <div class="tresc-opinii">
@@ -92,10 +100,12 @@
                         </div>
                     </div>
 
-
+                    
+                   
                     <div class="obraz-o-nas" style="flex: 1; background: #f5f5f5; padding: 30px; border-radius: 8px;">
                         <h3 style="color: #c00; margin-bottom: 20px;">Dodaj swoją opinię</h3>
                         <form class="contact-form">
+                            
 
                             <div class="form-group">
                                 <label for="opinion">Twoja opinia</label>
@@ -106,8 +116,10 @@
                     </div>
                 </div>
 
-
+                
+                
                 <div class="siatka-opinii" style="margin-top: 40px;">
+                    
 
                     <div class="karta-opinii">
                         <div class="tresc-opinii">
@@ -118,6 +130,7 @@
                         </div>
                     </div>
 
+                    
 
                     <div class="karta-opinii">
                         <div class="tresc-opinii">
@@ -127,7 +140,6 @@
                             <i class="fas fa-user"></i> Paweł M. – Bistro „Mięsiwo”
                         </div>
                     </div>
-
 
                     <div class="karta-opinii">
                         <div class="tresc-opinii">
@@ -160,13 +172,15 @@
                     <p>Niedz: Zamknięte</p>
                 </div>
 
+                
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
-
+                        
                         <a href="#" aria-label="Twitter" class="x-icon">X</a>
-
+                      
                         <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                       
 
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>

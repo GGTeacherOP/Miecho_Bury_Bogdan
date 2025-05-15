@@ -1,77 +1,3 @@
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conn = new mysqli("localhost", "root", "", "meatmasters");
-
-    if ($conn->connect_error) {
-        die("Błąd połączenia: " . $conn->connect_error);
-    }
-
-    function clean($dane)
-    {
-        return htmlspecialchars(trim($dane));
-    }
-
-    $imie = clean($_POST['imie']);
-    $nazwisko = clean($_POST['nazwisko']);
-    $email = clean($_POST['email']);
-    $haslo = $_POST['haslo'];
-    $potwierdz_haslo = $_POST['potwierdz-haslo'];
-    $telefon = clean($_POST['telefon']);
-    $typ_formularza = clean($_POST['typ-konta']);
-
-    // Mapowanie wartości z formularza na wartości typu ENUM z bazy danych
-    $mapa_typow = [
-        'klient' => 'klient indywidualny',
-        'firma' => 'firma/hurtownia',
-        'restauracja' => 'restauracja'
-    ];
-
-    $typ_konta = $mapa_typow[$typ_formularza] ?? 'klient indywidualny';
-
-    $nazwa_firmy = !empty($_POST['nazwa-firmy']) ? clean($_POST['nazwa-firmy']) : null;
-    $nip = !empty($_POST['nip']) ? clean($_POST['nip']) : null;
-    $regulamin = isset($_POST['regulamin']);
-
-    if ($haslo !== $potwierdz_haslo) {
-        $error = "Hasła nie są takie same!";
-    } elseif (strlen($haslo) < 8) {
-        $error = "Hasło musi mieć co najmniej 8 znaków!";
-    } elseif (!$regulamin) {
-        $error = "Musisz zaakceptować regulamin!";
-    } else {
-        $czyste_haslo = $haslo; // UWAGA: brak haszowania hasła
-
-        // Przygotowanie zapytania do sprawdzenia, czy email już istnieje
-        $stmt = $conn->prepare("SELECT id FROM klienci WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows > 0) {
-            $error = "Ten adres email już istnieje!";
-        } else {
-            // Przygotowanie zapytania INSERT do dodania nowego użytkownika
-            $stmt = $conn->prepare("INSERT INTO klienci 
-                (imie, nazwisko, email, haslo, telefon, typ_konta, nazwa_firmy, nip) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssss", $imie, $nazwisko, $email, $czyste_haslo, $telefon, $typ_konta, $nazwa_firmy, $nip);
-
-            if ($stmt->execute()) {
-                header("Location: logowanie.php?registered=1");
-                exit();
-            } else {
-                $error = "Błąd przy rejestracji: " . $stmt->error;
-            }
-        }
-        $stmt->close();
-    }
-
-    $conn->close();
-}
-?>
 <!DOCTYPE html>
 <html lang="pl">
 
@@ -82,39 +8,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Podpięcie głównego pliku stylów -->
 
+    
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
+
 
     <!-- Font Awesome do ikon (np. Instagram, telefon) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Style specyficzne tylko dla strony rejestracji -->
     <style>
-        body {
-            margin: 0;
-            font-family: sans-serif;
-        }
-
+        /* Sekcja rejestracji użytkownika */
         .sekcja-rejestracji {
-            padding: 80px 20px;
+            padding: 80px 0;
             background: #f5f5f5;
-            min-height: 100vh;
+            min-height: calc(100vh - 300px);
+            /* pełna wysokość minus nagłówek i stopka */
         }
 
         .kontener-rejestracji {
             max-width: 600px;
-            margin: auto;
+            margin: 0 auto;
             background: #fff;
-            padding: 30px;
+            padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 0 10px #ccc;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            /* delikatny cień dla estetyki */
         }
 
         .tytul-rejestracji {
             text-align: center;
-            font-size: 28px;
             color: #c00;
-            margin-bottom: 20px;
+            font-size: 28px;
+            margin-bottom: 30px;
         }
 
         .tytul-rejestracji::after {
@@ -123,31 +49,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 60px;
             height: 3px;
             background: #c00;
-            margin: 10px auto;
+            margin: 15px auto 0;
+            /* pasek dekoracyjny pod tytułem */
         }
 
         .formularz-grupa {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .formularz-grupa label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
         }
 
         .formularz-grupa input,
-        select {
+        .formularz-grupa select {
             width: 100%;
-            padding: 10px;
+            padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Podświetlenie pola przy aktywności */
+        .formularz-grupa input:focus,
+        .formularz-grupa select:focus {
+            border-color: #c00;
+            outline: none;
         }
 
         .podwojna-kolumna {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            /* dwa równe pola obok siebie */
+            gap: 20px;
+            /* odstęp między nimi */
         }
 
         .przycisk-rejestracji {
@@ -158,48 +96,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: none;
             border-radius: 4px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
         }
 
         .przycisk-rejestracji:hover {
             background: #a00;
         }
 
-        .checkbox-grupa {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-        }
-
-        .checkbox-grupa input {
-            margin-right: 10px;
-        }
-
-        .informacje-dodatkowe {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-top: 15px;
-        }
-
-        .error-message {
-            color: red;
-            background: #ffeeee;
-            padding: 10px;
-            border: 1px solid red;
-            margin-bottom: 20px;
-        }
-
         .linki-dodatkowe {
-            text-align: center;
             margin-top: 20px;
+            text-align: center;
         }
 
         .linki-dodatkowe a {
             color: #c00;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+        }
+
+        .linki-dodatkowe a:hover {
+            text-decoration: underline;
+        }
+
+        .wymagane {
+            color: #c00;
+        }
+
+        .informacje-dodatkowe {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .checkbox-grupa {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-grupa input {
+            width: auto;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -232,18 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="kontener-rejestracji">
             <h2 class="tytul-rejestracji">Rejestracja konta</h2>
 
-            <!-- Wyświetlanie błędów -->
-            <?php if (isset($error)): ?>
-                <div class="error-message" style="color: red; margin-bottom: 20px; padding: 10px; background: #ffeeee; border: 1px solid red;">
-                    <?php echo $error; ?>
-                </div>
-            <?php endif; ?>
-
-
-
-
             <!-- Formularz rejestracyjny -->
-            <form action="" method="POST">
+            <form action="rejestracja.php" method="POST">
                 <!-- Imię i nazwisko -->
                 <div class="podwojna-kolumna">
                     <div class="formularz-grupa">

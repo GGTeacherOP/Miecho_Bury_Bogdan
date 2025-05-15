@@ -180,7 +180,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
             <nav>
                 <ul>
-                    <li><a href="Strona_glowna.php">Strona główna</a></li>
+
+                <li><a href="Strona_glowna.php">Strona główna</a></li>
+
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
                     <li><a href="o_nas.php">O nas</a></li>
