@@ -27,7 +27,8 @@
             <nav>
                 <ul>
 
-                    <li><a href="Strona_glowna.php">Strona główna</a></li>
+
+                <li><a href="Strona_glowna.php">Strona główna</a></li>
 
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
@@ -101,7 +102,9 @@
         </section>
     </main>
 
-    <footer>
+
+   <footer>
+
         <div class="kontener">
             <div class="zawartosc-stopki">
 
@@ -138,5 +141,4 @@
         </div>
     </footer>
 </body>
-
 </html>

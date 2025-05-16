@@ -12,20 +12,21 @@
     <?php
     session_start();
     ?>
+    <script>
+    const imieUzytkownika = <?php echo isset($_SESSION['imie']) ? json_encode($_SESSION['imie']) : 'null'; ?>;
+    const nazwiskoUzytkownika = <?php echo isset($_SESSION['nazwisko']) ? json_encode($_SESSION['nazwisko']) : 'null'; ?>;
+</script>
 </head>
 
 <body>
     <header>
-
         <div class="kontener naglowek-kontener">
             <div class="logo">
                 <img src="Logo.png" alt="MeatMaster Logo">
             </div>
             <nav>
                 <ul>
-
-                <li><a href="Strona_glowna.php">Strona główna</a></li>
-
+                    <li><a href="Strona_glowna.php">Strona główna</a></li>
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
                     <li><a href="o_nas.php">O nas</a></li>
@@ -39,11 +40,11 @@
                     <?php else: ?>
                         <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
-
                 </ul>
             </nav>
         </div>
     </header>
+
     <section class="sekcja-glowna">
         <div class="kontener">
             <h2>Świeże mięso do Twojego sklepu!</h2>
@@ -56,19 +57,15 @@
             </div>
         </div>
     </section>
+
     <main>
         <section class="sekcja-opinie">
             <div class="kontener">
                 <h2 class="tytul-sekcji">Opinie naszych klientów</h2>
 
-                
-               
                 <div class="zawartosc-o-nas" style="align-items: flex-start;">
-                    
                     <div class="tekst-o-nas" style="flex: 1.5;">
                         <div class="siatka-opinii">
-                            
-
                             <div class="karta-opinii">
                                 <div class="tresc-opinii">
                                     <p>"Zamawiamy regularnie od 2 lat. Mięso zawsze świeże i świetnie zapakowane. Obsługa ekspresowa!"</p>
@@ -77,8 +74,6 @@
                                     <i class="fas fa-user"></i> Jan K. – właściciel kebaba, Warszawa
                                 </div>
                             </div>
-
-                            
 
                             <div class="karta-opinii">
                                 <div class="tresc-opinii">
@@ -100,13 +95,9 @@
                         </div>
                     </div>
 
-                    
-                   
                     <div class="obraz-o-nas" style="flex: 1; background: #f5f5f5; padding: 30px; border-radius: 8px;">
                         <h3 style="color: #c00; margin-bottom: 20px;">Dodaj swoją opinię</h3>
-                        <form class="contact-form">
-                            
-
+                        <form class="contact-form" id="formularz-opinia">
                             <div class="form-group">
                                 <label for="opinion">Twoja opinia</label>
                                 <textarea id="opinion" rows="4" required></textarea>
@@ -116,11 +107,10 @@
                     </div>
                 </div>
 
-                
-                
-                <div class="siatka-opinii" style="margin-top: 40px;">
-                    
+                <!-- Miejsce na nowe opinie -->
+                <div id="nowe-opinie" class="siatka-opinii" style="margin-top: 40px;"></div>
 
+                <div class="siatka-opinii" style="margin-top: 40px;">
                     <div class="karta-opinii">
                         <div class="tresc-opinii">
                             <p>"Najlepsza hurtownia mięsa, z jaką współpracowaliśmy. Zamówienia zawsze na czas."</p>
@@ -129,8 +119,6 @@
                             <i class="fas fa-user"></i> Karolina Z. – sklep spożywczy „Smaczek”
                         </div>
                     </div>
-
-                    
 
                     <div class="karta-opinii">
                         <div class="tresc-opinii">
@@ -149,15 +137,14 @@
                             <i class="fas fa-user"></i> Ahmad A. – kebab „Ali Baba”
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
     </main>
+
     <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">
-
                 <div class="kolumna-stopki">
                     <h3>Kontakt</h3>
                     <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
@@ -172,16 +159,11 @@
                     <p>Niedz: Zamknięte</p>
                 </div>
 
-                
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
-                        
                         <a href="#" aria-label="Twitter" class="x-icon">X</a>
-                      
                         <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-                       
-
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
@@ -192,6 +174,99 @@
             </div>
         </div>
     </footer>
+
+    <!-- Skrypt dodający nowe opinie -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const imieUzytkownika = <?php echo isset($_SESSION['imie']) ? json_encode($_SESSION['imie']) : 'null'; ?>;
+    const nazwiskoUzytkownika = <?php echo isset($_SESSION['nazwisko']) ? json_encode($_SESSION['nazwisko']) : 'null'; ?>;
+    const identyfikatorZalogowanego = (imieUzytkownika && nazwiskoUzytkownika)
+        ? imieUzytkownika + " " + nazwiskoUzytkownika
+        : null;
+
+    const form = document.getElementById("formularz-opinia");
+    const textarea = document.getElementById("opinion");
+    const kontener = document.getElementById("nowe-opinie");
+
+    function zapiszDoLocalStorage(opinie) {
+        localStorage.setItem("opinieMM", JSON.stringify(opinie));
+    }
+
+    function wczytajZLocalStorage() {
+        return JSON.parse(localStorage.getItem("opinieMM") || "[]");
+    }
+
+    function stworzKarteOpinii(tresc, autor, identyfikator, index, zapisz = false) {
+        const nowaKarta = document.createElement("div");
+        nowaKarta.className = "karta-opinii";
+
+        const autorTekst = autor || "Użytkownik anonimowy";
+        const czyMozeUsunac = (
+            (identyfikatorZalogowanego && identyfikatorZalogowanego === identyfikator) ||
+            (!identyfikatorZalogowanego && !identyfikator)
+        );
+
+        nowaKarta.innerHTML = `
+            <div class="tresc-opinii">
+                <p>"${tresc}"</p>
+            </div>
+            <div class="autor-opinii">
+                <i class="fas fa-user"></i> ${autorTekst}
+                ${czyMozeUsunac ? `<button style="float:right; background:#c00; color:#fff; border:none; padding:5px 10px; cursor:pointer;" data-index="${index}">Usuń</button>` : ""}
+            </div>
+        `;
+
+        if (czyMozeUsunac) {
+            nowaKarta.querySelector("button").addEventListener("click", function () {
+                const opinie = wczytajZLocalStorage();
+                opinie.splice(index, 1);
+                zapiszDoLocalStorage(opinie);
+                odswiezOpinie();
+            });
+        }
+
+        kontener.appendChild(nowaKarta);
+
+        if (zapisz) {
+            const opinie = wczytajZLocalStorage();
+            opinie.push({ tresc, autor: autorTekst, identyfikator });
+            zapiszDoLocalStorage(opinie);
+            odswiezOpinie(); // dla aktualnych indeksów
+        }
+    }
+
+    function odswiezOpinie() {
+        kontener.innerHTML = "";
+        const opinie = wczytajZLocalStorage();
+        opinie.forEach((opinia, i) => {
+            stworzKarteOpinii(opinia.tresc, opinia.autor, opinia.identyfikator, i, false);
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const tresc = textarea.value.trim();
+        if (!tresc) return;
+
+        let autor = "Użytkownik anonimowy";
+        let identyfikator = null;
+
+        if (imieUzytkownika && nazwiskoUzytkownika) {
+            const inicjal = nazwiskoUzytkownika.charAt(0).toUpperCase() + ".";
+            autor = `${imieUzytkownika} ${inicjal}`;
+            identyfikator = `${imieUzytkownika} ${nazwiskoUzytkownika}`;
+        }
+
+        stworzKarteOpinii(tresc, autor, identyfikator, null, true);
+        textarea.value = "";
+    });
+
+    odswiezOpinie();
+});
+
+</script>
 </body>
 
 </html>
