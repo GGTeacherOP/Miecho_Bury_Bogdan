@@ -292,14 +292,14 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
                         </div>
 
                         <div class="przyciski-pracownika">
-                            <?php if (in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
-                                <a href="pracownicy.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
-                                <a href="towar.php" class="przycisk-pracownika">Zarządzaj towarem</a>
+                            <?php if (in_array($_SESSION['stanowisko'], ['Kierownik'])): ?>
+                                <a href="pracownicy_p.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
+                                <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
                             <?php endif; ?>
 
                             <?php if (!in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
-                                <a href="reklamacje.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
-                                <a href="zamowienia.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
+                                <a href="reklamacje_p.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
+                                <a href="zamowienia_p.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
                             <?php endif; ?>
                         </div>
                     </div>

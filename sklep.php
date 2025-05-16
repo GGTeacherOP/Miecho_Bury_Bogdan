@@ -179,7 +179,7 @@
                 </div>
 
                 <!-- Mięso do kebaba -->
-                <div class="karta-produktu" data-kategoria="specjalne">
+                <div class="karta-produktu" data-kategoria="kebab">
                     <div class="obraz-produktu">
                         <img src="kebabwol.jpg" alt="Mięso do kebaba klasyczne">
                         <span class="promocja">Bestseller</span>
@@ -196,7 +196,7 @@
                         <button class="przycisk-koszyk">Dodaj do koszyka</button>
                     </div>
                 </div>
-                <div class="karta-produktu" data-kategoria="kebab-drobiowe">
+                <div class="karta-produktu" data-kategoria="kebab">
                     <div class="obraz-produktu">
                         <img src="kabab-drobiowy.jpg" alt="Mięso do kebaba drobiowe">
                         <span class="promocja">Nowość</span>
@@ -393,6 +393,7 @@
     </footer>
 
     <script src="sklep.js"></script>
+   
 </body>
 
 </html>
