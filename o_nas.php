@@ -64,7 +64,7 @@
         <section class="o-nas-sekcja">
             <div class="o-nas-kontener">
                 <h2 class="o-nas-tytul">O nas</h2>
-                
+
                 <div class="o-nas-zawartosc">
                     <div class="o-nas-tekst">
                         <article class="o-nas-artykul">
@@ -102,7 +102,9 @@
         </section>
     </main>
 
+
    <footer>
+
         <div class="kontener">
             <div class="zawartosc-stopki">
 

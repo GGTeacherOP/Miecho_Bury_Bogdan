@@ -551,6 +551,7 @@ if(isset($_POST['dodaj_do_koszyka'])) {
         </div>
     </footer>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Obsługa wyświetlania/ukrywania koszyka
