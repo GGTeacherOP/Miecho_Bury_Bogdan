@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="pl">
 
@@ -8,13 +12,124 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <?php
-    session_start();
-    ?>
-
-</head>
-
+    <style>
+       
+        .faq-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            font-family: Arial, sans-serif;
+            overflow: hidden; 
+        }
+        
+        .faq-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .faq-header h2 {
+            color: #d32f2f;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .faq-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .faq-list {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .faq-item {
+            background: white;
+            margin-bottom: 30px; 
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .faq-question {
+            background: #f8f8f8;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .faq-answer {
+            padding: 20px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .faq-image-box {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .faq-image-box img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px; 
+        }
+        
+      
+        .faq-contact-box {
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 8px;
+            margin: 80px auto 0;
+            text-align: center;
+            clear: both;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .faq-contact-box h3 {
+            color: #d32f2f;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .faq-contact-box p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .faq-contact-box .przycisk {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #d32f2f;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        
+        .faq-contact-box .przycisk:hover {
+            background: #b71c1c;
+        }
+        
+        @media (max-width: 768px) {
+            .faq-content {
+                flex-direction: column;
+            }
+            
+            .faq-contact-box {
+                margin: 50px auto 0;
+                padding: 30px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -25,10 +140,7 @@
             </div>
             <nav>
                 <ul>
-
-
-                <li><a href="Strona_glowna.php">Strona główna</a></li>
-
+                    <li><a href="Strona_glowna.php">Strona główna</a></li>
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
                     <li><a href="o_nas.php">O nas</a></li>
@@ -38,186 +150,120 @@
                     <li><a href="opinie.php">Opinie</a></li>
 
                     <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
-                        <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
+                        <li><a href="profil.php"><i class="fas fa-user"></i> Profil</a></li>
                     <?php else: ?>
-                        <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
+                        <li><a href="logowanie.php"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
-
                 </ul>
             </nav>
         </div>
     </header>
 
-    <section class="sekcja-glowna">
-        <div class="kontener">
-            <h2>Świeże mięso do Twojego sklepu!</h2>
-            <p>Najwyższej jakości produkty mięsne od sprawdzonych dostawców</p>
-            <div class="kontener-przyciskow">
+    <main>
+        <div class="faq-container">
+            <div class="faq-header">
+                <h2>Najczęściej zadawane pytania</h2>
+                <p>Znajdź odpowiedzi na najpopularniejsze pytania dotyczące naszych produktów i usług</p>
+            </div>
+            
+            <div class="faq-content">
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Czy dostarczacie mięso do sklepów i restauracji?
+                        </div>
+                        <div class="faq-answer">
+                            <p>Tak, specjalizujemy się w dostawach dla profesjonalnych klientów. Oferujemy dostawy na terenie całego kraju do restauracji, hoteli i sklepów mięsnych.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Jak należy przechowywać Wasze produkty?
+                        </div>
+                        <div class="faq-answer">
+                            <p>Produkty należy przechowywać w temperaturze 0-4°C. Mięso pakowane próżniowo zachowuje świeżość do 14 dni w odpowiednich warunkach.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Jakie certyfikaty posiadają Wasze produkty?
+                        </div>
+                        <div class="faq-answer">
+                            <p>Wszystkie nasze produkty posiadają wymagane certyfikaty UE, w tym HACCP i ISO 9001. Prowadzimy rygorystyczną kontrolę jakości.</p>
+                        </div>
+                    </div>
 
-            <a href="oferta.php" class="przycisk">Oferta</a>
-
-                <a href="sklep.php " class="przycisk">Sklep</a>
-                <a href="faq.php" class="przycisk">FAQ</a>
-                <a href="kontakt.php" class="przycisk">Kontakt</a>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Czy oferujecie mięso ekologiczne?
+                        </div>
+                        <div class="faq-answer">
+                            <p>Tak, w naszej ofercie znajduje się również linia produktów ekologicznych, pochodzących z certyfikowanych hodowli.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-image-box">
+                    <img src="faq.jpg" alt="Nasza hurtownia mięsa">
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Jak długo trwa dostawa?
+                        </div>
+                        <div class="faq-answer">
+                            <p>Standardowo realizujemy dostawy w ciągu 24-48 godzin. Dla Warszawy i okolic gwarantujemy dostawę w ciągu 24 godzin od złożenia zamówienia.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Jakie mięso znajdę w ofercie?
+                        </div>
+                        <div class="faq-answer">
+                            <p>Oferujemy wołowinę, wieprzowinę, drób (kurczak, indyk), a także specjalności jak mięso do kebaba i mieszanki własnej receptury.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-contact-box">
+                <h3>Masz dodatkowe pytania?</h3>
+                <p>Nasz zespół chętnie na nie odpowie!</p>
+                <a href="kontakt.php" class="przycisk">Skontaktuj się z nami</a>
             </div>
         </div>
-    </section>
-
-<body>
-   
-    <main>
-        <section class="sekcja-o-nas">
-            <div class="kontener">
-                <h2 class="tytul-sekcji">Najczęściej zadawane pytania</h2>
-                
-                <div class="zawartosc-o-nas">
-                  
-                    <div class="tekst-o-nas">
-                        <div class="karta-opinii">
-                            <div class="tresc-opinii">
-                                <h3>Czy dostarczacie mięso do sklepów i lokali gastronomicznych?</h3>
-                                <p>Tak, dostarczamy świeże mięso na terenie całego kraju zarówno do sklepów, jak i lokali gastronomicznych. Współpracujemy z restauracjami, barami i sklepami mięsnymi.</p>
-
-                            </div>
-                        </div>
-
-                        <div class="karta-opinii">
-                            <div class="tresc-opinii">
-
-                                <h3>Jak należy przechowywać Wasze produkty?</h3>
-                                <p>Produkty należy przechowywać w temperaturze od 0°C do 4°C w oryginalnym opakowaniu. Mięso pakowane próżniowo zachowuje świeżość do 14 dni w odpowiednich warunkach.</p>
-
-                            </div>
-                        </div>
-
-                        <div class="karta-opinii">
-                            <div class="tresc-opinii">
-
-                                <h3>Jak mogę złożyć reklamację?</h3>
-                                <p>Reklamacje przyjmujemy telefonicznie pod numerem +48 123 456 789 lub mailowo na adres reklamacje@meatmaster.pl. Prosimy o dołączenie zdjęć produktu i paragonu/faktury.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-
-        <footer>
-            <div class="kontener">
-                <div class="zawartosc-stopki">
-
-                    <div class="kolumna-stopki">
-                        <h3>Kontakt</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
-                        <p><i class="fas fa-phone"></i> +48 694 202 137</p>
-                        <p><i class="fas fa-envelope"></i> kontaktujSieWariacieEssa@meatmaster.pl</p>
-                    </div>
-
-                    <div class="kolumna-stopki">
-                        <h3>Godziny otwarcia</h3>
-                        <p>Pon-Pt: 6:00 - 22:00</p>
-                        <p>Sob: 7:00 - 14:00</p>
-                        <p>Niedz: Zamknięte</p>
-                    </div>
-
-                    <div class="kolumna-stopki">
-                        <h3>Śledź nas</h3>
-                        <div class="linki-spolecznosciowe">
-
-                            <a href="#" aria-label="Twitter" class="x-icon">X</a>
-
-                            <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-
-                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="prawa-autorskie">
-                    <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
-                </div>
-            </div>
-        </footer>
-    </body>
-
-
-                                <h3>Jak długo trwa dostawa od momentu złożenia zamówienia?</h3>
-                                <p>Dostawa w Warszawie i okolicach trwa 24 godziny. Dla innych regionów kraju - maksymalnie 48 godzin. W przypadku zamówień specjalnych czas może się wydłużyć.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                   
-                    <div class="obraz-o-nas">
-                        <img src="faq.jpg" alt="Pracownik hurtowni mięsa">
-                    </div>
-                </div>
-                
-               
-                <div class="siatka-opinii" style="margin-top: 40px;">
-                    <div class="karta-opinii">
-                        <div class="tresc-opinii">
-                            <h3>Czy mogę zamówić mniejsze ilości produktów?</h3>
-                            <p>W naszym sklepie internetowym oferujemy możliwość zakupu mniejszych ilości wybranych produktów. Minimalna waga zamówienia to 5 kg dla poszczególnych produktów.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="karta-opinii">
-                        <div class="tresc-opinii">
-                            <h3>Jakie mięso znajdę w ofercie?</h3>
-                            <p>W naszej ofercie znajdziesz: mięso do kebaba, wołowinę (w tym steki), wieprzowinę, drób (kurczak, indyk), a także mięso jagnięce i dziczyznę sezonowo.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="karta-opinii">
-                        <div class="tresc-opinii">
-                            <h3>Jak mogę złożyć reklamację?</h3>
-                            <p>Reklamacje przyjmujemy telefonicznie pod numerem +48 123 456 789 lub mailowo na adres reklamacje@meatmaster.pl. Prosimy o dołączenie zdjęć produktu i paragonu/faktury.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
-
 
     <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">
-              
                 <div class="kolumna-stopki">
                     <h3>Kontakt</h3>
                     <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
-                    <p><i class="fas fa-envelope"></i> kontaktujSieWariacieEssa@meatmaster.pl</p>
+                    <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
-              
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
                     <p>Pon-Pt: 6:00 - 22:00</p>
                     <p>Sob: 7:00 - 14:00</p>
                     <p>Niedz: Zamknięte</p>
                 </div>
-               
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
-                      
                         <a href="#" aria-label="Twitter" class="x-icon">X</a>
-                       
                         <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-                        
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
-           
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
             </div>
         </div>
     </footer>
 </body>
-
 </html>
