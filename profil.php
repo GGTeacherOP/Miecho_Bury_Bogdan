@@ -5,21 +5,26 @@ require_once "sesje.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wyloguj'])) {
     session_unset();
     session_destroy();
-    header("Location: logowanie.php"); // lub Strona_glowna.php
+    header("Location: logowanie.php");
     exit;
 }
 
-// Zakładamy, że w sesji masz tablicę 'uzytkownik' z kluczami: imie, nazwisko, email, telefon, rejestracja, typ_konta
-$uzytkownik = $_SESSION['uzytkownik'] ?? [
-    'imie' => 'Jan',
-    'nazwisko' => 'Nowak',
-    'email' => 'jan.nowak@example.com',
+// Pobranie danych użytkownika z sesji
+$uzytkownik = [
+    'imie' => $_SESSION['imie'],
+    'nazwisko' => $_SESSION['nazwisko'],
+    'email' => $_SESSION['user_email'],
     'telefon' => '+48 123 456 789',
-    'rejestracja' => '12.05.2023',
-    'typ_konta' => 'Konto standardowe',
+    'rejestracja' => date('d.m.Y', strtotime('now')),
+    'typ_konta' => $_SESSION['rola'] === 'pracownik' ? 'Pracownik' : ($_SESSION['typ_konta'] ?? 'Klient indywidualny'),
     'zamowienia' => 15,
     'wartosc' => '3450 zł'
 ];
+
+// Dodanie stanowiska dla pracownika
+if ($_SESSION['rola'] === 'pracownik') {
+    $uzytkownik['stanowisko'] = $_SESSION['stanowisko'];
+}
 
 $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['nazwisko'], 0, 1));
 ?>
@@ -34,19 +39,13 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <?php
-    require_once "sesje.php";
-    ?>
-
     <style>
-        /* Sekcja profilu - tło, odstępy i minimalna wysokość */
         .sekcja-profilu {
             padding: 80px 0;
             background: #f5f5f5;
             min-height: calc(100vh - 300px);
         }
 
-        /* Kontener profilu */
         .kontener-profilu {
             max-width: 800px;
             margin: 0 auto;
@@ -59,7 +58,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             gap: 30px;
         }
 
-        /* Nagłówek profilu */
         .naglowek-profilu {
             display: flex;
             align-items: center;
@@ -68,7 +66,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             padding-bottom: 20px;
         }
 
-        /* Awatar użytkownika */
         .awatar {
             width: 120px;
             height: 120px;
@@ -82,7 +79,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             font-weight: bold;
         }
 
-        /* Informacje o użytkowniku */
         .informacje-uzytkownika h2 {
             color: #c00;
             margin-bottom: 10px;
@@ -99,7 +95,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             margin-top: 5px;
         }
 
-        /* Sekcja statystyk */
         .sekcja-statystyk {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -126,7 +121,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             color: #c00;
         }
 
-        /* Sekcja danych */
         .sekcja-danych {
             display: grid;
             grid-template-columns: 1fr;
@@ -161,7 +155,31 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             color: #333;
         }
 
-        /* Przycisk wylogowania */
+        .przyciski-pracownika {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .przycisk-pracownika {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            background: #c00;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .przycisk-pracownika:hover {
+            background: #a00;
+            transform: translateY(-2px);
+        }
+
         .przycisk-wyloguj {
             width: 100%;
             padding: 14px;
@@ -173,19 +191,31 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
-            text-decoration: none;
-            text-align: center;
             margin-top: 30px;
         }
 
         .przycisk-wyloguj:hover {
             background: #a00;
         }
+
+        @media (max-width: 600px) {
+            .naglowek-profilu {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .awatar {
+                margin: 0 auto;
+            }
+
+            .przycisk-pracownika {
+                min-width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- Nagłówek strony -->
     <header>
         <div class="kontener naglowek-kontener">
             <div class="logo">
@@ -206,7 +236,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
         </div>
     </header>
 
-    <!-- Sekcja profilu -->
     <section class="sekcja-profilu">
         <div class="kontener-profilu">
             <div class="naglowek-profilu">
@@ -253,17 +282,36 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
                         <span class="wartosc"><?= htmlspecialchars($uzytkownik['rejestracja']) ?></span>
                     </div>
                 </div>
+
+                <?php if ($_SESSION['rola'] === 'pracownik'): ?>
+                    <div class="grupa-danych">
+                        <h3>Informacje o pracowniku</h3>
+                        <div class="dane">
+                            <span class="etykieta">Stanowisko:</span>
+                            <span class="wartosc"><?= htmlspecialchars($uzytkownik['stanowisko']) ?></span>
+                        </div>
+
+                        <div class="przyciski-pracownika">
+                            <?php if (in_array($_SESSION['stanowisko'], ['Kierownik'])): ?>
+                                <a href="pracownicy_p.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
+                                <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
+                            <?php endif; ?>
+
+                            <?php if (!in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
+                                <a href="reklamacje_p.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
+                                <a href="zamowienia_p.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
-            <!-- Przycisk wylogowania -->
             <form method="post">
                 <button type="submit" name="wyloguj" class="przycisk-wyloguj">Wyloguj się</button>
             </form>
         </div>
     </section>
 
-
-    <!-- Stopka -->
     <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">

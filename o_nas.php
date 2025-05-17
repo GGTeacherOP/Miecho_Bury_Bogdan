@@ -98,14 +98,17 @@
                     </article>
                 </div>
 
+
                 <div class="o-nas-obraz">
                     <img src="firma.png" alt="Hurtownia mięsa MeatMaster">
                 </div>
             </div>
+
         </div>
     </section>
 </main>
    <footer>
+
         <div class="kontener">
             <div class="zawartosc-stopki">
 

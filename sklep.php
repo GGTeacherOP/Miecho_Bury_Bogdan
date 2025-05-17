@@ -550,6 +550,8 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             </div>
         </div>
     </footer>
+
+
     <script>
         // Czekamy aż cała strona się załaduje
         document.addEventListener('DOMContentLoaded', function() {
