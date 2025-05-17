@@ -1,49 +1,66 @@
-// 1. Znajdź potrzebne elementy
-const kategorieSelect = document.getElementById('kategoria');
-const sortowanieSelect = document.getElementById('sortowanie');
-const kontenerProduktow = document.querySelector('.siatka-produktow');
-const wszystkieProdukty = Array.from(document.querySelectorAll('.karta-produktu'));
+// Prosty skrypt do filtrowania i sortowania produktów
+document.addEventListener('DOMContentLoaded', function() {
+    // Pobieramy elementy strony
+    const selectKategoria = document.getElementById('kategoria');
+    const selectSortowanie = document.getElementById('sortowanie');
+    const kontener = document.querySelector('.siatka-produktow');
+    const produkty = Array.from(document.querySelectorAll('.karta-produktu'));
 
-// 2. Funkcja aktualizująca produkty
-function aktualizujProdukty() {
-  const wybranaKategoria = kategorieSelect.value;
-  const sposobSortowania = sortowanieSelect.value;
-  
-  // Filtruj produkty
-  const przefiltrowane = wszystkieProdukty.filter(produkt => {
-    const kategoria = produkt.dataset.kategoria;
-    return wybranaKategoria === 'wszystkie' || 
-           kategoria === wybranaKategoria ||
-           (wybranaKategoria === 'kebab' && (kategoria === 'kebab' || kategoria === 'kebab-drobiowe'));
-  });
+    // Funkcja do filtrowania i sortowania
+    function aktualizujWidok() {
+        const kategoria = selectKategoria.value;
+        const sortowanie = selectSortowanie.value;
 
-  // Sortuj produkty
-  przefiltrowane.sort((a, b) => {
-    if (sposobSortowania === 'cena-rosnaco') {
-      return pobierzCene(a) - pobierzCene(b);
-    } else if (sposobSortowania === 'cena-malejaco') {
-      return pobierzCene(b) - pobierzCene(a);
-    } else if (sposobSortowania === 'nazwa') {
-      return pobierzNazwe(a).localeCompare(pobierzNazwe(b));
+        // Filtrowanie
+        let przefiltrowane = produkty.filter(produkt => {
+            if (kategoria === 'wszystkie') return true;
+            if (kategoria === 'kebab') {
+                return produkt.dataset.kategoria === 'kebab' || 
+                       produkt.dataset.kategoria === 'kebab-drobiowe';
+            }
+            return produkt.dataset.kategoria === kategoria;
+        });
+
+        // Sortowanie
+        if (sortowanie === 'cena-rosnaco') {
+            przefiltrowane.sort(sortujCenaRosnaco);
+        } else if (sortowanie === 'cena-malejaco') {
+            przefiltrowane.sort(sortujCenaMalejaco);
+        } else if (sortowanie === 'nazwa') {
+            przefiltrowane.sort(sortujNazwa);
+        }
+
+        // Wyświetlanie
+        kontener.innerHTML = '';
+        przefiltrowane.forEach(p => kontener.appendChild(p));
     }
-    return 0;
-  });
 
-  // Wyświetl produkty
-  kontenerProduktow.innerHTML = '';
-  przefiltrowane.forEach(p => kontenerProduktow.appendChild(p));
-}
+    // Funkcje sortujące
+    function sortujCenaRosnaco(a, b) {
+        return pobierzCene(a) - pobierzCene(b);
+    }
 
-// 3. Pomocnicze funkcje
-function pobierzCene(produkt) {
-  const cenaText = produkt.querySelector('.cena-produktu').textContent;
-  return cenaText.includes('Zapytaj') ? 0 : parseFloat(cenaText);
-}
+    function sortujCenaMalejaco(a, b) {
+        return pobierzCene(b) - pobierzCene(a);
+    }
 
-function pobierzNazwe(produkt) {
-  return produkt.querySelector('.nazwa-produktu').textContent.toLowerCase();
-}
+    function sortujNazwa(a, b) {
+        const nazwaA = a.querySelector('.nazwa-produktu').textContent.toLowerCase();
+        const nazwaB = b.querySelector('.nazwa-produktu').textContent.toLowerCase();
+        return nazwaA.localeCompare(nazwaB);
+    }
 
-// 4. Nasłuchuj zmian
-kategorieSelect.addEventListener('change', aktualizujProdukty);
-sortowanieSelect.addEventListener('change', aktualizujProdukty);
+    // Pomocnicza funkcja do pobierania ceny
+    function pobierzCene(produkt) {
+        const cenaText = produkt.querySelector('.cena-produktu').textContent;
+        const cena = parseFloat(cenaText.replace(' zł/kg', '').replace(',', '.'));
+        return isNaN(cena) ? 0 : cena; // Dla "Zapytaj o ofertę" zwracamy 0
+    }
+
+    // Nasłuchiwanie zmian w selectach
+    selectKategoria.addEventListener('change', aktualizujWidok);
+    selectSortowanie.addEventListener('change', aktualizujWidok);
+
+    // Inicjalizacja
+    aktualizujWidok();
+});
