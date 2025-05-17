@@ -60,48 +60,51 @@
         </div>
     </section>
 
-    <main>
-        <section class="o-nas-sekcja">
-            <div class="o-nas-kontener">
-                <h2 class="o-nas-tytul">O nas</h2>
-                
-                <div class="o-nas-zawartosc">
-                    <div class="o-nas-tekst">
-                        <article class="o-nas-artykul">
-                            <h2><i class="fas fa-building"></i> O firmie</h2>
-                            <p>Nasza hurtownia działa od ponad 10 lat, obsługując setki klientów w całej Polsce. Specjalizujemy się w hurtowej sprzedaży mięsa do kebaba, wołowiny, wieprzowiny oraz drobiu.</p>
-                            <p>Współpracujemy z najlepszymi zakładami mięsnymi i producentami, dzięki czemu gwarantujemy najwyższą jakość naszych produktów.</p>
-                        </article>
+   <main>
+    <section class="o-nas-sekcja">
+        <div class="o-nas-kontener">
+            <h2 class="o-nas-tytul">O nas</h2>
+            
+            <div class="o-nas-zawartosc">
+                <div class="o-nas-tekst">
+                    <article class="o-nas-artykul">
+                        <h2><i class="fas fa-building"></i> O firmie</h2>
+                        <p>Nasza hurtownia działa od ponad 10 lat, obsługując setki klientów w całej Polsce. Specjalizujemy się w hurtowej sprzedaży mięsa do kebaba, wołowiny, wieprzowiny oraz drobiu.</p>
+                        <p>Współpracujemy z najlepszymi zakładami mięsnymi i producentami, dzięki czemu gwarantujemy najwyższą jakość naszych produktów.</p>
+                    </article>
 
-                        <article class="o-nas-artykul">
-                            <h2><i class="fas fa-trophy"></i> Nasze osiągnięcia</h2>
-                            <ul class="o-nas-lista lista-osiagniec">
-                                <li>Obsługa ponad 1200 lokali gastronomicznych w Polsce</li>
-                                <li>Flota 12 nowoczesnych chłodni zapewniających dostawy w 24h</li>
-                                <li>Wyróżnienia za jakość i terminowość dostaw (2021, 2023)</li>
-                                <li>Stale rosnąca baza klientów i partnerów handlowych</li>
-                            </ul>
-                        </article>
+                   
+                   
 
-                        <article class="o-nas-artykul">
-                            <h2><i class="fas fa-star"></i> Dlaczego my?</h2>
-                            <ul class="o-nas-lista lista-dlaczego-my">
-                                <li>Sprawdzeni dostawcy i surowce najwyższej jakości</li>
-                                <li>Indywidualne podejście do klienta i elastyczność współpracy</li>
-                                <li>Własne centrum logistyczne i transport w chłodni</li>
-                                <li>Certyfikaty HACCP i przestrzeganie standardów sanitarnych</li>
-                            </ul>
-                        </article>
-                    </div>
+                  <article class="o-nas-artykul">
+    <h2><i class="fas fa-trophy"></i> Nasze osiągnięcia</h2>
+    <ul class="o-nas-lista lista-osiagniec">
+        <li>Obsługa ponad 1200 lokali gastronomicznych w Polsce</li>
+        <li>Flota 12 nowoczesnych chłodni zapewniających dostawy w 24h</li>
+        <li>Ustanowienie rekordu Guinnessa w produkcji największej kaszanki świata  (226 m, Radomyśl Wielki 2014)</li>
+        <li>Wyróżnienia za jakość i terminowość dostaw (2021, 2023)</li>
+        <li>Stale rosnąca baza klientów i partnerów handlowych</li>
+    </ul>
+</article>
 
-                    <div class="o-nas-obraz">
-                        <img src="firma.png" alt="Hurtownia mięsa MeatMaster">
-                    </div>
+                    <article class="o-nas-artykul">
+                        <h2><i class="fas fa-star"></i> Dlaczego my?</h2>
+                        <ul class="o-nas-lista lista-dlaczego-my">
+                            <li>Sprawdzeni dostawcy i surowce najwyższej jakości</li>
+                            <li>Indywidualne podejście do klienta i elastyczność współpracy</li>
+                            <li>Własne centrum logistyczne i transport w chłodni</li>
+                            <li>Certyfikaty HACCP i przestrzeganie standardów sanitarnych</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="o-nas-obraz">
+                    <img src="firma.png" alt="Hurtownia mięsa MeatMaster">
                 </div>
             </div>
-        </section>
-    </main>
-
+        </div>
+    </section>
+</main>
    <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">
