@@ -150,9 +150,10 @@ if (isset($_POST['aktualizuj_koszyk'])) {
         .kontener-koszyka {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px;
             background: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
         
         .tabela-koszyka {
@@ -164,50 +165,84 @@ if (isset($_POST['aktualizuj_koszyk'])) {
         .tabela-koszyka th {
             background: #d32f2f;
             color: white;
-            padding: 10px;
+            padding: 12px;
             text-align: left;
         }
         
         .tabela-koszyka td {
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid #eee;
+            vertical-align: middle;
         }
         
         .ilosc-input {
-            width: 60px;
-            padding: 5px;
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         
         .usun-produkt {
             color: #d32f2f;
+            font-size: 18px;
         }
         
         .koszyk-pusty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
             text-align: center;
-            padding: 50px 0;
         }
         
         .koszyk-pusty i {
-            font-size: 50px;
+            font-size: 60px;
             color: #ddd;
             margin-bottom: 20px;
+        }
+        
+        .koszyk-pusty h3 {
+            margin-bottom: 25px;
+            color: #555;
+            font-weight: normal;
         }
         
         .przyciski-koszyka {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 30px;
+            gap: 15px;
         }
         
         .przycisk-koszyk {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background: #d32f2f;
             color: white;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            flex: 1;
+            text-align: center;
         }
         
         .przycisk-koszyk:hover {
+            background: #b71c1c;
+        }
+        
+        .przycisk-sklep {
+            padding: 12px 30px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .przycisk-sklep:hover {
             background: #b71c1c;
         }
         
@@ -215,25 +250,51 @@ if (isset($_POST['aktualizuj_koszyk'])) {
             padding: 20px;
             background: #f9f9f9;
             border-radius: 5px;
+            margin-bottom: 20px;
         }
         
         .wiersz-podsumowania {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
+            padding: 8px 0;
         }
         
         .wiersz-podsumowania.razem {
             font-weight: bold;
             font-size: 1.2em;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 10px;
         }
         
         .blad {
             color: #d32f2f;
             margin-bottom: 20px;
-            padding: 10px;
+            padding: 15px;
             background: #ffebee;
             border-radius: 5px;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        @media (max-width: 768px) {
+            .kontener-koszyka {
+                padding: 20px 15px;
+            }
+            
+            .tabela-koszyka {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .przyciski-koszyka {
+                flex-direction: column;
+            }
+            
+            .przycisk-koszyk {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
@@ -263,7 +324,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
         </div>
     </header>
 
-    <section class="sekcja-koszyka">
+  <section class="sekcja-koszyka">
         <div class="kontener-koszyka">
             <h2>Twój koszyk</h2>
             
@@ -278,7 +339,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                 <div class="koszyk-pusty">
                     <i class="fas fa-shopping-cart"></i>
                     <h3>Twój koszyk jest pusty</h3>
-                    <a href="sklep.php" class="przycisk-koszyk">Przejdź do sklepu</a>
+                    <a href="sklep.php" class="przycisk-sklep">Przejdź do sklepu</a>
                 </div>
             <?php else: ?>
                 <form method="post">
@@ -289,7 +350,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                                 <th>Cena</th>
                                 <th>Ilość</th>
                                 <th>Wartość</th>
-                                <th></th>
+                                <th>Akcje</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -304,11 +365,12 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                                 <td><?= number_format($produkt['cena'], 2) ?> zł/kg</td>
                                 <td>
                                     <input type="number" name="ilosc[<?= $produkt['id'] ?>]" 
-                                           value="<?= $produkt['ilosc'] ?>" min="0.1" step="0.1" class="ilosc-input">
+                                           value="<?= $produkt['ilosc'] ?>" min="0.1" step="0.1" 
+                                           class="ilosc-input">
                                 </td>
                                 <td><?= number_format($wartosc, 2) ?> zł</td>
                                 <td>
-                                    <a href="koszyk.php?usun=<?= $produkt['id'] ?>" class="usun-produkt">
+                                    <a href="koszyk.php?usun=<?= $produkt['id'] ?>" class="usun-produkt" title="Usuń produkt">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>
@@ -319,14 +381,21 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                     
                     <div class="podsumowanie-koszyka">
                         <div class="karta-podsumowania">
+                            <div class="wiersz-podsumowania">
+                                <span>Wartość produktów:</span>
+                                <span><?= number_format($suma, 2) ?> zł</span>
+                            </div>
                             <div class="wiersz-podsumowania razem">
-                                <span>Suma:</span>
+                                <span>Do zapłaty:</span>
                                 <span><?= number_format($suma, 2) ?> zł</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="przyciski-koszyka">
+                        <a href="sklep.php" class="przycisk-koszyk" style="background: #555; text-decoration: none;">
+                            <i class="fas fa-arrow-left"></i> Kontynuuj zakupy
+                        </a>
                         <button type="submit" name="aktualizuj_koszyk" class="przycisk-koszyk">
                             <i class="fas fa-sync-alt"></i> Aktualizuj koszyk
                         </button>
@@ -338,7 +407,6 @@ if (isset($_POST['aktualizuj_koszyk'])) {
             <?php endif; ?>
         </div>
     </section>
-
     <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">

@@ -553,70 +553,92 @@ if(isset($_POST['dodaj_do_koszyka'])) {
 
 
     <script>
+        // Czekamy aż cała strona się załaduje
         document.addEventListener('DOMContentLoaded', function() {
-            // Obsługa wyświetlania/ukrywania koszyka
+            // 1. Pobieramy potrzebne elementy
+            const selectKategoria = document.getElementById('kategoria');
+            const selectSortowanie = document.getElementById('sortowanie');
+            const kontenerProduktow = document.querySelector('.siatka-produktow');
+            const wszystkieProdukty = Array.from(document.querySelectorAll('.karta-produktu'));
+            
+            // 2. Funkcja do aktualizacji widoku
+            function aktualizujWidok() {
+                const kategoria = selectKategoria.value;
+                const sortowanie = selectSortowanie.value;
+                
+                // Filtrowanie produktów
+                const przefiltrowane = wszystkieProdukty.filter(function(produkt) {
+                    if (kategoria === 'wszystkie') return true;
+                    if (kategoria === 'kebab') {
+                        return produkt.dataset.kategoria === 'kebab' || 
+                               produkt.dataset.kategoria === 'kebab-drobiowe';
+                    }
+                    return produkt.dataset.kategoria === kategoria;
+                });
+                
+                // Sortowanie produktów
+                if (sortowanie === 'cena-rosnaco') {
+                    przefiltrowane.sort(function(a, b) {
+                        return pobierzCene(a) - pobierzCene(b);
+                    });
+                } else if (sortowanie === 'cena-malejaco') {
+                    przefiltrowane.sort(function(a, b) {
+                        return pobierzCene(b) - pobierzCene(a);
+                    });
+                } else if (sortowanie === 'nazwa') {
+                    przefiltrowane.sort(function(a, b) {
+                        const nazwaA = a.querySelector('.nazwa-produktu').textContent.toLowerCase();
+                        const nazwaB = b.querySelector('.nazwa-produktu').textContent.toLowerCase();
+                        return nazwaA.localeCompare(nazwaB);
+                    });
+                }
+                
+                // Wyświetlamy produkty
+                kontenerProduktow.innerHTML = '';
+                przefiltrowane.forEach(function(produkt) {
+                    kontenerProduktow.appendChild(produkt);
+                });
+            }
+            
+            // 3. Funkcja pomocnicza do pobierania ceny
+            function pobierzCene(produkt) {
+                const cenaText = produkt.querySelector('.cena-produktu').textContent;
+                const cena = parseFloat(cenaText.replace(' zł/kg', '').replace(',', '.'));
+                return isNaN(cena) ? 0 : cena; // Dla "Zapytaj o ofertę" zwracamy 0
+            }
+            
+            // 4. Dodajemy nasłuchiwanie zmian
+            selectKategoria.addEventListener('change', aktualizujWidok);
+            selectSortowanie.addEventListener('change', aktualizujWidok);
+            
+            // 5. Inicjalizacja - pierwsze sortowanie
+            aktualizujWidok();
+            
+            // 6. Obsługa koszyka (pozostała funkcjonalność)
             const koszykSection = document.getElementById('koszyk');
             const formularzZamowienia = document.getElementById('formularz-zamowienia');
             
-            // Przycisk "Przejdź do zamówienia"
             document.getElementById('przejdz-do-zamowienia').addEventListener('click', function(e) {
                 e.preventDefault();
                 koszykSection.style.display = 'none';
                 formularzZamowienia.style.display = 'block';
             });
             
-            // Przycisk "Kontynuuj zakupy"
             document.getElementById('kontynuuj-zakupy').addEventListener('click', function(e) {
                 e.preventDefault();
                 koszykSection.style.display = 'none';
             });
             
-            // Obsługa zmiany metody dostawy
-            document.querySelectorAll('input[name="dostawa"]').forEach(radio => {
+            document.querySelectorAll('input[name="dostawa"]').forEach(function(radio) {
                 radio.addEventListener('change', function() {
-                    const kosztDostawy = this.value === 'kurier' ? 15 : this.value === 'paczkomat' ? 10 : 0;
+                    const kosztDostawy = this.value === 'kurier' ? 15 : 
+                                        this.value === 'paczkomat' ? 10 : 0;
                     document.getElementById('koszt-dostawy').textContent = kosztDostawy.toFixed(2) + ' zł';
                     
-                    const wartoscProduktow = parseFloat(document.getElementById('wartosc-produktow').textContent);
+                    const wartoscText = document.getElementById('wartosc-produktow').textContent;
+                    const wartoscProduktow = parseFloat(wartoscText.replace(' zł', ''));
                     document.getElementById('suma-zamowienia').textContent = (wartoscProduktow + kosztDostawy).toFixed(2) + ' zł';
                 });
-            });
-            
-            // Filtrowanie produktów
-            document.getElementById('kategoria').addEventListener('change', function() {
-                const kategoria = this.value;
-                document.querySelectorAll('.karta-produktu').forEach(karta => {
-                    if(kategoria === 'wszystkie' || karta.dataset.kategoria === kategoria) {
-                        karta.style.display = 'block';
-                    } else {
-                        karta.style.display = 'none';
-                    }
-                });
-            });
-            
-            // Sortowanie produktów
-            document.getElementById('sortowanie').addEventListener('change', function() {
-                const sortowanie = this.value;
-                const kontener = document.querySelector('.siatka-produkty');
-                const karty = Array.from(document.querySelectorAll('.karta-produktu'));
-                
-                karty.sort((a, b) => {
-                    if(sortowanie === 'cena-rosnaco') {
-                        return parseFloat(a.querySelector('.cena-produktu').textContent) - 
-                               parseFloat(b.querySelector('.cena-produktu').textContent);
-                    } else if(sortowanie === 'cena-malejaco') {
-                        return parseFloat(b.querySelector('.cena-produktu').textContent) - 
-                               parseFloat(a.querySelector('.cena-produktu').textContent);
-                    } else if(sortowanie === 'nazwa') {
-                        return a.querySelector('.nazwa-produktu').textContent.localeCompare(
-                            b.querySelector('.nazwa-produktu').textContent
-                        );
-                    }
-                    return 0;
-                });
-                
-                // Usuń wszystkie karty i dodaj posortowane
-                karty.forEach(karta => kontener.appendChild(karta));
             });
         });
     </script>
