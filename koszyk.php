@@ -140,6 +140,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koszyk - MeatMaster</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .sekcja-koszyka {
@@ -208,29 +209,31 @@ if (isset($_POST['aktualizuj_koszyk'])) {
             font-weight: normal;
         }
         
-        .przyciski-koszyka {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            gap: 15px;
-        }
+.przyciski-wrapper {
+    display: flex;
+    align-items: center; /* Wyrównanie wertykalne */
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.przycisk {
+    flex: 1;
+    padding: 12px 0;
+    text-align: center;
+    height: 44px; /* Stała wysokość */
+    line-height: 20px; /* Wyrównanie tekstu */
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: inherit; /* Spójna czcionka */
+}
+.przycisk-koszyk:hover {
+    background: #b71c1c;
+}
+
         
-        .przycisk-koszyk {
-            padding: 12px 25px;
-            background: #d32f2f;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .przycisk-koszyk:hover {
-            background: #b71c1c;
-        }
         
         .przycisk-sklep {
             padding: 12px 30px;
@@ -324,7 +327,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
         </div>
     </header>
 
-  <section class="sekcja-koszyka">
+    <section class="sekcja-koszyka">
         <div class="kontener-koszyka">
             <h2>Twój koszyk</h2>
             
@@ -392,17 +395,10 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                         </div>
                     </div>
                     
-                    <div class="przyciski-koszyka">
-                        <a href="sklep.php" class="przycisk-koszyk" style="background: #555; text-decoration: none;">
-                            <i class="fas fa-arrow-left"></i> Kontynuuj zakupy
-                        </a>
-                        <button type="submit" name="aktualizuj_koszyk" class="przycisk-koszyk">
-                            <i class="fas fa-sync-alt"></i> Aktualizuj koszyk
-                        </button>
-                        <button type="submit" name="zloz_zamowienie" class="przycisk-koszyk">
-                            <i class="fas fa-check"></i> Złóż zamówienie
-                        </button>
-                    </div>
+                 <div class="przyciski-wrapper">
+    <a href="sklep.php" class="przycisk">Kontynuuj zakupy</a>
+    <button type="submit" name="zloz_zamowienie" class="przycisk">Złóż zamówienie</button>
+</div>
                 </form>
             <?php endif; ?>
         </div>
