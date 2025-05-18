@@ -1,7 +1,17 @@
+php
 <?php
-require_once "sesje.php";
+// 1. Ustawienia początkowe - KODOWANIE
+header('Content-Type: text/html; charset=UTF-8');
+ini_set('default_charset', 'UTF-8');
+mb_internal_encoding('UTF-8');
 
-// Obsługa wylogowania
+require_once "sesje.php";
+require_once "db.php";
+
+// 2. Ustawienie kodowania połączenia z bazą danych
+$conn->set_charset("utf8mb4");
+
+// 3. Obsługa wylogowania
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wyloguj'])) {
     session_unset();
     session_destroy();
@@ -9,37 +19,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wyloguj'])) {
     exit;
 }
 
-// Pobranie danych użytkownika z sesji
-$uzytkownik = [
-    'imie' => $_SESSION['imie'],
-    'nazwisko' => $_SESSION['nazwisko'],
-    'email' => $_SESSION['user_email'],
-    'telefon' => '+48 123 456 789',
-    'rejestracja' => date('d.m.Y', strtotime('now')),
-    'typ_konta' => $_SESSION['rola'] === 'pracownik' ? 'Pracownik' : ($_SESSION['typ_konta'] ?? 'Klient indywidualny'),
-    'zamowienia' => 15,
-    'wartosc' => '3450 zł'
-];
-
-// Dodanie stanowiska dla pracownika
-if ($_SESSION['rola'] === 'pracownik') {
-    $uzytkownik['stanowisko'] = $_SESSION['stanowisko'];
+// 4. Funkcja do bezpiecznego wyświetlania tekstu
+function safeText($text) {
+    return htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
-$inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['nazwisko'], 0, 1));
-?>
+// 5. Pobranie danych użytkownika
+$uzytkownik = [
+    'imie' => safeText($_SESSION['imie'] ?? ''),
+    'nazwisko' => safeText($_SESSION['nazwisko'] ?? ''),
+    'email' => safeText($_SESSION['user_email'] ?? ''),
+    'telefon' => '+48 123 456 789',
+    'rejestracja' => date('d.m.Y'),
+    'typ_konta' => ($_SESSION['rola'] === 'pracownik') ? 'Pracownik' : 'Klient indywidualny',
+    'zamowienia' => 0,
+    'wartosc' => '0 zł'
+];
 
+// 6. Pobranie statystyk dla klienta
+if ($_SESSION['rola'] === 'klient' && isset($_SESSION['user_id'])) {
+    $user_id = (int)$_SESSION['user_id'];
+    
+    // Liczba zamówień
+    $wynik = $conn->query("SELECT COUNT(*) as liczba FROM zamowienia WHERE klient_id = $user_id");
+    $uzytkownik['zamowienia'] = $wynik->fetch_assoc()['liczba'];
+    
+    // Wartość zamówień
+    $wynik = $conn->query("SELECT SUM(z.ilosc_kg * z.cena_zl_kg) as wartosc 
+                          FROM zamowienia_towary z
+                          JOIN zamowienia za ON z.zamowienie_id = za.id
+                          WHERE za.klient_id = $user_id");
+    $wartosc = $wynik->fetch_assoc()['wartosc'] ?? 0;
+    $uzytkownik['wartosc'] = number_format($wartosc, 2, ',', ' ') . ' zł';
+}
+
+// 7. Dodanie stanowiska dla pracownika
+if ($_SESSION['rola'] === 'pracownik') {
+    $uzytkownik['stanowisko'] = safeText($_SESSION['stanowisko'] ?? '');
+}
+
+// 8. Generowanie inicjałów
+$inicjaly = mb_strtoupper(
+    mb_substr($uzytkownik['imie'], 0, 1) . 
+    mb_substr($uzytkownik['nazwisko'], 0, 1),
+    'UTF-8'
+);
+?>
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeatMaster - Profil użytkownika</title>
+    <title>MeatMaster - Profil</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 7. Zachowane oryginalne style */
         .sekcja-profilu {
             padding: 80px 0;
             background: #f5f5f5;
@@ -214,7 +250,6 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
         }
     </style>
 </head>
-
 <body>
     <header>
         <div class="kontener naglowek-kontener">
@@ -231,6 +266,7 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
                     <li><a href="opinie.php">Opinie</a></li>
+                    <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
                 </ul>
             </nav>
         </div>
@@ -241,9 +277,9 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
             <div class="naglowek-profilu">
                 <div class="awatar"><?= $inicjaly ?></div>
                 <div class="informacje-uzytkownika">
-                    <h2><?= htmlspecialchars($uzytkownik['imie'] . ' ' . $uzytkownik['nazwisko']) ?></h2>
-                    <p><?= htmlspecialchars($uzytkownik['email']) ?></p>
-                    <span class="typ-konta"><?= htmlspecialchars($uzytkownik['typ_konta']) ?></span>
+                    <h2><?= "{$uzytkownik['imie']} {$uzytkownik['nazwisko']}" ?></h2>
+                    <p><?= $uzytkownik['email'] ?></p>
+                    <span class="typ-konta"><?= $uzytkownik['typ_konta'] ?></span>
                 </div>
             </div>
 
@@ -263,11 +299,11 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
                     <h3>Dane osobowe</h3>
                     <div class="dane">
                         <span class="etykieta">Imię:</span>
-                        <span class="wartosc"><?= htmlspecialchars($uzytkownik['imie']) ?></span>
+                        <span class="wartosc"><?= $uzytkownik['imie'] ?></span>
                     </div>
                     <div class="dane">
                         <span class="etykieta">Nazwisko:</span>
-                        <span class="wartosc"><?= htmlspecialchars($uzytkownik['nazwisko']) ?></span>
+                        <span class="wartosc"><?= $uzytkownik['nazwisko'] ?></span>
                     </div>
                 </div>
 
@@ -275,35 +311,50 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
                     <h3>Dane kontaktowe</h3>
                     <div class="dane">
                         <span class="etykieta">Telefon:</span>
-                        <span class="wartosc"><?= htmlspecialchars($uzytkownik['telefon']) ?></span>
+                        <span class="wartosc"><?= $uzytkownik['telefon'] ?></span>
                     </div>
                     <div class="dane">
                         <span class="etykieta">Data rejestracji:</span>
-                        <span class="wartosc"><?= htmlspecialchars($uzytkownik['rejestracja']) ?></span>
+                        <span class="wartosc"><?= $uzytkownik['rejestracja'] ?></span>
                     </div>
                 </div>
 
-                <?php if ($_SESSION['rola'] === 'pracownik'): ?>
+                 <?php if ($_SESSION['rola'] === 'pracownik'): ?>
                     <div class="grupa-danych">
                         <h3>Informacje o pracowniku</h3>
                         <div class="dane">
                             <span class="etykieta">Stanowisko:</span>
-                            <span class="wartosc"><?= htmlspecialchars($uzytkownik['stanowisko']) ?></span>
+                            <span class="wartosc"><?= $uzytkownik['stanowisko'] ?></span>
                         </div>
 
                         <div class="przyciski-pracownika">
                             <?php if (in_array($_SESSION['stanowisko'], ['Kierownik'])): ?>
-                                <a href="pracownicy_p.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
-                                <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
+                                <a href="pracownicy_p.php" class="przycisk-pracownika">
+                                     Zarządzaj pracownikami
+                                </a>
+                                <a href="towar_p.php" class="przycisk-pracownika">
+                                     Zarządzaj towarem
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (in_array($_SESSION['stanowisko'], ['Kierownik', 'Specjalista HR', 'Logistyk'])): ?>
+                                <a href="kontakty_p.php" class="przycisk-pracownika">
+                                     Zgłoszenia kontaktowe
+                                </a>
                             <?php endif; ?>
 
                             <?php if (!in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
-                                <a href="reklamacje_p.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
-                                <a href="zamowienia_p.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
+                                <a href="reklamacje_p.php" class="przycisk-pracownika">
+                                     Przeglądaj reklamacje
+                                </a>
+                                <a href="zamowienia_p.php" class="przycisk-pracownika">
+                                     Przeglądaj zamówienia
+                                </a>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
+
             </div>
 
             <form method="post">
@@ -319,7 +370,7 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
                     <h3>Kontakt</h3>
                     <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
-                    <p><i class="fas fa-envelope"></i> kontaktujSieWariacieEssa@meatmaster.pl</p>
+                    <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
@@ -342,5 +393,4 @@ $inicjaly = strtoupper(substr($uzytkownik['imie'], 0, 1) . substr($uzytkownik['n
         </div>
     </footer>
 </body>
-
 </html>
