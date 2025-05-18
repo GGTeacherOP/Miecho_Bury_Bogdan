@@ -345,15 +345,10 @@ if(isset($_POST['dodaj_do_koszyka'])) {
                 </div>
             </div>
                             </tbody>
-                          
-                        </table>
-
-                       
+                        </table>      
                     </div>
                 </div>
             </section>
-
-            
     </main>
 
     <!-- Stopka -->
