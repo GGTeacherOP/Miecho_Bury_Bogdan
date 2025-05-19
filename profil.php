@@ -38,11 +38,13 @@ $uzytkownik = [
 // 6. Pobranie statystyk dla klienta
 if ($_SESSION['rola'] === 'klient' && isset($_SESSION['user_id'])) {
     $user_id = (int)$_SESSION['user_id'];
+
     
     // Liczba zamówień
     $wynik = $conn->query("SELECT COUNT(*) as liczba FROM zamowienia WHERE klient_id = $user_id");
     $uzytkownik['zamowienia'] = $wynik->fetch_assoc()['liczba'];
     
+
     // Wartość zamówień
     $wynik = $conn->query("SELECT SUM(z.ilosc_kg * z.cena_zl_kg) as wartosc 
                           FROM zamowienia_towary z
@@ -59,8 +61,10 @@ if ($_SESSION['rola'] === 'pracownik') {
 
 // 8. Generowanie inicjałów
 $inicjaly = mb_strtoupper(
+
     mb_substr($uzytkownik['imie'], 0, 1) . 
     mb_substr($uzytkownik['nazwisko'], 0, 1),
+
     'UTF-8'
 );
 ?>
@@ -75,207 +79,311 @@ $inicjaly = mb_strtoupper(
     <link rel="icon" type="image/png" href="icon.png"> <!-- Ikona strony -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Ikony FontAwesome -->
     <style>
-       /* Główna sekcja profilu - tło i minimalna wysokość */
-.sekcja-profilu {
-    padding: 80px 0;                  /* Wewnętrzny odstęp góra/dół */
-    background: #f5f5f5;              /* Jasnoszare tło */
-    min-height: calc(100vh - 300px);  /* Minimalna wysokość (cały ekran minus 300px) */
-}
 
-/* Kontener z zawartością profilu */
-.kontener-profilu {
-    max-width: 800px;                 /* Maksymalna szerokość */
-    margin: 0 auto;                   /* Wyśrodkowanie */
-    background: #fff;                 /* Białe tło */
-    padding: 40px;                    /* Wewnętrzny odstęp */
-    border-radius: 8px;               /* Zaokrąglone rogi */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtelny cień */
-    display: flex;                    /* Flexbox dla układu */
-    flex-direction: column;           /* Elementy w kolumnie */
-    gap: 30px;                       /* Odstęp między dziećmi */
-}
+        /* Główna sekcja profilu - tło i minimalna wysokość */
+        .sekcja-profilu {
+            padding: 80px 0;
+            /* Wewnętrzny odstęp góra/dół */
+            background: #f5f5f5;
+            /* Jasnoszare tło */
+            min-height: calc(100vh - 300px);
+            /* Minimalna wysokość (cały ekran minus 300px) */
+        }
 
-/* Nagłówek profilu (awatar + dane) */
-.naglowek-profilu {
-    display: flex;                    /* Flexbox dla układu poziomego */
-    align-items: center;              /* Wyśrodkowanie w pionie */
-    gap: 30px;                       /* Odstęp między awatarem a danymi */
-    border-bottom: 1px solid #eee;    /* Szara linia oddzielająca */
-    padding-bottom: 20px;             /* Odstęp od linii */
-}
+        /* Kontener z zawartością profilu */
+        .kontener-profilu {
+            max-width: 800px;
+            /* Maksymalna szerokość */
+            margin: 0 auto;
+            /* Wyśrodkowanie */
+            background: #fff;
+            /* Białe tło */
+            padding: 40px;
+            /* Wewnętrzny odstęp */
+            border-radius: 8px;
+            /* Zaokrąglone rogi */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            /* Subtelny cień */
+            display: flex;
+            /* Flexbox dla układu */
+            flex-direction: column;
+            /* Elementy w kolumnie */
+            gap: 30px;
+            /* Odstęp między dziećmi */
+        }
 
-/* Okrągły awatar z inicjałami */
-.awatar {
-    width: 120px;                    /* Szerokość */
-    height: 120px;                   /* Wysokość */
-    border-radius: 50%;               /* Kółko (50% border-radius) */
-    background-color: #c00;           /* Czerwone tło (#c00) */
-    color: white;                    /* Biały tekst */
-    display: flex;                   /* Flexbox dla wyśrodkowania */
-    align-items: center;             /* Wyśrodkowanie w pionie */
-    justify-content: center;         /* Wyśrodkowanie w poziomie */
-    font-size: 48px;                /* Duży rozmiar czcionki */
-    font-weight: bold;              /* Pogrubienie */
-}
+        /* Nagłówek profilu (awatar + dane) */
+        .naglowek-profilu {
+            display: flex;
+            /* Flexbox dla układu poziomego */
+            align-items: center;
+            /* Wyśrodkowanie w pionie */
+            gap: 30px;
+            /* Odstęp między awatarem a danymi */
+            border-bottom: 1px solid #eee;
+            /* Szara linia oddzielająca */
+            padding-bottom: 20px;
+            /* Odstęp od linii */
+        }
 
-/* Nagłówek z danymi użytkownika */
-.informacje-uzytkownika h2 {
-    color: #c00;                    /* Czerwony kolor tekstu */
-    margin-bottom: 10px;            /* Odstęp od dołu */
-    font-size: 28px;               /* Rozmiar czcionki */
-}
+        /* Okrągły awatar z inicjałami */
+        .awatar {
+            width: 120px;
+            /* Szerokość */
+            height: 120px;
+            /* Wysokość */
+            border-radius: 50%;
+            /* Kółko (50% border-radius) */
+            background-color: #c00;
+            /* Czerwone tło (#c00) */
+            color: white;
+            /* Biały tekst */
+            display: flex;
+            /* Flexbox dla wyśrodkowania */
+            align-items: center;
+            /* Wyśrodkowanie w pionie */
+            justify-content: center;
+            /* Wyśrodkowanie w poziomie */
+            font-size: 48px;
+            /* Duży rozmiar czcionki */
+            font-weight: bold;
+            /* Pogrubienie */
+        }
 
-/* Etykieta typu konta (np. "Pracownik") */
-.typ-konta {
-    display: inline-block;          /* Element liniowo-blokowy */
-    background: #c00;               /* Czerwone tło */
-    color: white;                  /* Biały tekst */
-    padding: 5px 15px;             /* Wewnętrzny odstęp */
-    border-radius: 20px;           /* Bardzo zaokrąglone rogi (efekt "pigułki") */
-    font-size: 14px;               /* Rozmiar czcionki */
-    margin-top: 5px;               /* Mały odstęp od góry */
-}
+        /* Nagłówek z danymi użytkownika */
+        .informacje-uzytkownika h2 {
+            color: #c00;
+            /* Czerwony kolor tekstu */
+            margin-bottom: 10px;
+            /* Odstęp od dołu */
+            font-size: 28px;
+            /* Rozmiar czcionki */
+        }
 
-/* Kontener statystyk (2 kolumny) */
-.sekcja-statystyk {
-    display: grid;                  /* Grid layout */
-    grid-template-columns: repeat(2, 1fr); /* 2 kolumny o równej szerokości */
-    gap: 20px;                      /* Odstęp między kolumnami */
-}
+        /* Etykieta typu konta (np. "Pracownik") */
+        .typ-konta {
+            display: inline-block;
+            /* Element liniowo-blokowy */
+            background: #c00;
+            /* Czerwone tło */
+            color: white;
+            /* Biały tekst */
+            padding: 5px 15px;
+            /* Wewnętrzny odstęp */
+            border-radius: 20px;
+            /* Bardzo zaokrąglone rogi (efekt "pigułki") */
+            font-size: 14px;
+            /* Rozmiar czcionki */
+            margin-top: 5px;
+            /* Mały odstęp od góry */
+        }
 
-/* Pojedyncza statystyka (np. "Złożone zamówienia") */
-.statystyka {
-    background: #f9f9f9;            /* Bardzo jasnoszare tło */
-    padding: 20px;                  /* Wewnętrzny odstęp */
-    border-radius: 8px;             /* Lekko zaokrąglone rogi */
-    text-align: center;             /* Tekst wyśrodkowany */
-    border-left: 4px solid #c00;    /* Czerwony akcent z lewej strony */
-}
+        /* Kontener statystyk (2 kolumny) */
+        .sekcja-statystyk {
+            display: grid;
+            /* Grid layout */
+            grid-template-columns: repeat(2, 1fr);
+            /* 2 kolumny o równej szerokości */
+            gap: 20px;
+            /* Odstęp między kolumnami */
+        }
 
-/* Nagłówek statystyki (np. "Wartość zamówień") */
-.statystyka h3 {
-    color: #333;                    /* Ciemnoszary tekst */
-    font-size: 16px;                /* Rozmiar czcionki */
-    margin-bottom: 10px;            /* Odstęp od dołu */
-}
+        /* Pojedyncza statystyka (np. "Złożone zamówienia") */
+        .statystyka {
+            background: #f9f9f9;
+            /* Bardzo jasnoszare tło */
+            padding: 20px;
+            /* Wewnętrzny odstęp */
+            border-radius: 8px;
+            /* Lekko zaokrąglone rogi */
+            text-align: center;
+            /* Tekst wyśrodkowany */
+            border-left: 4px solid #c00;
+            /* Czerwony akcent z lewej strony */
+        }
 
-/* Wartość statystyki (np. "5" lub "120,50 zł") */
-.wartosc-statystyki {
-    font-size: 28px;                /* Duży rozmiar czcionki */
-    font-weight: bold;              /* Pogrubienie */
-    color: #c00;                    /* Czerwony kolor */
-}
+        /* Nagłówek statystyki (np. "Wartość zamówień") */
+        .statystyka h3 {
+            color: #333;
+            /* Ciemnoszary tekst */
+            font-size: 16px;
+            /* Rozmiar czcionki */
+            margin-bottom: 10px;
+            /* Odstęp od dołu */
+        }
 
-/* Sekcja z danymi użytkownika (np. "Dane osobowe") */
-.sekcja-danych {
-    display: grid;                  /* Grid layout */
-    grid-template-columns: 1fr;     /* 1 kolumna */
-    gap: 20px;                      /* Odstęp między grupami danych */
-}
+        /* Wartość statystyki (np. "5" lub "120,50 zł") */
+        .wartosc-statystyki {
+            font-size: 28px;
+            /* Duży rozmiar czcionki */
+            font-weight: bold;
+            /* Pogrubienie */
+            color: #c00;
+            /* Czerwony kolor */
+        }
 
-/* Grupa danych (np. "Dane kontaktowe") */
-.grupa-danych {
-    margin-bottom: 20px;            /* Odstęp od dołu */
-}
+        /* Sekcja z danymi użytkownika (np. "Dane osobowe") */
+        .sekcja-danych {
+            display: grid;
+            /* Grid layout */
+            grid-template-columns: 1fr;
+            /* 1 kolumna */
+            gap: 20px;
+            /* Odstęp między grupami danych */
+        }
 
-/* Nagłówek grupy danych */
-.grupa-danych h3 {
-    color: #333;                    /* Ciemnoszary tekst */
-    margin-bottom: 10px;            /* Odstęp od dołu */
-    font-size: 18px;                /* Rozmiar czcionki */
-    border-bottom: 2px solid #eee;  /* Szara linia pod nagłówkiem */
-    padding-bottom: 5px;            /* Odstęp od linii */
-}
+        /* Grupa danych (np. "Dane kontaktowe") */
+        .grupa-danych {
+            margin-bottom: 20px;
+            /* Odstęp od dołu */
+        }
 
-/* Pojedynczy wiersz z danymi (np. "Imię: Jan") */
-.dane {
-    display: flex;                  /* Flexbox dla układu poziomego */
-    justify-content: space-between; /* Rozłożenie na szerokość (etykieta z lewej, wartość z prawej) */
-    padding: 8px 0;                 /* Odstęp góra/dół */
-    border-bottom: 1px solid #f0f0f0; /* Bardzo subtelna szara linia oddzielająca */
-}
+        /* Nagłówek grupy danych */
+        .grupa-danych h3 {
+            color: #333;
+            /* Ciemnoszary tekst */
+            margin-bottom: 10px;
+            /* Odstęp od dołu */
+            font-size: 18px;
+            /* Rozmiar czcionki */
+            border-bottom: 2px solid #eee;
+            /* Szara linia pod nagłówkiem */
+            padding-bottom: 5px;
+            /* Odstęp od linii */
+        }
 
-/* Etykieta danych (np. "Imię:") */
-.etykieta {
-    font-weight: 600;               /* Pogrubienie (ale nie bold) */
-    color: #666;                    |* Średnio szary tekst *|
-}
+        /* Pojedynczy wiersz z danymi (np. "Imię: Jan") */
+        .dane {
+            display: flex;
+            /* Flexbox dla układu poziomego */
+            justify-content: space-between;
+            /* Rozłożenie na szerokość (etykieta z lewej, wartość z prawej) */
+            padding: 8px 0;
+            /* Odstęp góra/dół */
+            border-bottom: 1px solid #f0f0f0;
+            /* Bardzo subtelna szara linia oddzielająca */
+        }
 
-/* Wartość danych (np. "Jan") */
-.wartosc {
-    color: #333;                    /* Ciemnoszary tekst */
-}
+        /* Etykieta danych (np. "Imię:") */
+        .etykieta {
+            font-weight: 600;
+            /* Pogrubienie (ale nie bold) */
+            color: #666;
+            /* Średnio szary tekst */
+        }
 
-/* Kontener przycisków dla pracowników */
-.przyciski-pracownika {
-    display: flex;                  /* Flexbox dla układu poziomego */
-    gap: 15px;                      /* Odstęp między przyciskami */
-    margin-top: 20px;               /* Odstęp od góry */
-    flex-wrap: wrap;                /* Zawijanie przycisków na małych ekranach */
-}
+        /* Wartość danych (np. "Jan") */
+        .wartosc {
+            color: #333;
+            /* Ciemnoszary tekst */
+        }
 
-/* Pojedynczy przycisk dla pracownika */
-.przycisk-pracownika {
-    flex: 1;                        /* Rozciąganie do dostępnej szerokości */
-    min-width: 200px;               /* Minimalna szerokość */
-    padding: 12px;                  /* Wewnętrzny odstęp */
-    background: #c00;               /* Czerwone tło */
-    color: white;                  /* Biały tekst */
-    text-align: center;            /* Tekst wyśrodkowany */
-    text-decoration: none;        /* Brak podkreślenia */
-    border-radius: 4px;           /* Lekko zaokrąglone rogi */
-    font-weight: 600;             /* Pogrubienie */
-    transition: 0.3s;             /* Animacja hover */
-}
+        /* Kontener przycisków dla pracowników */
+        .przyciski-pracownika {
+            display: flex;
+            /* Flexbox dla układu poziomego */
+            gap: 15px;
+            /* Odstęp między przyciskami */
+            margin-top: 20px;
+            /* Odstęp od góry */
+            flex-wrap: wrap;
+            /* Zawijanie przycisków na małych ekranach */
+        }
 
-/* Efekt hover na przyciskach */
-.przycisk-pracownika:hover {
-    background: #a00;              /* Ciemniejszy czerwony */
-    transform: translateY(-2px);   /* Lekkie uniesienie */
-}
+        /* Pojedynczy przycisk dla pracownika */
+        .przycisk-pracownika {
+            flex: 1;
+            /* Rozciąganie do dostępnej szerokości */
+            min-width: 200px;
+            /* Minimalna szerokość */
+            padding: 12px;
+            /* Wewnętrzny odstęp */
+            background: #c00;
+            /* Czerwone tło */
+            color: white;
+            /* Biały tekst */
+            text-align: center;
+            /* Tekst wyśrodkowany */
+            text-decoration: none;
+            /* Brak podkreślenia */
+            border-radius: 4px;
+            /* Lekko zaokrąglone rogi */
+            font-weight: 600;
+            /* Pogrubienie */
+            transition: 0.3s;
+            /* Animacja hover */
+        }
 
-/* Przycisk wylogowania */
-.przycisk-wyloguj {
-    width: 100%;                   /* Pełna szerokość */
-    padding: 14px;                 /* Wewnętrzny odstęp */
-    background: #c00;              /* Czerwone tło */
-    color: #fff;                  /* Biały tekst */
-    border: none;                 /* Brak obramowania */
-    border-radius: 4px;           /* Lekko zaokrąglone rogi */
-    font-size: 16px;              /* Rozmiar czcionki */
-    font-weight: 600;             /* Pogrubienie */
-    cursor: pointer;              /* Kursor wskazujący */
-    transition: 0.3s;             /* Animacja hover */
-    margin-top: 30px;             /* Duży odstęp od góry */
-}
+        /* Efekt hover na przyciskach */
+        .przycisk-pracownika:hover {
+            background: #a00;
+            /* Ciemniejszy czerwony */
+            transform: translateY(-2px);
+            /* Lekkie uniesienie */
+        }
 
-/* Efekt hover na przycisku wylogowania */
-.przycisk-wyloguj:hover {
-    background: #a00;              /* Ciemniejszy czerwony */
-}
+        /* Przycisk wylogowania */
+        .przycisk-wyloguj {
+            width: 100%;
+            /* Pełna szerokość */
+            padding: 14px;
+            /* Wewnętrzny odstęp */
+            background: #c00;
+            /* Czerwone tło */
+            color: #fff;
+            /* Biały tekst */
+            border: none;
+            /* Brak obramowania */
+            border-radius: 4px;
+            /* Lekko zaokrąglone rogi */
+            font-size: 16px;
+            /* Rozmiar czcionki */
+            font-weight: 600;
+            /* Pogrubienie */
+            cursor: pointer;
+            /* Kursor wskazujący */
+            transition: 0.3s;
+            /* Animacja hover */
+            margin-top: 30px;
+            /* Duży odstęp od góry */
+        }
 
-/* Responsywność - zmiany dla ekranów <= 600px */
-@media (max-width: 600px) {
-    /* Nagłówek profilu - zmiana na układ kolumnowy */
-    .naglowek-profilu {
-        flex-direction: column;     /* Elementy w kolumnie */
-        text-align: center;        /* Tekst wyśrodkowany */
-    }
+        /* Efekt hover na przycisku wylogowania */
+        .przycisk-wyloguj:hover {
+            background: #a00;
+            /* Ciemniejszy czerwony */
+        }
 
-    /* Awatar - wyśrodkowanie */
-    .awatar {
-        margin: 0 auto;           /* Wyśrodkowanie poziome */
-    }
+        /* Responsywność - zmiany dla ekranów <= 600px */
+        @media (max-width: 600px) {
 
-    /* Przyciski pracownika - pełna szerokość */
-    .przycisk-pracownika {
-        min-width: 100%;          /* Pełna szerokość kontenera */
-    }
-}
+            /* Nagłówek profilu - zmiana na układ kolumnowy */
+            .naglowek-profilu {
+                flex-direction: column;
+                /* Elementy w kolumnie */
+                text-align: center;
+                /* Tekst wyśrodkowany */
+            }
+
+            /* Awatar - wyśrodkowanie */
+            .awatar {
+                margin: 0 auto;
+                /* Wyśrodkowanie poziome */
+            }
+
+            /* Przyciski pracownika - pełna szerokość */
+            .przycisk-pracownika {
+                min-width: 100%;
+                /* Pełna szerokość kontenera */
+            }
+        }
+
     </style>
 </head>
 <body>
+
       <!-- 12. NAGŁÓWEK STRONY (menu nawigacyjne) -->
+
     <header>
         <div class="kontener naglowek-kontener">
             <div class="logo">
@@ -400,7 +508,7 @@ $inicjaly = mb_strtoupper(
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
                     <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
-                
+
                 <!-- Kolumna 2: Godziny otwarcia -->
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
@@ -408,7 +516,7 @@ $inicjaly = mb_strtoupper(
                     <p>Sob: 7:00 - 14:00</p>
                     <p>Niedz: Zamknięte</p>
                 </div>
-                
+
                 <!-- Kolumna 3: Media społecznościowe -->
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
@@ -419,7 +527,7 @@ $inicjaly = mb_strtoupper(
                     </div>
                 </div>
             </div>
-            
+
             <!-- Informacja o prawach autorskich -->
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
