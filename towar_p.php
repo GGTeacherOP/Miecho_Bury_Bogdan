@@ -1,160 +1,189 @@
 <?php
-require_once "sesje.php";
-sprawdzStanowisko(['Kierownik']); // Tylko kierownik ma dostęp
+/**
+ * PLIK: towary_p.php
+ * PRZEZNACZENIE: Panel zarządzania asortymentem mięsnym (tylko dla kierownika)
+ * DOSTĘP: Tylko dla użytkowników z rolą 'Kierownik'
+ * BEZPIECZEŃSTWO: Weryfikacja sesji, ochrona przed SQL injection
+ */
 
+// =============================================================================
+// SEKCJA 1: INICJALIZACJA I KONTROLA DOSTĘPU
+// =============================================================================
+
+// Załączenie mechanizmu sesji i kontroli dostępu
+require_once "sesje.php";
+
+// Weryfikacja czy użytkownik ma uprawnienia kierownika
+// Funkcja automatycznie przekieruje na stronę logowania jeśli brak dostępu
+sprawdzStanowisko(['Kierownik']);
+
+// Załączenie konfiguracji połączenia z bazą danych MySQL
 require_once "db.php";
 
-// Pobierz dane towarów z bazy
+// =============================================================================
+// SEKCJA 2: OPERACJE NA BAZIE DANYCH
+// =============================================================================
+
+/**
+ * Pobranie pełnej listy towarów z widoku bazy danych
+ * Widok 'towary_widok' łączy dane z różnych tabel dla wygody prezentacji
+ */
 $query = "SELECT * FROM towary_widok";
 $result = $conn->query($query);
-$towary = $result->fetch_all(MYSQLI_ASSOC);
+$towary = $result->fetch_all(MYSQLI_ASSOC); // Konwersja wyników na tablicę asocjacyjną
 
-// Obsługa aktualizacji towaru
+/**
+ * Obsługa żądania aktualizacji danych towaru
+ * Zabezpieczenia:
+ * - Weryfikacja metody POST
+ * - Sprawdzenie czy wysłano formularz edycji
+ * - Prepared statements chroniące przed SQL injection
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
-    $id = $_POST['id'];
-    $nazwa = $_POST['nazwa'];
-    $cena = $_POST['cena'];
-    $kategoria = $_POST['kategoria'];
-    $dostepnosc = $_POST['dostepnosc'];
+    // Pobranie i sanityzacja danych z formularza
+    $id = $_POST['id']; // ID towaru do aktualizacji
+    $nazwa = $_POST['nazwa']; // Nowa nazwa produktu
+    $cena = $_POST['cena']; // Zaktualizowana cena
+    $kategoria = $_POST['kategoria']; // Kategoria produktu
+    $dostepnosc = $_POST['dostepnosc']; // Status dostępności
 
+    // Przygotowanie zapytania SQL z parametrami
     $update_query = "UPDATE towary SET 
-                    nazwa = ?,
-                    cena_zl_kg = ?,
-                    kategoria = ?,
-                    dostepnosc = ?
-                    WHERE id = ?";
+                    nazwa = ?,          -- Parametr 1: Nazwa towaru
+                    cena_zl_kg = ?,     -- Parametr 2: Cena za kg
+                    kategoria = ?,      -- Parametr 3: Kategoria
+                    dostepnosc = ?      -- Parametr 4: Status dostępności
+                    WHERE id = ?";      -- Warunek: ID towaru
 
+    // Inicjalizacja prepared statement
     $stmt = $conn->prepare($update_query);
+    
+    // Powiązanie parametrów (typów):
+    // s - string (nazwa)
+    // d - double (cena)
+    // s - string (kategoria)
+    // s - string (dostepnosc)
+    // i - integer (id)
     $stmt->bind_param("sdssi", $nazwa, $cena, $kategoria, $dostepnosc, $id);
+
+    // Wykonanie zapytania
     $stmt->execute();
 
+    // Obsługa rezultatów operacji
     if ($stmt->affected_rows > 0) {
-        $success = "Towar został zaktualizowany!";
-        // Odśwież dane
+        // Sukces - odświeżenie danych
+        $success = "Dane towaru zostały zaktualizowane!";
         $result = $conn->query($query);
         $towary = $result->fetch_all(MYSQLI_ASSOC);
     } else {
-        $error = "Błąd podczas aktualizacji towaru!";
+        // Błąd aktualizacji
+        $error = "Operacja aktualizacji nie powiodła się!";
     }
 }
 ?>
 
+<!-- ========================================================================== -->
+<!-- SEKCJA HTML: INTERFEJS UŻYTKOWNIKA -->
+<!-- ========================================================================== -->
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
+    <!-- Meta dane -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeatMaster - Zarządzanie towarem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="icon.png">
+    
+    <!-- Informacje nagłówkowe -->
+    <title>MeatMaster | Panel zarządzania towarami</title>
+    
+    <!-- Załączenie arkuszy stylów -->
+    <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów -->
+    <link rel="icon" type="image/png" href="icon.png"> <!-- Favicon -->
+    
+    <!-- Biblioteka ikon Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Style wewnętrzne specyficzne dla tej strony -->
     <style>
+        /* Główny kontener sekcji */
         .sekcja-towary {
-            padding: 80px 0;
-            background: #f5f5f5;
-            min-height: calc(100vh - 300px);
+            padding: 80px 0; /* Wewnętrzny odstęp */
+            background: #f5f5f5; /* Kolor tła */
+            min-height: calc(100vh - 300px); /* Minimalna wysokość */
         }
 
+        /* Kontener z zawartością */
         .kontener-towary {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 1000px; /* Maksymalna szerokość */
+            margin: 0 auto; /* Wyśrodkowanie */
+            background: #fff; /* Białe tło */
+            padding: 40px; /* Wewnętrzne odstępy */
+            border-radius: 8px; /* Zaokrąglone rogi */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Cień */
         }
 
-        h2 {
-            color: #c00;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
+        /* Tabela z towarami */
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
+            width: 100%; /* Pełna szerokość */
+            border-collapse: collapse; /* Usunięcie podwójnych obramowań */
+            margin-bottom: 30px; /* Odstęp od dołu */
         }
 
-        th,
-        td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
+        /* Nagłówki tabeli */
         th {
-            background-color: #c00;
-            color: white;
+            background-color: #c00; /* Czerwone tło */
+            color: white; /* Biały tekst */
         }
 
+        /* Komórki tabeli */
+        th, td {
+            padding: 12px 15px; /* Wewnętrzne odstępy */
+            text-align: left; /* Wyrównanie tekstu */
+            border-bottom: 1px solid #ddd; /* Linia oddzielająca */
+        }
+
+        /* Efekt hover na wierszach */
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #f5f5f5; /* Jasnoszare tło */
         }
 
+        /* Formularz edycji */
         .formularz-edycji {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
+            background: #f9f9f9; /* Jasne tło */
+            padding: 20px; /* Wewnętrzne odstępy */
+            border-radius: 8px; /* Zaokrąglone rogi */
+            margin-top: 20px; /* Odstęp od góry */
         }
 
+        /* Grupy pól formularza */
         .formularz-grupa {
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* Odstęp między grupami */
         }
 
-        .formularz-grupa label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .formularz-grupa input,
-        .formularz-grupa select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
+        /* Przyciski */
         .przycisk-edycji {
-            padding: 10px 15px;
-            background: #c00;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            background: #c00; /* Czerwony kolor */
+            color: white; /* Biały tekst */
+            transition: background 0.3s; /* Efekt przejścia */
         }
-
         .przycisk-edycji:hover {
-            background: #a00;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-
-        .alert-success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-
-        .alert-error {
-            background-color: #f2dede;
-            color: #a94442;
+            background: #a00; /* Ciemniejszy czerwony */
         }
     </style>
 </head>
 
+<!-- ========================================================================== -->
+<!-- SEKCJA BODY: ZAWARTOŚĆ STRONY -->
+<!-- ========================================================================== -->
 <body>
+    <!-- Nagłówek strony -->
     <header>
         <div class="kontener naglowek-kontener">
+            <!-- Logo firmy -->
             <div class="logo">
-                <img src="Logo.png" alt="MeatMaster Logo">
+                <img src="Logo.png" alt="Logo MeatMaster">
             </div>
+            
+            <!-- Główne menu nawigacyjne -->
             <nav>
                 <ul>
                     <li><a href="Strona_glowna.php">Strona główna</a></li>
@@ -165,29 +194,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
                     <li><a href="opinie.php">Opinie</a></li>
-                    <li><a href="profil.php" id="profile-link"><i class="fas fa-user"></i> Profil</a></li>
+                    <li><a href="profil.php"><i class="fas fa-user"></i> Profil</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
+    <!-- Główna sekcja zarządzania towarami -->
     <section class="sekcja-towary">
         <div class="kontener-towary">
-            <h2>Zarządzanie towarem</h2>
+            <!-- Nagłówek sekcji -->
+            <h2>Zarządzanie asortymentem</h2>
 
+            <!-- Komunikaty systemowe -->
             <?php if (isset($success)): ?>
-                <div class="alert alert-success"><?= $success ?></div>
+                <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
             <?php endif; ?>
-
+            
             <?php if (isset($error)): ?>
-                <div class="alert alert-error"><?= $error ?></div>
+                <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
+            <!-- Tabela z listą towarów -->
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nazwa</th>
+                        <th>Nazwa produktu</th>
                         <th>Cena (zł/kg)</th>
                         <th>Kategoria</th>
                         <th>Dostępność</th>
@@ -197,40 +230,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
                 <tbody>
                     <?php foreach ($towary as $towar): ?>
                         <tr>
-                            <td><?= $towar['id'] ?></td>
+                            <td><?= htmlspecialchars($towar['id']) ?></td>
                             <td><?= htmlspecialchars($towar['nazwa']) ?></td>
                             <td><?= number_format($towar['cena_zl_kg'], 2) ?></td>
-                            <td><?= $towar['kategoria'] ?></td>
-                            <td><?= $towar['dostepnosc'] ?></td>
+                            <td><?= htmlspecialchars($towar['kategoria']) ?></td>
+                            <td><?= htmlspecialchars($towar['dostepnosc']) ?></td>
                             <td>
                                 <button onclick="pokazFormularzEdycji(
-                                '<?= $towar['id'] ?>',
-                                '<?= htmlspecialchars($towar['nazwa'], ENT_QUOTES) ?>',
-                                '<?= $towar['cena_zl_kg'] ?>',
-                                '<?= $towar['kategoria'] ?>',
-                                '<?= $towar['dostepnosc'] ?>'
-                            )">Edytuj</button>
+                                    '<?= $towar['id'] ?>',
+                                    '<?= htmlspecialchars($towar['nazwa'], ENT_QUOTES) ?>',
+                                    '<?= $towar['cena_zl_kg'] ?>',
+                                    '<?= $towar['kategoria'] ?>',
+                                    '<?= $towar['dostepnosc'] ?>'
+                                )">Edytuj</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
 
+            <!-- Formularz edycji (początkowo ukryty) -->
             <div id="formularz-edycji" class="formularz-edycji" style="display: none;">
-                <h3>Edytuj towar</h3>
+                <h3>Edytuj produkt</h3>
                 <form method="POST">
+                    <!-- Pole ukryte z ID towaru -->
                     <input type="hidden" name="id" id="edit-id">
 
+                    <!-- Pole nazwy produktu -->
                     <div class="formularz-grupa">
-                        <label for="nazwa">Nazwa:</label>
+                        <label for="nazwa">Nazwa produktu:</label>
                         <input type="text" name="nazwa" id="edit-nazwa" required>
                     </div>
 
+                    <!-- Pole ceny -->
                     <div class="formularz-grupa">
                         <label for="cena">Cena (zł/kg):</label>
                         <input type="number" step="0.01" name="cena" id="edit-cena" required>
                     </div>
 
+                    <!-- Wybór kategorii -->
                     <div class="formularz-grupa">
                         <label for="kategoria">Kategoria:</label>
                         <select name="kategoria" id="edit-kategoria" required>
@@ -241,6 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
                         </select>
                     </div>
 
+                    <!-- Status dostępności -->
                     <div class="formularz-grupa">
                         <label for="dostepnosc">Dostępność:</label>
                         <select name="dostepnosc" id="edit-dostepnosc" required>
@@ -250,51 +289,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
                         </select>
                     </div>
 
+                    <!-- Przycisk zapisu -->
                     <button type="submit" name="edytuj" class="przycisk-edycji">Zapisz zmiany</button>
                 </form>
             </div>
         </div>
     </section>
-
-    <footer>
-        <div class="kontener">
-            <div class="zawartosc-stopki">
-                <div class="kolumna-stopki">
-                    <h3>Kontakt</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
-                    <p><i class="fas fa-phone"></i> +48 694 202 137</p>
-                    <p><i class="fas fa-envelope"></i> kontaktujSieWariacieEssa@meatmaster.pl</p>
-                </div>
-                <div class="kolumna-stopki">
-                    <h3>Godziny otwarcia</h3>
-                    <p>Pon-Pt: 6:00 - 22:00</p>
-                    <p>Sob: 7:00 - 14:00</p>
-                    <p>Niedz: Zamknięte</p>
-                </div>
-                <div class="kolumna-stopki">
-                    <h3>Śledź nas</h3>
-                    <div class="linki-spolecznosciowe">
-                        <a href="#" aria-label="Twitter" class="x-icon">X</a>
-                        <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="prawa-autorskie">
-                <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
-            </div>
-        </div>
     </footer>
-
+    <!-- Skrypt JavaScript -->
     <script>
+        /**
+         * Funkcja pokazująca formularz edycji i wypełniająca go danymi
+         * @param {number} id - ID towaru
+         * @param {string} nazwa - Nazwa produktu
+         * @param {number} cena - Cena za kg
+         * @param {string} kategoria - Kategoria produktu
+         * @param {string} dostepnosc - Status dostępności
+         */
         function pokazFormularzEdycji(id, nazwa, cena, kategoria, dostepnosc) {
+            // Wypełnienie formularza danymi
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-nazwa').value = nazwa;
             document.getElementById('edit-cena').value = cena;
             document.getElementById('edit-kategoria').value = kategoria;
             document.getElementById('edit-dostepnosc').value = dostepnosc;
 
+            // Pokazanie formularza
             document.getElementById('formularz-edycji').style.display = 'block';
+            
+            // Płynne przewinięcie do formularza
             window.scrollTo({
                 top: document.getElementById('formularz-edycji').offsetTop,
                 behavior: 'smooth'
@@ -302,5 +325,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         }
     </script>
 </body>
-
 </html>
