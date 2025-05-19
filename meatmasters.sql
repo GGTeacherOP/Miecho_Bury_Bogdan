@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Maj 16, 2025 at 05:22 PM
+-- Generation Time: Maj 18, 2025 at 08:50 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -119,6 +119,38 @@ INSERT INTO `klienci` (`id`, `imie`, `nazwisko`, `email`, `haslo`, `telefon`, `t
 (27, 'Bartosz', 'Dziewit', 'Dziewit@gmail.com', 'Dziewit1337', '000999888', 'firma/hurtownia', 'dziewit sp.zoo', '123', '2025-05-15 17:12:10'),
 (28, 'Jan', 'Muszynski', 'Jan@gmail.com', 'Muszynskiessa', '123456789', 'klient indywidualny', NULL, NULL, '2025-05-15 17:30:43'),
 (30, 'Bartek', 'Kozioł', 'koziolbartek@gmail.com', 'Bartek1337', '987234675', 'firma/hurtownia', NULL, NULL, '2025-05-15 20:34:15');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `kontakty`
+--
+
+CREATE TABLE `kontakty` (
+  `id` int(11) NOT NULL,
+  `klient_id` int(11) DEFAULT NULL,
+  `pracownik_id` int(11) DEFAULT NULL,
+  `imie` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `telefon` varchar(20) DEFAULT NULL,
+  `temat` enum('zamowienie','reklamacja','wspolpraca','inne') NOT NULL,
+  `wiadomosc` varchar(200) NOT NULL,
+  `status` enum('nowa','w_trakcie','zamknieta') DEFAULT 'nowa',
+  `data_zgloszenia` datetime DEFAULT current_timestamp(),
+  `data_zakonczenia` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `kontakty`
+--
+
+INSERT INTO `kontakty` (`id`, `klient_id`, `pracownik_id`, `imie`, `email`, `telefon`, `temat`, `wiadomosc`, `status`, `data_zgloszenia`, `data_zakonczenia`) VALUES
+(1, 1, 3, 'Jan Kowalski', 'jan.kowalski@email.com', '123456789', 'zamowienie', 'Chciałbym zamówić 10kg rostbefu wołowego na przyszły tydzień.', 'zamknieta', '2025-05-10 09:15:00', '2025-05-10 14:30:00'),
+(2, 4, NULL, 'Marek Zieliński', 'biuro@zielpol.pl', '601234567', 'wspolpraca', 'Interesuje nas stała współpraca hurtowa. Proszę o kontakt w sprawie oferty.', 'w_trakcie', '2025-05-12 11:45:00', NULL),
+(3, NULL, NULL, 'Anna Nowak', 'anna.nowak@email.com', '987654321', 'reklamacja', 'W ostatnim zamówieniu mięso było nieświeże. Proszę o wyjaśnienie sytuacji.', 'nowa', '2025-05-15 16:20:00', NULL),
+(4, 7, 2, 'Agnieszka Dąbrowska', 'rezerwacje@podkogutem.pl', '508123456', 'zamowienie', 'Pilnie potrzebujemy 20kg mięsa do kebabu na weekend.', 'zamknieta', '2025-05-18 08:30:00', '2025-05-18 10:15:00'),
+(5, 12, NULL, 'Grzegorz Lewandowski', 'pizza@bellaitalia.pl', '603987654', 'inne', 'Czy prowadzą Państwo szkolenia z przygotowania mięsa dla restauracji?', 'nowa', '2025-05-20 13:10:00', NULL),
+(6, 5, 1, 'Katarzyna Wójcik', 'office@elektroplus.com', '605987654', 'reklamacja', 'Otrzymaliśmy niepełną dostawę w zamówieniu nr 245.', 'w_trakcie', '2025-05-21 10:45:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -423,6 +455,14 @@ ALTER TABLE `klienci`
   ADD KEY `typ_konta` (`typ_konta`);
 
 --
+-- Indeksy dla tabeli `kontakty`
+--
+ALTER TABLE `kontakty`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `klient_id` (`klient_id`),
+  ADD KEY `pracownik_id` (`pracownik_id`);
+
+--
 -- Indeksy dla tabeli `pracownicy`
 --
 ALTER TABLE `pracownicy`
@@ -469,6 +509,11 @@ ALTER TABLE `zamowienia_towary`
 ALTER TABLE `dostawy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
+--
+-- AUTO_INCREMENT for table `kontakty`
+--
+ALTER TABLE `kontakty`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `reklamacje`
@@ -504,6 +549,13 @@ ALTER TABLE `dostawy`
 ALTER TABLE `dostawy_towary`
   ADD CONSTRAINT `dostawy_towary_ibfk_1` FOREIGN KEY (`dostawa_id`) REFERENCES `dostawy` (`id`),
   ADD CONSTRAINT `dostawy_towary_ibfk_2` FOREIGN KEY (`towar_id`) REFERENCES `towary` (`id`);
+
+--
+-- Constraints for table `kontakty`
+--
+ALTER TABLE `kontakty`
+  ADD CONSTRAINT `kontakty_ibfk_1` FOREIGN KEY (`klient_id`) REFERENCES `klienci` (`id`),
+  ADD CONSTRAINT `kontakty_ibfk_2` FOREIGN KEY (`pracownik_id`) REFERENCES `pracownicy` (`id`);
 
 --
 -- Constraints for table `reklamacje`

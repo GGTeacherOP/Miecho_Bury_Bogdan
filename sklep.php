@@ -1,18 +1,18 @@
 <?php
-session_start();
+session_start(); // Rozpoczęcie sesji – umożliwia przechowywanie danych (np. koszyka) między żądaniami użytkownika
 
 // Inicjalizacja koszyka jeśli nie istnieje
-if(!isset($_SESSION['koszyk'])) {
-    $_SESSION['koszyk'] = [];
+if (!isset($_SESSION['koszyk'])) {
+    $_SESSION['koszyk'] = []; // Jeśli koszyk nie istnieje w sesji, tworzony jest jako pusty array
 }
 
 // Obsługa dodawania do koszyka
-if(isset($_POST['dodaj_do_koszyka'])) {
-    $produkt_id = $_POST['produkt_id'];
-    $ilosc = (float)$_POST['ilosc'];
-    
+if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przyciskiem "dodaj do koszyka" został wysłany
+    $produkt_id = $_POST['produkt_id']; // Pobranie ID produktu z formularza
+    $ilosc = (float)$_POST['ilosc']; // Pobranie ilości z formularza i rzutowanie na typ float
+
     // Dane produktów (w rzeczywistej aplikacji pobierane z bazy danych)
-    $produkty = [
+    $produkty = [ // Tablica produktów z przykładowymi danymi – ID => dane produktu
         '1' => ['nazwa' => 'Schab wieprzowy', 'cena' => 24.99, 'kategoria' => 'wieprzowina'],
         '2' => ['nazwa' => 'Filet z kurczaka', 'cena' => 25.99, 'kategoria' => 'drobiowe'],
         '5' => ['nazwa' => 'Karkówka wieprzowa', 'cena' => 27.99, 'kategoria' => 'wieprzowina'],
@@ -22,11 +22,14 @@ if(isset($_POST['dodaj_do_koszyka'])) {
         '10' => ['nazwa' => 'Mieszanka do kebaba', 'cena' => 42.00, 'kategoria' => 'kebab'],
         '11' => ['nazwa' => 'Mięso do kebaba drobiowe', 'cena' => 38.00, 'kategoria' => 'kebab']
     ];
-    
-    if(isset($produkty[$produkt_id]) && $ilosc > 0) {
-        if(isset($_SESSION['koszyk'][$produkt_id])) {
+
+    // Sprawdzenie, czy produkt o danym ID istnieje i czy ilość jest większa od 0
+    if (isset($produkty[$produkt_id]) && $ilosc > 0) {
+        // Jeśli produkt już jest w koszyku, zwiększ jego ilość
+        if (isset($_SESSION['koszyk'][$produkt_id])) {
             $_SESSION['koszyk'][$produkt_id]['ilosc'] += $ilosc;
         } else {
+            // Jeśli produkt nie jest jeszcze w koszyku, dodaj go z pełnymi danymi
             $_SESSION['koszyk'][$produkt_id] = [
                 'id' => $produkt_id,
                 'nazwa' => $produkty[$produkt_id]['nazwa'],
@@ -36,11 +39,13 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             ];
         }
     }
-    
+
+    // Po dodaniu przekierowanie z powrotem do strony sklepu, by odświeżyć widok
     header("Location: sklep.php");
-    exit();
+    exit(); // Zakończenie działania skryptu po przekierowaniu
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -56,19 +61,20 @@ if(isset($_POST['dodaj_do_koszyka'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Dodatkowe style dla koszyka */
-        #koszyk, #formularz-zamowienia {
+        #koszyk,
+        #formularz-zamowienia {
             display: none;
             margin-top: 40px;
             background: #f9f9f9;
             padding: 20px;
             border-radius: 8px;
         }
-        
+
         .usun-produkt {
             color: #d32f2f;
             text-decoration: none;
         }
-        
+
         #cart-count {
             background: #d32f2f;
             color: white;
@@ -79,42 +85,45 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             top: -8px;
             right: -5px;
         }
-        
+
         .zamowienie-columns {
             display: flex;
             gap: 30px;
         }
-        
-        .dane-uzytkownika, .podsumowanie-zamowienia {
+
+        .dane-uzytkownika,
+        .podsumowanie-zamowienia {
             flex: 1;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
         }
-        
-        .form-group input, .form-group textarea {
+
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        
-        .dostawa-options, .platnosc-options {
+
+        .dostawa-options,
+        .platnosc-options {
             margin-bottom: 20px;
         }
-        
+
         .podsumowanie-cena .wiersz {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
-        
+
         .podsumowanie-cena .suma {
             font-weight: bold;
             font-size: 1.1em;
@@ -344,180 +353,11 @@ if(isset($_POST['dodaj_do_koszyka'])) {
                     </div>
                 </div>
             </div>
-
-
-            <!-- Koszyk -->
-            <section id="koszyk" class="sekcja-koszyk" <?= !empty($_SESSION['koszyk']) ? 'style="display:block;"' : '' ?>>
-                <div class="koszyk-container">
-                    <h2 class="tytul-sekcji">Twój Koszyk</h2>
-                    <div id="koszyk-tabela">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Produkt</th>
-                                    <th>Cena</th>
-                                    <th>Ilość</th>
-                                    <th>Wartość</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="koszyk-zawartosc">
-                                <?php if(empty($_SESSION['koszyk'])): ?>
-                                <tr id="koszyk-pusty">
-                                    <td colspan="5">Twój koszyk jest pusty</td>
-                                </tr>
-                                <?php else: ?>
-                                    <?php 
-                                    $suma = 0;
-                                    foreach($_SESSION['koszyk'] as $id => $produkt): 
-                                        $wartosc = $produkt['cena'] * $produkt['ilosc'];
-                                        $suma += $wartosc;
-                                    ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($produkt['nazwa']) ?></td>
-                                        <td><?= number_format($produkt['cena'], 2) ?> zł/kg</td>
-                                        <td><?= number_format($produkt['ilosc'], 1) ?> kg</td>
-                                        <td><?= number_format($wartosc, 2) ?> zł</td>
-                                        <td>
-                                            <a href="usun_z_koszyka.php?id=<?= $id ?>" class="usun-produkt">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                            <tfoot id="koszyk-podsumowanie" <?= !empty($_SESSION['koszyk']) ? 'style="display:table-row;"' : 'style="display:none;"' ?>>
-                                <tr>
-                                    <td colspan="3">Suma:</td>
-                                    <td id="koszyk-suma"><?= isset($suma) ? number_format($suma, 2) : '0.00' ?> zł</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-
-                        <div class="koszyk-akcje">
-                            <button id="kontynuuj-zakupy" class="przycisk">Kontynuuj zakupy</button>
-                            <button id="przejdz-do-zamowienia" class="przycisk">Przejdź do zamówienia</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Formularz zamówienia -->
-            <section id="formularz-zamowienia" class="sekcja-zamowienia">
-                <div class="zamowienie-container">
-                    <h2 class="tytul-sekcji">Dane do zamówienia</h2>
-
-                    <div class="zamowienie-columns">
-                        <div class="dane-uzytkownika">
-                            <h3>Dane osobowe</h3>
-                            <form id="dane-form">
-                                <div class="form-group">
-                                    <label for="imie">Imię *</label>
-                                    <input type="text" id="imie" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="nazwisko">Nazwisko *</label>
-                                    <input type="text" id="nazwisko" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email *</label>
-                                    <input type="email" id="email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="telefon">Telefon *</label>
-                                    <input type="tel" id="telefon" required>
-                                </div>
-                            </form>
-
-                            <h3>Adres dostawy</h3>
-                            <form id="adres-form">
-                                <div class="form-group">
-                                    <label for="ulica">Ulica i nr domu *</label>
-                                    <input type="text" id="ulica" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="miasto">Miasto *</label>
-                                    <input type="text" id="miasto" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="kod">Kod pocztowy *</label>
-                                    <input type="text" id="kod" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="uwagi">Uwagi do zamówienia</label>
-                                    <textarea id="uwagi" rows="3"></textarea>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="podsumowanie-zamowienia">
-                            <h3>Podsumowanie</h3>
-                            <div id="podsumowanie-zawartosc">
-                                <?php if(!empty($_SESSION['koszyk'])): ?>
-                                    <ul>
-                                    <?php foreach($_SESSION['koszyk'] as $produkt): ?>
-                                        <li><?= htmlspecialchars($produkt['nazwa']) ?> - <?= $produkt['ilosc'] ?> kg × <?= number_format($produkt['cena'], 2) ?> zł</li>
-                                    <?php endforeach; ?>
-                                    </ul>
-                                <?php else: ?>
-                                    <p>Wybierz produkty w koszyku</p>
-                                <?php endif; ?>
-                            </div>
-
-                            <h3>Sposób dostawy</h3>
-                            <div class="dostawa-options">
-                                <div class="dostawa-option">
-                                    <input type="radio" id="dostawa-kurier" name="dostawa" value="kurier" checked>
-                                    <label for="dostawa-kurier">Kurier (24h) - 15.00 zł</label>
-                                </div>
-                                <div class="dostawa-option">
-                                    <input type="radio" id="dostawa-paczkomat" name="dostawa" value="paczkomat">
-                                    <label for="dostawa-paczkomat">Paczkomat (48h) - 10.00 zł</label>
-                                </div>
-                                <div class="dostawa-option">
-                                    <input type="radio" id="dostawa-odbior" name="dostawa" value="odbior">
-                                    <label for="dostawa-odbior">Odbiór osobisty - 0.00 zł</label>
-                                </div>
-                            </div>
-
-                            <div class="platnosc-options">
-                                <h3>Sposób płatności</h3>
-                                <div class="platnosc-option">
-                                    <input type="radio" id="platnosc-przelew" name="platnosc" value="przelew" checked>
-                                    <label for="platnosc-przelew">Przelew bankowy</label>
-                                </div>
-                                <div class="platnosc-option">
-                                    <input type="radio" id="platnosc-blik" name="platnosc" value="blik">
-                                    <label for="platnosc-blik">BLIK</label>
-                                </div>
-                                <div class="platnosc-option">
-                                    <input type="radio" id="platnosc-karta" name="platnosc" value="karta">
-                                    <label for="platnosc-karta">Karta płatnicza</label>
-                                </div>
-                            </div>
-
-                            <div class="podsumowanie-cena">
-                                <div class="wiersz">
-                                    <span>Wartość produktów:</span>
-                                    <span id="wartosc-produktow"><?= isset($suma) ? number_format($suma, 2) : '0.00' ?> zł</span>
-                                </div>
-                                <div class="wiersz">
-                                    <span>Dostawa:</span>
-                                    <span id="koszt-dostawy">15.00 zł</span>
-                                </div>
-                                <div class="wiersz suma">
-                                    <span>Do zapłaty:</span>
-                                    <span id="suma-zamowienia"><?= isset($suma) ? number_format($suma + 15, 2) : '15.00' ?> zł</span>
-                                </div>
-                            </div>
-
-                            <button id="zloz-zamowienie" class="przycisk">Złóż zamówienie</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            </tbody>
+            </table>
+            </div>
+            </div>
+        </section>
     </main>
 
     <!-- Stopka -->
@@ -553,72 +393,95 @@ if(isset($_POST['dodaj_do_koszyka'])) {
 
 
     <script>
+        // Czekamy aż cała strona się załaduje
         document.addEventListener('DOMContentLoaded', function() {
-            // Obsługa wyświetlania/ukrywania koszyka
+            // 1. Pobieramy potrzebne elementy
+            const selectKategoria = document.getElementById('kategoria');
+            const selectSortowanie = document.getElementById('sortowanie');
+            const kontenerProduktow = document.querySelector('.siatka-produktow');
+            const wszystkieProdukty = Array.from(document.querySelectorAll('.karta-produktu'));
+
+            // 2. Funkcja do aktualizacji widoku
+            function aktualizujWidok() {
+                const kategoria = selectKategoria.value;
+                const sortowanie = selectSortowanie.value;
+
+                // Filtrowanie produktów
+                const przefiltrowane = wszystkieProdukty.filter(function(produkt) {
+                    if (kategoria === 'wszystkie') return true;
+                    if (kategoria === 'kebab') {
+                        return produkt.dataset.kategoria === 'kebab' ||
+                            produkt.dataset.kategoria === 'kebab-drobiowe';
+                    }
+                    return produkt.dataset.kategoria === kategoria;
+                });
+
+                // Sortowanie produktów
+                if (sortowanie === 'cena-rosnaco') {
+                    przefiltrowane.sort(function(a, b) {
+                        return pobierzCene(a) - pobierzCene(b);
+                    });
+                } else if (sortowanie === 'cena-malejaco') {
+                    przefiltrowane.sort(function(a, b) {
+                        return pobierzCene(b) - pobierzCene(a);
+                    });
+                } else if (sortowanie === 'nazwa') {
+                    przefiltrowane.sort(function(a, b) {
+                        const nazwaA = a.querySelector('.nazwa-produktu').textContent.toLowerCase();
+                        const nazwaB = b.querySelector('.nazwa-produktu').textContent.toLowerCase();
+                        return nazwaA.localeCompare(nazwaB);
+                    });
+                }
+
+                // Wyświetlamy produkty
+                kontenerProduktow.innerHTML = '';
+                przefiltrowane.forEach(function(produkt) {
+                    kontenerProduktow.appendChild(produkt);
+                });
+            }
+
+            // 3. Funkcja pomocnicza do pobierania ceny
+            function pobierzCene(produkt) {
+                const cenaText = produkt.querySelector('.cena-produktu').textContent;
+                const cena = parseFloat(cenaText.replace(' zł/kg', '').replace(',', '.'));
+                return isNaN(cena) ? 0 : cena; // Dla "Zapytaj o ofertę" zwracamy 0
+            }
+
+            // 4. Dodajemy nasłuchiwanie zmian
+            selectKategoria.addEventListener('change', aktualizujWidok);
+            selectSortowanie.addEventListener('change', aktualizujWidok);
+
+            // 5. Inicjalizacja - pierwsze sortowanie
+            aktualizujWidok();
+
+            // 6. Obsługa koszyka (pozostała funkcjonalność)
             const koszykSection = document.getElementById('koszyk');
             const formularzZamowienia = document.getElementById('formularz-zamowienia');
-            
-            // Przycisk "Przejdź do zamówienia"
+
             document.getElementById('przejdz-do-zamowienia').addEventListener('click', function(e) {
                 e.preventDefault();
                 koszykSection.style.display = 'none';
                 formularzZamowienia.style.display = 'block';
             });
-            
-            // Przycisk "Kontynuuj zakupy"
+
             document.getElementById('kontynuuj-zakupy').addEventListener('click', function(e) {
                 e.preventDefault();
                 koszykSection.style.display = 'none';
             });
-            
-            // Obsługa zmiany metody dostawy
-            document.querySelectorAll('input[name="dostawa"]').forEach(radio => {
+
+            document.querySelectorAll('input[name="dostawa"]').forEach(function(radio) {
                 radio.addEventListener('change', function() {
-                    const kosztDostawy = this.value === 'kurier' ? 15 : this.value === 'paczkomat' ? 10 : 0;
+                    const kosztDostawy = this.value === 'kurier' ? 15 :
+                        this.value === 'paczkomat' ? 10 : 0;
                     document.getElementById('koszt-dostawy').textContent = kosztDostawy.toFixed(2) + ' zł';
-                    
-                    const wartoscProduktow = parseFloat(document.getElementById('wartosc-produktow').textContent);
+
+                    const wartoscText = document.getElementById('wartosc-produktow').textContent;
+                    const wartoscProduktow = parseFloat(wartoscText.replace(' zł', ''));
                     document.getElementById('suma-zamowienia').textContent = (wartoscProduktow + kosztDostawy).toFixed(2) + ' zł';
                 });
-            });
-            
-            // Filtrowanie produktów
-            document.getElementById('kategoria').addEventListener('change', function() {
-                const kategoria = this.value;
-                document.querySelectorAll('.karta-produktu').forEach(karta => {
-                    if(kategoria === 'wszystkie' || karta.dataset.kategoria === kategoria) {
-                        karta.style.display = 'block';
-                    } else {
-                        karta.style.display = 'none';
-                    }
-                });
-            });
-            
-            // Sortowanie produktów
-            document.getElementById('sortowanie').addEventListener('change', function() {
-                const sortowanie = this.value;
-                const kontener = document.querySelector('.siatka-produkty');
-                const karty = Array.from(document.querySelectorAll('.karta-produktu'));
-                
-                karty.sort((a, b) => {
-                    if(sortowanie === 'cena-rosnaco') {
-                        return parseFloat(a.querySelector('.cena-produktu').textContent) - 
-                               parseFloat(b.querySelector('.cena-produktu').textContent);
-                    } else if(sortowanie === 'cena-malejaco') {
-                        return parseFloat(b.querySelector('.cena-produktu').textContent) - 
-                               parseFloat(a.querySelector('.cena-produktu').textContent);
-                    } else if(sortowanie === 'nazwa') {
-                        return a.querySelector('.nazwa-produktu').textContent.localeCompare(
-                            b.querySelector('.nazwa-produktu').textContent
-                        );
-                    }
-                    return 0;
-                });
-                
-                // Usuń wszystkie karty i dodaj posortowane
-                karty.forEach(karta => kontener.appendChild(karta));
             });
         });
     </script>
 </body>
+
 </html>

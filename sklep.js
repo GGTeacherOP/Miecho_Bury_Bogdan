@@ -1,49 +1,72 @@
-// 1. Znajdź potrzebne elementy
-const kategorieSelect = document.getElementById('kategoria');
-const sortowanieSelect = document.getElementById('sortowanie');
-const kontenerProduktow = document.querySelector('.siatka-produktow');
-const wszystkieProdukty = Array.from(document.querySelectorAll('.karta-produktu'));
+// Prosty skrypt do filtrowania i sortowania produktów
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. POBRANIE ELEMENTÓW STRONY
+    const selectKategoria = document.getElementById('kategoria'); // Select z kategoriami
+    const selectSortowanie = document.getElementById('sortowanie'); // Select z sortowaniem
+    const kontener = document.querySelector('.siatka-produktow'); // Kontener na produkty
+    const produkty = Array.from(document.querySelectorAll('.karta-produktu')); // Wszystkie produkty jako tablica
 
-// 2. Funkcja aktualizująca produkty
-function aktualizujProdukty() {
-  const wybranaKategoria = kategorieSelect.value;
-  const sposobSortowania = sortowanieSelect.value;
-  
-  // Filtruj produkty
-  const przefiltrowane = wszystkieProdukty.filter(produkt => {
-    const kategoria = produkt.dataset.kategoria;
-    return wybranaKategoria === 'wszystkie' || 
-           kategoria === wybranaKategoria ||
-           (wybranaKategoria === 'kebab' && (kategoria === 'kebab' || kategoria === 'kebab-drobiowe'));
-  });
+    // 2. GŁÓWNA FUNKCJA AKTUALIZUJĄCA WIDOK
+    function aktualizujWidok() {
+        // Pobieramy wybrane wartości
+        const kategoria = selectKategoria.value;
+        const sortowanie = selectSortowanie.value;
 
-  // Sortuj produkty
-  przefiltrowane.sort((a, b) => {
-    if (sposobSortowania === 'cena-rosnaco') {
-      return pobierzCene(a) - pobierzCene(b);
-    } else if (sposobSortowania === 'cena-malejaco') {
-      return pobierzCene(b) - pobierzCene(a);
-    } else if (sposobSortowania === 'nazwa') {
-      return pobierzNazwe(a).localeCompare(pobierzNazwe(b));
+        // 2.1. FILTROWANIE PRODUKTÓW
+        let przefiltrowane = produkty.filter(produkt => {
+            if (kategoria === 'wszystkie') return true; // Pokazuj wszystkie produkty
+            
+            // Specjalna obsługa kategorii "kebab" (obejmuje też "kebab-drobiowe")
+            if (kategoria === 'kebab') {
+                return produkt.dataset.kategoria === 'kebab' || 
+                       produkt.dataset.kategoria === 'kebab-drobiowe';
+            }
+            
+            // Dla innych kategorii - dokładne dopasowanie
+            return produkt.dataset.kategoria === kategoria;
+        });
+
+        // 2.2. SORTOWANIE PRODUKTÓW
+        if (sortowanie === 'cena-rosnaco') {
+            przefiltrowane.sort(sortujCenaRosnaco);
+        } else if (sortowanie === 'cena-malejaco') {
+            przefiltrowane.sort(sortujCenaMalejaco);
+        } else if (sortowanie === 'nazwa') {
+            przefiltrowane.sort(sortujNazwa);
+        }
+
+        // 2.3. WYŚWIETLANIE WYNIKÓW
+        kontener.innerHTML = ''; // Wyczyszczenie kontenera
+        przefiltrowane.forEach(p => kontener.appendChild(p)); // Dodanie przefiltrowanych produktów
     }
-    return 0;
-  });
 
-  // Wyświetl produkty
-  kontenerProduktow.innerHTML = '';
-  przefiltrowane.forEach(p => kontenerProduktow.appendChild(p));
-}
+    // 3. FUNKCJE SORTUJĄCE
+    function sortujCenaRosnaco(a, b) {
+        return pobierzCene(a) - pobierzCene(b); // Sortowanie od najtańszego
+    }
 
-// 3. Pomocnicze funkcje
-function pobierzCene(produkt) {
-  const cenaText = produkt.querySelector('.cena-produktu').textContent;
-  return cenaText.includes('Zapytaj') ? 0 : parseFloat(cenaText);
-}
+    function sortujCenaMalejaco(a, b) {
+        return pobierzCene(b) - pobierzCene(a); // Sortowanie od najdroższego
+    }
 
-function pobierzNazwe(produkt) {
-  return produkt.querySelector('.nazwa-produktu').textContent.toLowerCase();
-}
+    function sortujNazwa(a, b) {
+        const nazwaA = a.querySelector('.nazwa-produktu').textContent.toLowerCase();
+        const nazwaB = b.querySelector('.nazwa-produktu').textContent.toLowerCase();
+        return nazwaA.localeCompare(nazwaB); // Sortowanie alfabetyczne
+    }
 
-// 4. Nasłuchuj zmian
-kategorieSelect.addEventListener('change', aktualizujProdukty);
-sortowanieSelect.addEventListener('change', aktualizujProdukty);
+    // 4. FUNKCJA POMOCNICZA DO POBRANIA CENY
+    function pobierzCene(produkt) {
+        const cenaText = produkt.querySelector('.cena-produktu').textContent;
+        // Konwersja tekstu ceny na liczbę (zamiana , na . i usunięcie "zł/kg")
+        const cena = parseFloat(cenaText.replace(' zł/kg', '').replace(',', '.'));
+        return isNaN(cena) ? 0 : cena; // Dla "Zapytaj o ofertę" zwracamy 0
+    }
+
+    // 5. NASŁUCHIWANIE ZDARZEŃ
+    selectKategoria.addEventListener('change', aktualizujWidok); // Zmiana kategorii
+    selectSortowanie.addEventListener('change', aktualizujWidok); // Zmiana sortowania
+
+    // 6. INICJALIZACJA - PIERWSZE WYŚWIETLENIE
+    aktualizujWidok();
+});

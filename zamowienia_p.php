@@ -1,30 +1,35 @@
 <?php
 require_once "sesje.php";
-sprawdzStanowisko(['Pracownik linii pakowania', 'Magazynier', 'Księgowy', 'Specjalista HR', 'Logistyk']); // Tylko wybrane stanowiska mają dostęp
+// Sprawdza czy użytkownik ma odpowiednie stanowisko do dostępu
+sprawdzStanowisko(['Pracownik linii pakowania', 'Magazynier', 'Księgowy', 'Specjalista HR', 'Logistyk']);
 
 require_once "db.php";
 
-// Pobierz dane zamówień z bazy
+// Pobiera dane zamówień z bazy danych
 $query = "SELECT * FROM zamowienia_widok";
 $result = $conn->query($query);
-$zamowienia = $result->fetch_all(MYSQLI_ASSOC);
+$zamowienia = $result->fetch_all(MYSQLI_ASSOC); // Pobiera wszystkie wyniki jako tablicę asocjacyjną
 
 // Obsługa aktualizacji zamówienia
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
     $id = $_POST['id'];
     $status = $_POST['status'];
 
+    // Przygotowuje zapytanie SQL z parametrami do wiązania
     $update_query = "UPDATE zamowienia SET 
                     status = ?
                     WHERE id = ?";
 
+    // Przygotowuje statement do wykonania (zabezpieczenie przed SQL injection)
     $stmt = $conn->prepare($update_query);
+    // Wiąże parametry do zapytania ("s" - string, "i" - integer)
     $stmt->bind_param("si", $status, $id);
     $stmt->execute();
 
+    // Sprawdza czy aktualizacja się powiodła
     if ($stmt->affected_rows > 0) {
         $success = "Status zamówienia został zaktualizowany!";
-        // Odśwież dane
+        // Odświeża dane po aktualizacji
         $result = $conn->query($query);
         $zamowienia = $result->fetch_all(MYSQLI_ASSOC);
     } else {
