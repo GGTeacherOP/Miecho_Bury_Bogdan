@@ -1,4 +1,3 @@
-php
 <?php
 // 1. Ustawienia początkowe - KODOWANIE
 header('Content-Type: text/html; charset=UTF-8');
@@ -71,193 +70,220 @@ $inicjaly = mb_strtoupper(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MeatMaster - Profil</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 8.2. LINKI DO ZASOBÓW -->
+    <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów -->
+    <link rel="icon" type="image/png" href="icon.png"> <!-- Ikona strony -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Ikony FontAwesome -->
     <style>
-        /* 7. Zachowane oryginalne style */
-        .sekcja-profilu {
-            padding: 80px 0;
-            background: #f5f5f5;
-            min-height: calc(100vh - 300px);
-        }
+       /* Główna sekcja profilu - tło i minimalna wysokość */
+.sekcja-profilu {
+    padding: 80px 0;                  /* Wewnętrzny odstęp góra/dół */
+    background: #f5f5f5;              /* Jasnoszare tło */
+    min-height: calc(100vh - 300px);  /* Minimalna wysokość (cały ekran minus 300px) */
+}
 
-        .kontener-profilu {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
+/* Kontener z zawartością profilu */
+.kontener-profilu {
+    max-width: 800px;                 /* Maksymalna szerokość */
+    margin: 0 auto;                   /* Wyśrodkowanie */
+    background: #fff;                 /* Białe tło */
+    padding: 40px;                    /* Wewnętrzny odstęp */
+    border-radius: 8px;               /* Zaokrąglone rogi */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+    display: flex;                    /* Flexbox dla układu */
+    flex-direction: column;           /* Elementy w kolumnie */
+    gap: 30px;                       /* Odstęp między dziećmi */
+}
 
-        .naglowek-profilu {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
+/* Nagłówek profilu (awatar + dane) */
+.naglowek-profilu {
+    display: flex;                    /* Flexbox dla układu poziomego */
+    align-items: center;              /* Wyśrodkowanie w pionie */
+    gap: 30px;                       /* Odstęp między awatarem a danymi */
+    border-bottom: 1px solid #eee;    /* Szara linia oddzielająca */
+    padding-bottom: 20px;             /* Odstęp od linii */
+}
 
-        .awatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background-color: #c00;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-        }
+/* Okrągły awatar z inicjałami */
+.awatar {
+    width: 120px;                    /* Szerokość */
+    height: 120px;                   /* Wysokość */
+    border-radius: 50%;               /* Kółko (50% border-radius) */
+    background-color: #c00;           /* Czerwone tło (#c00) */
+    color: white;                    /* Biały tekst */
+    display: flex;                   /* Flexbox dla wyśrodkowania */
+    align-items: center;             /* Wyśrodkowanie w pionie */
+    justify-content: center;         /* Wyśrodkowanie w poziomie */
+    font-size: 48px;                /* Duży rozmiar czcionki */
+    font-weight: bold;              /* Pogrubienie */
+}
 
-        .informacje-uzytkownika h2 {
-            color: #c00;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
+/* Nagłówek z danymi użytkownika */
+.informacje-uzytkownika h2 {
+    color: #c00;                    /* Czerwony kolor tekstu */
+    margin-bottom: 10px;            /* Odstęp od dołu */
+    font-size: 28px;               /* Rozmiar czcionki */
+}
 
-        .typ-konta {
-            display: inline-block;
-            background: #c00;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-top: 5px;
-        }
+/* Etykieta typu konta (np. "Pracownik") */
+.typ-konta {
+    display: inline-block;          /* Element liniowo-blokowy */
+    background: #c00;               /* Czerwone tło */
+    color: white;                  /* Biały tekst */
+    padding: 5px 15px;             /* Wewnętrzny odstęp */
+    border-radius: 20px;           /* Bardzo zaokrąglone rogi (efekt "pigułki") */
+    font-size: 14px;               /* Rozmiar czcionki */
+    margin-top: 5px;               /* Mały odstęp od góry */
+}
 
-        .sekcja-statystyk {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
+/* Kontener statystyk (2 kolumny) */
+.sekcja-statystyk {
+    display: grid;                  /* Grid layout */
+    grid-template-columns: repeat(2, 1fr); /* 2 kolumny o równej szerokości */
+    gap: 20px;                      /* Odstęp między kolumnami */
+}
 
-        .statystyka {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid #c00;
-        }
+/* Pojedyncza statystyka (np. "Złożone zamówienia") */
+.statystyka {
+    background: #f9f9f9;            /* Bardzo jasnoszare tło */
+    padding: 20px;                  /* Wewnętrzny odstęp */
+    border-radius: 8px;             /* Lekko zaokrąglone rogi */
+    text-align: center;             /* Tekst wyśrodkowany */
+    border-left: 4px solid #c00;    /* Czerwony akcent z lewej strony */
+}
 
-        .statystyka h3 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
+/* Nagłówek statystyki (np. "Wartość zamówień") */
+.statystyka h3 {
+    color: #333;                    /* Ciemnoszary tekst */
+    font-size: 16px;                /* Rozmiar czcionki */
+    margin-bottom: 10px;            /* Odstęp od dołu */
+}
 
-        .wartosc-statystyki {
-            font-size: 28px;
-            font-weight: bold;
-            color: #c00;
-        }
+/* Wartość statystyki (np. "5" lub "120,50 zł") */
+.wartosc-statystyki {
+    font-size: 28px;                /* Duży rozmiar czcionki */
+    font-weight: bold;              /* Pogrubienie */
+    color: #c00;                    /* Czerwony kolor */
+}
 
-        .sekcja-danych {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
+/* Sekcja z danymi użytkownika (np. "Dane osobowe") */
+.sekcja-danych {
+    display: grid;                  /* Grid layout */
+    grid-template-columns: 1fr;     /* 1 kolumna */
+    gap: 20px;                      /* Odstęp między grupami danych */
+}
 
-        .grupa-danych {
-            margin-bottom: 20px;
-        }
+/* Grupa danych (np. "Dane kontaktowe") */
+.grupa-danych {
+    margin-bottom: 20px;            /* Odstęp od dołu */
+}
 
-        .grupa-danych h3 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 18px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 5px;
-        }
+/* Nagłówek grupy danych */
+.grupa-danych h3 {
+    color: #333;                    /* Ciemnoszary tekst */
+    margin-bottom: 10px;            /* Odstęp od dołu */
+    font-size: 18px;                /* Rozmiar czcionki */
+    border-bottom: 2px solid #eee;  /* Szara linia pod nagłówkiem */
+    padding-bottom: 5px;            /* Odstęp od linii */
+}
 
-        .dane {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
+/* Pojedynczy wiersz z danymi (np. "Imię: Jan") */
+.dane {
+    display: flex;                  /* Flexbox dla układu poziomego */
+    justify-content: space-between; /* Rozłożenie na szerokość (etykieta z lewej, wartość z prawej) */
+    padding: 8px 0;                 /* Odstęp góra/dół */
+    border-bottom: 1px solid #f0f0f0; /* Bardzo subtelna szara linia oddzielająca */
+}
 
-        .etykieta {
-            font-weight: 600;
-            color: #666;
-        }
+/* Etykieta danych (np. "Imię:") */
+.etykieta {
+    font-weight: 600;               /* Pogrubienie (ale nie bold) */
+    color: #666;                    |* Średnio szary tekst *|
+}
 
-        .wartosc {
-            color: #333;
-        }
+/* Wartość danych (np. "Jan") */
+.wartosc {
+    color: #333;                    /* Ciemnoszary tekst */
+}
 
-        .przyciski-pracownika {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
+/* Kontener przycisków dla pracowników */
+.przyciski-pracownika {
+    display: flex;                  /* Flexbox dla układu poziomego */
+    gap: 15px;                      /* Odstęp między przyciskami */
+    margin-top: 20px;               /* Odstęp od góry */
+    flex-wrap: wrap;                /* Zawijanie przycisków na małych ekranach */
+}
 
-        .przycisk-pracownika {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px;
-            background: #c00;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
+/* Pojedynczy przycisk dla pracownika */
+.przycisk-pracownika {
+    flex: 1;                        /* Rozciąganie do dostępnej szerokości */
+    min-width: 200px;               /* Minimalna szerokość */
+    padding: 12px;                  /* Wewnętrzny odstęp */
+    background: #c00;               /* Czerwone tło */
+    color: white;                  /* Biały tekst */
+    text-align: center;            /* Tekst wyśrodkowany */
+    text-decoration: none;        /* Brak podkreślenia */
+    border-radius: 4px;           /* Lekko zaokrąglone rogi */
+    font-weight: 600;             /* Pogrubienie */
+    transition: 0.3s;             /* Animacja hover */
+}
 
-        .przycisk-pracownika:hover {
-            background: #a00;
-            transform: translateY(-2px);
-        }
+/* Efekt hover na przyciskach */
+.przycisk-pracownika:hover {
+    background: #a00;              /* Ciemniejszy czerwony */
+    transform: translateY(-2px);   /* Lekkie uniesienie */
+}
 
-        .przycisk-wyloguj {
-            width: 100%;
-            padding: 14px;
-            background: #c00;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 30px;
-        }
+/* Przycisk wylogowania */
+.przycisk-wyloguj {
+    width: 100%;                   /* Pełna szerokość */
+    padding: 14px;                 /* Wewnętrzny odstęp */
+    background: #c00;              /* Czerwone tło */
+    color: #fff;                  /* Biały tekst */
+    border: none;                 /* Brak obramowania */
+    border-radius: 4px;           /* Lekko zaokrąglone rogi */
+    font-size: 16px;              /* Rozmiar czcionki */
+    font-weight: 600;             /* Pogrubienie */
+    cursor: pointer;              /* Kursor wskazujący */
+    transition: 0.3s;             /* Animacja hover */
+    margin-top: 30px;             /* Duży odstęp od góry */
+}
 
-        .przycisk-wyloguj:hover {
-            background: #a00;
-        }
+/* Efekt hover na przycisku wylogowania */
+.przycisk-wyloguj:hover {
+    background: #a00;              /* Ciemniejszy czerwony */
+}
 
-        @media (max-width: 600px) {
-            .naglowek-profilu {
-                flex-direction: column;
-                text-align: center;
-            }
+/* Responsywność - zmiany dla ekranów <= 600px */
+@media (max-width: 600px) {
+    /* Nagłówek profilu - zmiana na układ kolumnowy */
+    .naglowek-profilu {
+        flex-direction: column;     /* Elementy w kolumnie */
+        text-align: center;        /* Tekst wyśrodkowany */
+    }
 
-            .awatar {
-                margin: 0 auto;
-            }
+    /* Awatar - wyśrodkowanie */
+    .awatar {
+        margin: 0 auto;           /* Wyśrodkowanie poziome */
+    }
 
-            .przycisk-pracownika {
-                min-width: 100%;
-            }
-        }
+    /* Przyciski pracownika - pełna szerokość */
+    .przycisk-pracownika {
+        min-width: 100%;          /* Pełna szerokość kontenera */
+    }
+}
     </style>
 </head>
 <body>
+      <!-- 12. NAGŁÓWEK STRONY (menu nawigacyjne) -->
     <header>
         <div class="kontener naglowek-kontener">
             <div class="logo">
-                <img src="Logo.png" alt="MeatMaster Logo">
+                <img src="Logo.png" alt="MeatMaster Logo"> <!-- Logo firmy -->
             </div>
             <nav>
                 <ul>
+                    <!-- Lista linków nawigacyjnych -->
                     <li><a href="Strona_glowna.php">Strona główna</a></li>
                     <li><a href="Oferta.php">Oferta</a></li>
                     <li><a href="sklep.php">Sklep</a></li>
@@ -272,10 +298,12 @@ $inicjaly = mb_strtoupper(
         </div>
     </header>
 
+    <!-- 13. GŁÓWNA SEKCJA PROFILU -->
     <section class="sekcja-profilu">
         <div class="kontener-profilu">
+            <!-- 13.1. NAGŁÓWEK PROFILU (awatar + dane) -->
             <div class="naglowek-profilu">
-                <div class="awatar"><?= $inicjaly ?></div>
+                <div class="awatar"><?= $inicjaly ?></div> <!-- Wyświetl inicjały -->
                 <div class="informacje-uzytkownika">
                     <h2><?= "{$uzytkownik['imie']} {$uzytkownik['nazwisko']}" ?></h2>
                     <p><?= $uzytkownik['email'] ?></p>
@@ -283,18 +311,23 @@ $inicjaly = mb_strtoupper(
                 </div>
             </div>
 
+            <!-- 13.2. SEKCJA STATYSTYK -->
             <div class="sekcja-statystyk">
+                <!-- Statystyka 1: Liczba zamówień -->
                 <div class="statystyka">
                     <h3>Złożone zamówienia</h3>
                     <div class="wartosc-statystyki"><?= $uzytkownik['zamowienia'] ?></div>
                 </div>
+                <!-- Statystyka 2: Wartość zamówień -->
                 <div class="statystyka">
                     <h3>Wartość zamówień</h3>
                     <div class="wartosc-statystyki"><?= $uzytkownik['wartosc'] ?></div>
                 </div>
             </div>
 
+            <!-- 13.3. SEKCJA DANYCH UŻYTKOWNIKA -->
             <div class="sekcja-danych">
+                <!-- Grupa 1: Dane osobowe -->
                 <div class="grupa-danych">
                     <h3>Dane osobowe</h3>
                     <div class="dane">
@@ -307,6 +340,7 @@ $inicjaly = mb_strtoupper(
                     </div>
                 </div>
 
+                <!-- Grupa 2: Dane kontaktowe -->
                 <div class="grupa-danych">
                     <h3>Dane kontaktowe</h3>
                     <div class="dane">
@@ -319,7 +353,8 @@ $inicjaly = mb_strtoupper(
                     </div>
                 </div>
 
-                 <?php if ($_SESSION['rola'] === 'pracownik'): ?>
+                <!-- 13.4. SEKCJA DLA PRACOWNIKÓW (warunkowa) -->
+                <?php if ($_SESSION['rola'] === 'pracownik'): ?>
                     <div class="grupa-danych">
                         <h3>Informacje o pracowniku</h3>
                         <div class="dane">
@@ -327,57 +362,54 @@ $inicjaly = mb_strtoupper(
                             <span class="wartosc"><?= $uzytkownik['stanowisko'] ?></span>
                         </div>
 
+                        <!-- Przyciski funkcjonalności pracowniczych -->
                         <div class="przyciski-pracownika">
                             <?php if (in_array($_SESSION['stanowisko'], ['Kierownik'])): ?>
-                                <a href="pracownicy_p.php" class="przycisk-pracownika">
-                                     Zarządzaj pracownikami
-                                </a>
-                                <a href="towar_p.php" class="przycisk-pracownika">
-                                     Zarządzaj towarem
-                                </a>
+                                <a href="pracownicy_p.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
+                                <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
                             <?php endif; ?>
 
                             <?php if (in_array($_SESSION['stanowisko'], ['Kierownik', 'Specjalista HR', 'Logistyk'])): ?>
-                                <a href="kontakty_p.php" class="przycisk-pracownika">
-                                     Zgłoszenia kontaktowe
-                                </a>
+                                <a href="kontakty_p.php" class="przycisk-pracownika">Zgłoszenia kontaktowe</a>
                             <?php endif; ?>
 
                             <?php if (!in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
-                                <a href="reklamacje_p.php" class="przycisk-pracownika">
-                                     Przeglądaj reklamacje
-                                </a>
-                                <a href="zamowienia_p.php" class="przycisk-pracownika">
-                                     Przeglądaj zamówienia
-                                </a>
+                                <a href="reklamacje_p.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
+                                <a href="zamowienia_p.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
-
             </div>
 
+            <!-- 13.5. FORMULARZ WYLOGOWANIA -->
             <form method="post">
                 <button type="submit" name="wyloguj" class="przycisk-wyloguj">Wyloguj się</button>
             </form>
         </div>
     </section>
 
+    <!-- 14. STOPKA STRONY -->
     <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">
+                <!-- Kolumna 1: Dane kontaktowe -->
                 <div class="kolumna-stopki">
                     <h3>Kontakt</h3>
                     <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
                     <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
+                
+                <!-- Kolumna 2: Godziny otwarcia -->
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
                     <p>Pon-Pt: 6:00 - 22:00</p>
                     <p>Sob: 7:00 - 14:00</p>
                     <p>Niedz: Zamknięte</p>
                 </div>
+                
+                <!-- Kolumna 3: Media społecznościowe -->
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
@@ -387,6 +419,8 @@ $inicjaly = mb_strtoupper(
                     </div>
                 </div>
             </div>
+            
+            <!-- Informacja o prawach autorskich -->
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
             </div>
