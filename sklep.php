@@ -1,18 +1,18 @@
 <?php
-session_start();
+session_start(); // Rozpoczęcie sesji – umożliwia przechowywanie danych (np. koszyka) między żądaniami użytkownika
 
 // Inicjalizacja koszyka jeśli nie istnieje
-if(!isset($_SESSION['koszyk'])) {
-    $_SESSION['koszyk'] = [];
+if (!isset($_SESSION['koszyk'])) {
+    $_SESSION['koszyk'] = []; // Jeśli koszyk nie istnieje w sesji, tworzony jest jako pusty array
 }
 
 // Obsługa dodawania do koszyka
-if(isset($_POST['dodaj_do_koszyka'])) {
-    $produkt_id = $_POST['produkt_id'];
-    $ilosc = (float)$_POST['ilosc'];
-    
+if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przyciskiem "dodaj do koszyka" został wysłany
+    $produkt_id = $_POST['produkt_id']; // Pobranie ID produktu z formularza
+    $ilosc = (float)$_POST['ilosc']; // Pobranie ilości z formularza i rzutowanie na typ float
+
     // Dane produktów (w rzeczywistej aplikacji pobierane z bazy danych)
-    $produkty = [
+    $produkty = [ // Tablica produktów z przykładowymi danymi – ID => dane produktu
         '1' => ['nazwa' => 'Schab wieprzowy', 'cena' => 24.99, 'kategoria' => 'wieprzowina'],
         '2' => ['nazwa' => 'Filet z kurczaka', 'cena' => 25.99, 'kategoria' => 'drobiowe'],
         '5' => ['nazwa' => 'Karkówka wieprzowa', 'cena' => 27.99, 'kategoria' => 'wieprzowina'],
@@ -22,11 +22,14 @@ if(isset($_POST['dodaj_do_koszyka'])) {
         '10' => ['nazwa' => 'Mieszanka do kebaba', 'cena' => 42.00, 'kategoria' => 'kebab'],
         '11' => ['nazwa' => 'Mięso do kebaba drobiowe', 'cena' => 38.00, 'kategoria' => 'kebab']
     ];
-    
-    if(isset($produkty[$produkt_id]) && $ilosc > 0) {
-        if(isset($_SESSION['koszyk'][$produkt_id])) {
+
+    // Sprawdzenie, czy produkt o danym ID istnieje i czy ilość jest większa od 0
+    if (isset($produkty[$produkt_id]) && $ilosc > 0) {
+        // Jeśli produkt już jest w koszyku, zwiększ jego ilość
+        if (isset($_SESSION['koszyk'][$produkt_id])) {
             $_SESSION['koszyk'][$produkt_id]['ilosc'] += $ilosc;
         } else {
+            // Jeśli produkt nie jest jeszcze w koszyku, dodaj go z pełnymi danymi
             $_SESSION['koszyk'][$produkt_id] = [
                 'id' => $produkt_id,
                 'nazwa' => $produkty[$produkt_id]['nazwa'],
@@ -36,11 +39,13 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             ];
         }
     }
-    
+
+    // Po dodaniu przekierowanie z powrotem do strony sklepu, by odświeżyć widok
     header("Location: sklep.php");
-    exit();
+    exit(); // Zakończenie działania skryptu po przekierowaniu
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -56,19 +61,20 @@ if(isset($_POST['dodaj_do_koszyka'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Dodatkowe style dla koszyka */
-        #koszyk, #formularz-zamowienia {
+        #koszyk,
+        #formularz-zamowienia {
             display: none;
             margin-top: 40px;
             background: #f9f9f9;
             padding: 20px;
             border-radius: 8px;
         }
-        
+
         .usun-produkt {
             color: #d32f2f;
             text-decoration: none;
         }
-        
+
         #cart-count {
             background: #d32f2f;
             color: white;
@@ -79,42 +85,45 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             top: -8px;
             right: -5px;
         }
-        
+
         .zamowienie-columns {
             display: flex;
             gap: 30px;
         }
-        
-        .dane-uzytkownika, .podsumowanie-zamowienia {
+
+        .dane-uzytkownika,
+        .podsumowanie-zamowienia {
             flex: 1;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
         }
-        
-        .form-group input, .form-group textarea {
+
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        
-        .dostawa-options, .platnosc-options {
+
+        .dostawa-options,
+        .platnosc-options {
             margin-bottom: 20px;
         }
-        
+
         .podsumowanie-cena .wiersz {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
-        
+
         .podsumowanie-cena .suma {
             font-weight: bold;
             font-size: 1.1em;
@@ -344,11 +353,13 @@ if(isset($_POST['dodaj_do_koszyka'])) {
                     </div>
                 </div>
             </div>
+
                             </tbody>
                         </table>      
                     </div>
                 </div>
             </section>
+
     </main>
 
     <!-- Stopka -->
@@ -391,22 +402,23 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             const selectSortowanie = document.getElementById('sortowanie');
             const kontenerProduktow = document.querySelector('.siatka-produktow');
             const wszystkieProdukty = Array.from(document.querySelectorAll('.karta-produktu'));
-            
+
             // 2. Funkcja do aktualizacji widoku
             function aktualizujWidok() {
                 const kategoria = selectKategoria.value;
                 const sortowanie = selectSortowanie.value;
-                
+
                 // Filtrowanie produktów
                 const przefiltrowane = wszystkieProdukty.filter(function(produkt) {
                     if (kategoria === 'wszystkie') return true;
                     if (kategoria === 'kebab') {
+
                         return produkt.dataset.kategoria === 'kebab' || 
                                produkt.dataset.kategoria === 'kebab-drobiowe';
                     }
                     return produkt.dataset.kategoria === kategoria;
                 });
-                
+
                 // Sortowanie produktów
                 if (sortowanie === 'cena-rosnaco') {
                     przefiltrowane.sort(function(a, b) {
@@ -423,20 +435,21 @@ if(isset($_POST['dodaj_do_koszyka'])) {
                         return nazwaA.localeCompare(nazwaB);
                     });
                 }
-                
+
                 // Wyświetlamy produkty
                 kontenerProduktow.innerHTML = '';
                 przefiltrowane.forEach(function(produkt) {
                     kontenerProduktow.appendChild(produkt);
                 });
             }
-            
+
             // 3. Funkcja pomocnicza do pobierania ceny
             function pobierzCene(produkt) {
                 const cenaText = produkt.querySelector('.cena-produktu').textContent;
                 const cena = parseFloat(cenaText.replace(' zł/kg', '').replace(',', '.'));
                 return isNaN(cena) ? 0 : cena; // Dla "Zapytaj o ofertę" zwracamy 0
             }
+
             
             // 4. Dodajemy nasłuchiwanie zmian
             selectKategoria.addEventListener('change', aktualizujWidok);
@@ -449,16 +462,18 @@ if(isset($_POST['dodaj_do_koszyka'])) {
             const koszykSection = document.getElementById('koszyk');
             const formularzZamowienia = document.getElementById('formularz-zamowienia');
             
+
             document.getElementById('przejdz-do-zamowienia').addEventListener('click', function(e) {
                 e.preventDefault();
                 koszykSection.style.display = 'none';
                 formularzZamowienia.style.display = 'block';
             });
-            
+
             document.getElementById('kontynuuj-zakupy').addEventListener('click', function(e) {
                 e.preventDefault();
                 koszykSection.style.display = 'none';
             });
+
             
             document.querySelectorAll('input[name="dostawa"]').forEach(function(radio) {
                 radio.addEventListener('change', function() {
@@ -466,6 +481,7 @@ if(isset($_POST['dodaj_do_koszyka'])) {
                                         this.value === 'paczkomat' ? 10 : 0;
                     document.getElementById('koszt-dostawy').textContent = kosztDostawy.toFixed(2) + ' zł';
                     
+
                     const wartoscText = document.getElementById('wartosc-produktow').textContent;
                     const wartoscProduktow = parseFloat(wartoscText.replace(' zł', ''));
                     document.getElementById('suma-zamowienia').textContent = (wartoscProduktow + kosztDostawy).toFixed(2) + ' zł';
@@ -474,4 +490,5 @@ if(isset($_POST['dodaj_do_koszyka'])) {
         });
     </script>
 </body>
+
 </html>

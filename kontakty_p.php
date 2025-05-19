@@ -26,7 +26,9 @@ sprawdzStanowisko(['Kierownik', 'Specjalista HR', 'Logistyk', 'Księgowy']);
 // Wyniki sortowane od najnowszych zgłoszeń
 $kontakty = $conn->query("
     SELECT k.*, CONCAT(p.imie, ' ', p.nazwisko) as pracownik
-    FROM kontakty k
+
+FROM kontakty
+
     LEFT JOIN pracownicy p ON k.pracownik_id = p.id
     ORDER BY k.data_zgloszenia DESC
 ")->fetch_all(MYSQLI_ASSOC); // Pobranie wszystkich wyników jako tablicy asocjacyjnej
@@ -37,18 +39,20 @@ $kontakty = $conn->query("
 
 // Sprawdzenie czy formularz został wysłany (metoda POST)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
+
     
     // Zabezpieczenie danych wejściowych:
     $id = $conn->real_escape_string($_POST['id']); // ID zgłoszenia
     $status = $conn->real_escape_string($_POST['status']); // Nowy status
     
+
     // Zapytanie SQL aktualizujące:
     $conn->query("UPDATE kontakty SET 
                 status = '$status',
                 pracownik_id = {$_SESSION['user_id']}, // Przypisanie do aktualnego pracownika
                 data_zakonczenia = " . ($status == 'zamknieta' ? "NOW()" : "NULL") . " // Ustawienie daty zamknięcia jeśli status=zamknieta
                 WHERE id = $id");
-    
+
     // Przekierowanie z powrotem z komunikatem o sukcesie
     header("Location: kontakty_p.php?updated=1");
     exit; // Zakończenie skryptu
@@ -57,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <!-- 
         SEKCJA METADANYCH
@@ -64,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
     -->
     <meta charset="UTF-8"> <!-- Kodowanie znaków (obsługa polskich liter) -->
     <title>Zgłoszenia kontaktowe</title> <!-- Tytuł strony (widoczny w zakładce przeglądarki) -->
-    
+
     <!-- 
         PODŁĄCZENIE ZASOBÓW ZEWNĘTRZNYCH
     -->
@@ -82,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Stylizacja kontenera i tła
         */
         .sekcja-zamowienia {
+
             padding: 80px 0; /* Wewnętrzny odstęp góra-dół */
             background: #f5f5f5; /* Kolor tła */
             min-height: calc(100vh - 300px); /* Minimalna wysokość (strona - header - footer) */
@@ -94,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             padding: 40px; /* Wewnętrzny odstęp */
             border-radius: 8px; /* Zaokrąglone rogi */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+
         }
 
         /* 
@@ -101,9 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Style tekstowe
         */
         h2 {
+
             color: #c00; /* Czerwony kolor MeatMaster */
             margin-bottom: 30px; /* Odstęp od dołu */
             text-align: center; /* Wyśrodkowanie */
+
         }
 
         /* 
@@ -111,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Stylizacja tabeli i jej elementów
         */
         table {
+
             width: 100%; /* Pełna szerokość kontenera */
             border-collapse: collapse; /* Łączenie obramowań */
             margin-bottom: 30px; /* Odstęp od dołu */
@@ -129,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
 
         tr:hover {
             background-color: #f5f5f5; /* Podświetlenie wiersza przy najechaniu */
+
         }
 
         /* 
@@ -136,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Stylizacja formularza edycji
         */
         .formularz-edycji {
+
             background: #f9f9f9; /* Jasne tło */
             padding: 20px; /* Wewnętrzny odstęp */
             border-radius: 8px; /* Zaokrąglone rogi */
@@ -170,6 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
 
         .przycisk-edycji:hover {
             background: #a00; /* Ciemniejszy czerwony przy najechaniu */
+
         }
 
         /* 
@@ -177,6 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Style dla powiadomień
         */
         .alert {
+
             padding: 15px; /* Wewnętrzny odstęp */
             margin-bottom: 20px; /* Odstęp od dołu */
             border-radius: 4px; /* Zaokrąglone rogi */
@@ -190,6 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .alert-error {
             background-color: #f2dede; /* Jasnoczerwone tło */
             color: #a94442; /* Ciemnoczerwony tekst */
+
         }
 
         /* 
@@ -197,21 +212,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Kolorystyka dla różnych statusów
         */
         .status-nowa {
+
             color: #ff9800; /* Pomarańczowy */
             font-weight: bold; /* Pogrubienie */
         }
 
         .status-w_trakcie {
             color: #2196f3; /* Niebieski */
+
             font-weight: bold;
         }
 
         .status-zamknieta {
+
             color: #4caf50; /* Zielony */
+
             font-weight: bold;
         }
     </style>
 </head>
+
 <body>
     <!-- 
         NAGŁÓWEK STRONY
@@ -223,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             <div class="logo">
                 <img src="Logo.png" alt="MeatMaster Logo">
             </div>
-            
+
             <!-- Główne menu nawigacyjne -->
             <nav>
                 <ul>
@@ -271,6 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                 <tbody>
                     <!-- Pętla przez wszystkie zgłoszenia -->
                     <?php foreach ($kontakty as $k): ?>
+
                     <tr>
                         <td><?= $k['id'] ?></td> <!-- ID zgłoszenia -->
                         <td><?= date('d.m.Y H:i', strtotime($k['data_zgloszenia'])) ?></td> <!-- Data w formacie dzień.miesiąc.rok godzina:minuta -->
@@ -287,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                             </button>
                         </td>
                     </tr>
+
                     <?php endforeach; ?>
                 </tbody>
             </table>
@@ -330,7 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
                     <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
-                
+
                 <!-- Godziny otwarcia -->
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
@@ -338,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                     <p>Sob: 7:00 - 14:00</p>
                     <p>Niedz: Zamknięte</p>
                 </div>
-                
+
                 <!-- Media społecznościowe -->
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
@@ -349,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                     </div>
                 </div>
             </div>
-            
+
             <!-- Prawa autorskie -->
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
@@ -370,7 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
 
             // Pokazanie formularza
             document.getElementById('formularz-edycji').style.display = 'block';
-            
+
             // Płynne przewinięcie do formularza
             window.scrollTo({
                 top: document.getElementById('formularz-edycji').offsetTop,
@@ -379,4 +401,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         }
     </script>
 </body>
+
 </html>
