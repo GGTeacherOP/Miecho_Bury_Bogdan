@@ -353,11 +353,13 @@ if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przycis
                     </div>
                 </div>
             </div>
-            </tbody>
-            </table>
-            </div>
-            </div>
-        </section>
+
+                            </tbody>
+                        </table>      
+                    </div>
+                </div>
+            </section>
+
     </main>
 
     <!-- Stopka -->
@@ -410,8 +412,9 @@ if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przycis
                 const przefiltrowane = wszystkieProdukty.filter(function(produkt) {
                     if (kategoria === 'wszystkie') return true;
                     if (kategoria === 'kebab') {
-                        return produkt.dataset.kategoria === 'kebab' ||
-                            produkt.dataset.kategoria === 'kebab-drobiowe';
+
+                        return produkt.dataset.kategoria === 'kebab' || 
+                               produkt.dataset.kategoria === 'kebab-drobiowe';
                     }
                     return produkt.dataset.kategoria === kategoria;
                 });
@@ -447,16 +450,18 @@ if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przycis
                 return isNaN(cena) ? 0 : cena; // Dla "Zapytaj o ofertę" zwracamy 0
             }
 
+            
             // 4. Dodajemy nasłuchiwanie zmian
             selectKategoria.addEventListener('change', aktualizujWidok);
             selectSortowanie.addEventListener('change', aktualizujWidok);
-
+            
             // 5. Inicjalizacja - pierwsze sortowanie
             aktualizujWidok();
-
+            
             // 6. Obsługa koszyka (pozostała funkcjonalność)
             const koszykSection = document.getElementById('koszyk');
             const formularzZamowienia = document.getElementById('formularz-zamowienia');
+            
 
             document.getElementById('przejdz-do-zamowienia').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -469,11 +474,13 @@ if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przycis
                 koszykSection.style.display = 'none';
             });
 
+            
             document.querySelectorAll('input[name="dostawa"]').forEach(function(radio) {
                 radio.addEventListener('change', function() {
-                    const kosztDostawy = this.value === 'kurier' ? 15 :
-                        this.value === 'paczkomat' ? 10 : 0;
+                    const kosztDostawy = this.value === 'kurier' ? 15 : 
+                                        this.value === 'paczkomat' ? 10 : 0;
                     document.getElementById('koszt-dostawy').textContent = kosztDostawy.toFixed(2) + ' zł';
+                    
 
                     const wartoscText = document.getElementById('wartosc-produktow').textContent;
                     const wartoscProduktow = parseFloat(wartoscText.replace(' zł', ''));
