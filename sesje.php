@@ -1,24 +1,38 @@
 <?php
+// Rozpoczęcie sesji - musi być na początku przed jakimkolwiek outputem
 session_start();
 
-// Funkcja sprawdzająca czy użytkownik jest zalogowany
+/**
+ * Sprawdza czy użytkownik jest zalogowany
+ * @return bool True jeśli zalogowany, false w przeciwnym wypadku
+ */
 function czyZalogowany()
 {
+    // Sprawdza czy flaga 'zalogowany' w sesji jest ustawiona na true
     return isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true;
 }
 
-// Funkcja sprawdzająca rolę użytkownika
+/**
+ * Sprawdza czy użytkownik ma wymaganą rolę
+ * @param string $wymaganaRola Wymagana rola (np. 'admin', 'pracownik')
+ */
 function sprawdzRole($wymaganaRola)
 {
+    // Jeśli użytkownik nie jest zalogowany lub nie ma wymaganej roli
     if (!czyZalogowany() || $_SESSION['rola'] !== $wymaganaRola) {
+        // Przekieruj na stronę braku dostępu
         header("Location: brak_dostepu.php");
-        exit();
+        exit(); // Zakończ wykonanie skryptu
     }
 }
 
-// Funkcja sprawdzająca stanowisko pracownika (tylko dla pracowników)
+/**
+ * Sprawdza czy pracownik ma wymagane stanowisko
+ * @param array|string $wymaganeStanowiska Tablica lub string z wymaganymi stanowiskami
+ */
 function sprawdzStanowisko($wymaganeStanowiska)
 {
+    // Jeśli użytkownik nie jest zalogowany, nie jest pracownikiem lub nie ma wymaganego stanowiska
     if (
         !czyZalogowany() || $_SESSION['rola'] !== 'pracownik' ||
         !in_array($_SESSION['stanowisko'], (array)$wymaganeStanowiska)
@@ -28,45 +42,57 @@ function sprawdzStanowisko($wymaganeStanowiska)
     }
 }
 
-// Funkcja zwracająca typ konta klienta (tylko dla klientów)
+/**
+ * Pobiera typ konta klienta (tylko dla roli 'klient')
+ * @return string|null Typ konta klienta lub null jeśli nie dotyczy
+ */
 function typKontaKlienta()
 {
+    // Jeśli użytkownik jest zalogowany jako klient
     if (czyZalogowany() && $_SESSION['rola'] === 'klient') {
-        return $_SESSION['typ_konta'];
+        return $_SESSION['typ_konta']; // Zwróć jego typ konta
     }
-    return null;
+    return null; // W przeciwnym wypadku zwróć null
 }
 
-// Funkcja wylogowująca
+/**
+ * Wylogowuje użytkownika i niszczy sesję
+ */
 function wyloguj()
 {
+    // Wyczyszczenie wszystkich danych sesji
     $_SESSION = array();
 
+    // Jeśli używane są ciasteczka sesji, usuń je
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(
-            session_name(),
-            '',
-            time() - 42000,
-            $params["path"],
-            $params["domain"],
-            $params["secure"],
-            $params["httponly"]
+            session_name(), // Nazwa ciasteczka sesji
+            '', // Wartość pusta
+            time() - 42000, // Czas w przeszłości (wygaśnięcie)
+            $params["path"], // Ścieżka
+            $params["domain"], // Domena
+            $params["secure"], // Flaga secure
+            $params["httponly"] // Flaga httponly
         );
     }
 
+    // Zniszcz sesję
     session_destroy();
+    
+    // Przekieruj na stronę logowania
     header("Location: logowanie.php");
-    exit();
+    exit(); // Zakończ wykonanie skryptu
 }
 
-// Automatyczne przekierowanie niezalogowanych
+// Automatyczne przekierowanie niezalogowanych użytkowników
+// (z wyjątkiem strony logowania)
 if (!czyZalogowany() && basename($_SERVER['PHP_SELF']) !== 'logowanie.php') {
     header("Location: logowanie.php");
     exit();
 }
 
-// Obsługa wylogowania
+// Obsługa żądania wylogowania
 if (isset($_GET['wyloguj'])) {
-    wyloguj();
+    wyloguj(); // Wywołaj funkcję wylogowania
 }

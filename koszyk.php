@@ -1,52 +1,68 @@
 <?php
+/**
+ * KOSZYK.PHP - SYSTEM ZAMÓWIEŃ HURTOWNI MIĘSA
+ * 
+ * Funkcje:
+ * 1. Zarządzanie zawartością koszyka
+ * 2. Składanie zamówień
+ * 3. Integracja z bazą danych
+ * 4. Obsługa sesji użytkownika
+ */
+
+// 1. INICJALIZACJA SESJI - pozwala przechowywać dane koszyka między stronami
 session_start();
 
-// Podstawowe połączenie z bazą danych
+// 2. POŁĄCZENIE Z BAZĄ DANYCH
 $polaczenie = new mysqli('localhost', 'root', '', 'meatmasters');
 if ($polaczenie->connect_error) {
-    die("Nie udało się połączyć z bazą danych: " . $polaczenie->connect_error);
+    die("Błąd połączenia z bazą: " . $polaczenie->connect_error);
 }
-$polaczenie->set_charset("utf8");
+$polaczenie->set_charset("utf8"); // Ustawienie kodowania dla polskich znaków
 
-// Pobranie danych klienta
+/**
+ * 3. FUNKCJA POBRANIA DANYCH KLIENTA
+ * @param mysqli $polaczenie - Połączenie z bazą
+ * @param int $id_klienta - ID klienta
+ * @return array - Dane klienta
+ */
 function pobierzDaneKlienta($polaczenie, $id_klienta) {
+    // Zabezpieczone zapytanie SQL (prepared statement)
     $zapytanie = $polaczenie->prepare("SELECT * FROM klienci WHERE id = ?");
     $zapytanie->bind_param("i", $id_klienta);
     $zapytanie->execute();
     return $zapytanie->get_result()->fetch_assoc();
 }
 
-// Składanie zamówienia
+// 4. OBSŁUGA SKŁADANIA ZAMÓWIENIA (formularz POST)
 if (isset($_POST['zloz_zamowienie']) && !empty($_SESSION['koszyk'])) {
     
     // Sprawdzenie czy użytkownik jest zalogowany
     if (!isset($_SESSION['zalogowany']) || $_SESSION['zalogowany'] !== true) {
-        $_SESSION['powrot_po_logowaniu'] = 'koszyk.php';
+        $_SESSION['powrot_po_logowaniu'] = 'koszyk.php'; // Zapamiętaj stronę dla powrotu
         header("Location: logowanie.php");
         exit();
     }
 
-    // Pobranie danych klienta
+    // Pobranie danych klienta z bazy
     $dane_klienta = pobierzDaneKlienta($polaczenie, $_SESSION['user_id']);
     if (!$dane_klienta) {
         die("Nie znaleziono danych klienta");
     }
 
-    // Przygotowanie listy produktów
+    // Przygotowanie listy produktów i obliczenie wagi
     $lista_produktow = [];
     $laczna_waga = 0;
-    
     foreach ($_SESSION['koszyk'] as $produkt) {
         $lista_produktow[] = $produkt['nazwa'];
         $laczna_waga += $produkt['ilosc'];
     }
 
-    // Ustalenie czy to firma
+    // Określenie czy klient jest firmą
     $czy_firma = ($dane_klienta['typ_konta'] !== 'klient indywidualny');
     $nazwa_firmy = $czy_firma ? $dane_klienta['nazwa_firmy'] : NULL;
     $nip = $czy_firma ? $dane_klienta['nip'] : NULL;
 
-    // Zapis zamówienia
+    // 5. ZAPIS ZAMÓWIENIA DO BAZY
     $zapytanie = $polaczenie->prepare("
         INSERT INTO zamowienia (
             klient_id, imie, nazwisko, email, telefon, 
@@ -55,6 +71,7 @@ if (isset($_POST['zloz_zamowienie']) && !empty($_SESSION['koszyk'])) {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'oczekujące')
     ");
     
+    // Powiązanie parametrów z zapytaniem
     $zapytanie->bind_param(
         "isssssssd", 
         $_SESSION['user_id'],
@@ -72,12 +89,13 @@ if (isset($_POST['zloz_zamowienie']) && !empty($_SESSION['koszyk'])) {
         die("Błąd przy zapisie zamówienia: " . $polaczenie->error);
     }
 
+    // Pobranie ID nowego zamówienia
     $id_zamowienia = $polaczenie->insert_id;
     $zapytanie->close();
 
-    // Zapis produktów w zamówieniu
+    // 6. ZAPIS SZCZEGÓŁÓW ZAMÓWIENIA (produktów)
     foreach ($_SESSION['koszyk'] as $produkt) {
-        // Sprawdzenie czy produkt istnieje
+        // Sprawdzenie czy produkt istnieje w bazie
         $sprawdz = $polaczenie->query("SELECT id FROM towary WHERE id = " . $produkt['id']);
         
         if ($sprawdz && $sprawdz->num_rows > 0) {
@@ -98,15 +116,15 @@ if (isset($_POST['zloz_zamowienie']) && !empty($_SESSION['koszyk'])) {
         }
     }
 
-    // Wyczyść koszyk i przekieruj
+    // Wyczyszczenie koszyka i przekierowanie
     unset($_SESSION['koszyk']);
     header("Location: zamowienie.php?id=$id_zamowienia");
     exit();
 }
 
-// Usuwanie produktu z koszyka
+// 7. USUWANIE PRODUKTU Z KOSZYKA (parametr GET)
 if (isset($_GET['usun'])) {
-    $id_produktu = (int)$_GET['usun'];
+    $id_produktu = (int)$_GET['usun']; // Zabezpieczenie przed SQL injection
     if (isset($_SESSION['koszyk'][$id_produktu])) {
         unset($_SESSION['koszyk'][$id_produktu]);
     }
@@ -114,17 +132,17 @@ if (isset($_GET['usun'])) {
     exit();
 }
 
-// Aktualizacja ilości produktów
+// 8. AKTUALIZACJA ILOŚCI PRODUKTÓW (formularz POST)
 if (isset($_POST['aktualizuj_koszyk'])) {
     foreach ($_POST['ilosc'] as $id => $ilosc) {
-        $id = (int)$id;
-        $ilosc = (float)$ilosc;
+        $id = (int)$id; // Zabezpieczenie
+        $ilosc = (float)$ilosc; // Zabezpieczenie
         
         if (isset($_SESSION['koszyk'][$id])) {
             if ($ilosc > 0) {
                 $_SESSION['koszyk'][$id]['ilosc'] = $ilosc;
             } else {
-                unset($_SESSION['koszyk'][$id]);
+                unset($_SESSION['koszyk'][$id]); // Usuń jeśli ilość = 0
             }
         }
     }
@@ -136,174 +154,200 @@ if (isset($_POST['aktualizuj_koszyk'])) {
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koszyk - MeatMaster</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 9. METADANE STRONY -->
+    <meta charset="UTF-8"> <!-- Obsługa polskich znaków -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsywność -->
+    <title>Koszyk - MeatMaster</title> <!-- Tytuł strony -->
+    
+    <!-- 10. ARKUSZE STYLÓW -->
+    <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów -->
+    <link rel="icon" type="image/png" href="icon.png"> <!-- Favicon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Ikony FontAwesome -->
+    
+    <!-- 11. STYLE WEWNĘTRZNE -->
     <style>
+        /* 12. SEKCJA KOSZYKA */
         .sekcja-koszyka {
-            padding: 50px 0;
-            min-height: 60vh;
+            padding: 50px 0; /* Odstępy góra-dół */
+            min-height: 60vh; /* Minimalna wysokość */
         }
         
+        /* 13. KONTENER GŁÓWNY */
         .kontener-koszyka {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 30px;
-            background: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            max-width: 1000px; /* Maksymalna szerokość */
+            margin: 0 auto; /* Wyśrodkowanie */
+            padding: 30px; /* Wewnętrzny odstęp */
+            background: #fff; /* Białe tło */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Cień */
+            border-radius: 8px; /* Zaokrąglone rogi */
         }
         
+        /* 14. TABELA PRODUKTÓW */
         .tabela-koszyka {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            width: 100%; /* Pełna szerokość */
+            border-collapse: collapse; /* Łączenie obramowań */
+            margin-bottom: 20px; /* Odstęp od dołu */
         }
         
+        /* 15. NAGŁÓWKI TABELI */
         .tabela-koszyka th {
-            background: #d32f2f;
-            color: white;
-            padding: 12px;
-            text-align: left;
+            background: #d32f2f; /* Czerwone tło */
+            color: white; /* Biały tekst */
+            padding: 12px; /* Wewnętrzny odstęp */
+            text-align: left; /* Wyrównanie tekstu */
         }
         
+        /* 16. KOMÓRKI TABELI */
         .tabela-koszyka td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
+            padding: 12px; /* Wewnętrzny odstęp */
+            border-bottom: 1px solid #eee; /* Linia oddzielająca */
+            vertical-align: middle; /* Wyrównanie pionowe */
         }
         
+        /* 17. POLE DO WPROWADZANIA ILOŚCI */
         .ilosc-input {
-            width: 70px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            width: 70px; /* Szerokość */
+            padding: 8px; /* Wewnętrzny odstęp */
+            border: 1px solid #ddd; /* Szara obramówka */
+            border-radius: 4px; /* Lekko zaokrąglone rogi */
         }
         
+        /* 18. PRZYCISK USUWANIA */
         .usun-produkt {
-            color: #d32f2f;
-            font-size: 18px;
+            color: #d32f2f; /* Czerwony kolor */
+            font-size: 18px; /* Rozmiar ikony */
         }
         
+        /* 19. STYL DLA PUSTEGO KOSZYKA */
         .koszyk-pusty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 300px;
-            text-align: center;
+            display: flex; /* Flexbox */
+            flex-direction: column; /* Elementy w kolumnie */
+            align-items: center; /* Wyśrodkowanie poziome */
+            justify-content: center; /* Wyśrodkowanie pionowe */
+            height: 300px; /* Stała wysokość */
+            text-align: center; /* Wyśrodkowany tekst */
         }
         
+        /* 20. IKONA PUSTEGO KOSZYKA */
         .koszyk-pusty i {
-            font-size: 60px;
-            color: #ddd;
-            margin-bottom: 20px;
+            font-size: 60px; /* Duża ikona */
+            color: #ddd; /* Szary kolor */
+            margin-bottom: 20px; /* Odstęp od dołu */
         }
         
+        /* 21. NAGŁÓWEK PUSTEGO KOSZYKA */
         .koszyk-pusty h3 {
-            margin-bottom: 25px;
-            color: #555;
-            font-weight: normal;
+            margin-bottom: 25px; /* Odstęp od dołu */
+            color: #555; /* Ciemnoszary tekst */
+            font-weight: normal; /* Normalna grubość */
         }
         
-        .przyciski-koszyka {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            gap: 15px;
+        /* 22. KONTENER PRZYCISKÓW */
+        .przyciski-wrapper {
+            display: flex; /* Flexbox */
+            align-items: center; /* Wyrównanie pionowe */
+            gap: 15px; /* Odstęp między przyciskami */
+            margin-top: 20px; /* Odstęp od góry */
         }
         
-        .przycisk-koszyk {
-            padding: 12px 25px;
-            background: #d32f2f;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-            flex: 1;
-            text-align: center;
+        /* 23. STYL OGÓLNY PRZYCISKU */
+        .przycisk {
+            flex: 1; /* Równe szerokości */
+            padding: 12px 0; /* Wewnętrzny odstęp */
+            text-align: center; /* Wyśrodkowany tekst */
+            height: 44px; /* Stała wysokość */
+            line-height: 20px; /* Wysokość linii */
+            box-sizing: border-box; /* Model pudełkowy */
+            border-radius: 4px; /* Zaokrąglone rogi */
+            border: none; /* Brak obramowania */
+            cursor: pointer; /* Kursor wskazujący */
+            font-size: 15px; /* Rozmiar tekstu */
+            font-family: inherit; /* Dziedziczenie czcionki */
         }
         
-        .przycisk-koszyk:hover {
-            background: #b71c1c;
-        }
-        
+        /* 24. PRZYCISK "KONTYNUUJ ZAKUPY" */
         .przycisk-sklep {
-            padding: 12px 30px;
-            background: #d32f2f;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background 0.3s;
+            padding: 12px 30px; /* Większy odstęp */
+            background: #d32f2f; /* Czerwone tło */
+            color: white; /* Biały tekst */
+            border: none; /* Brak obramowania */
+            border-radius: 4px; /* Zaokrąglone rogi */
+            text-decoration: none; /* Brak podkreślenia */
+            transition: background 0.3s; /* Animacja hover */
         }
         
-        .przycisk-sklep:hover {
-            background: #b71c1c;
+        /* 25. EFEKT HOVER DLA PRZYCISKÓW */
+        .przycisk:hover, .przycisk-sklep:hover {
+            background: #b71c1c; /* Ciemniejszy czerwony */
         }
         
+        /* 26. KARTA PODSUMOWANIA */
         .karta-podsumowania {
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            padding: 20px; /* Wewnętrzny odstęp */
+            background: #f9f9f9; /* Jasne tło */
+            border-radius: 5px; /* Zaokrąglone rogi */
+            margin-bottom: 20px; /* Odstęp od dołu */
         }
         
+        /* 27. WIERSZ PODSUMOWANIA */
         .wiersz-podsumowania {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 8px 0;
+            display: flex; /* Flexbox */
+            justify-content: space-between; /* Rozłożenie elementów */
+            margin-bottom: 10px; /* Odstęp od dołu */
+            padding: 8px 0; /* Wewnętrzny odstęp */
         }
         
+        /* 28. SUMA KOŃCOWA */
         .wiersz-podsumowania.razem {
-            font-weight: bold;
-            font-size: 1.2em;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
-            margin-top: 10px;
+            font-weight: bold; /* Pogrubienie */
+            font-size: 1.2em; /* Większy rozmiar */
+            border-top: 1px solid #ddd; /* Linia oddzielająca */
+            padding-top: 15px; /* Odstęp od góry */
+            margin-top: 10px; /* Odstęp od góry */
         }
         
+        /* 29. KOMUNIKATY BŁĘDÓW */
         .blad {
-            color: #d32f2f;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #ffebee;
-            border-radius: 5px;
-            border-left: 4px solid #d32f2f;
+            color: #d32f2f; /* Czerwony tekst */
+            margin-bottom: 20px; /* Odstęp od dołu */
+            padding: 15px; /* Wewnętrzny odstęp */
+            background: #ffebee; /* Jasnoczerwone tło */
+            border-radius: 5px; /* Zaokrąglone rogi */
+            border-left: 4px solid #d32f2f; /* Czerwony pasek */
         }
         
+        /* 30. RESPONSYWNOŚĆ - WERSJA MOBILNA */
         @media (max-width: 768px) {
             .kontener-koszyka {
-                padding: 20px 15px;
+                padding: 20px 15px; /* Mniejsze odstępy */
             }
             
             .tabela-koszyka {
-                display: block;
-                overflow-x: auto;
+                display: block; /* Pełna szerokość */
+                overflow-x: auto; /* Przewijanie poziome */
             }
             
-            .przyciski-koszyka {
-                flex-direction: column;
+            .przyciski-wrapper {
+                flex-direction: column; /* Przyciski w kolumnie */
             }
             
-            .przycisk-koszyk {
-                width: 100%;
-                margin-bottom: 10px;
+            .przycisk {
+                width: 100%; /* Pełna szerokość */
+                margin-bottom: 10px; /* Odstęp między przyciskami */
             }
         }
     </style>
 </head>
 <body>
+    <!-- 31. NAGŁÓWEK STRONY -->
     <header>
         <div class="kontener naglowek-kontener">
+            <!-- Logo firmy -->
             <div class="logo">
                 <img src="Logo.png" alt="MeatMaster Logo">
             </div>
+            
+            <!-- 32. GŁÓWNA NAWIGACJA -->
             <nav>
                 <ul>
                     <li><a href="Strona_glowna.php">Strona główna</a></li>
@@ -313,21 +357,34 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                     <li><a href="kontakt.php">Kontakt</a></li>
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
+                    
+                    <!-- 33. LINK DO PROFILU/LUB LOGOWANIA -->
                     <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
                         <li><a href="profil.php"><i class="fas fa-user"></i> Profil</a></li>
                     <?php else: ?>
                         <li><a href="logowanie.php"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
-                    <li><a href="koszyk.php" id="cart-link"><i class="fas fa-shopping-cart"></i> Koszyk (<span id="cart-count"><?= array_sum(array_column($_SESSION['koszyk'] ?? [], 'ilosc')) ?></span>)</a></li>
+                    
+                    <!-- 34. IKONA KOSZYKA Z LICZNIKIEM -->
+                    <li>
+                        <a href="koszyk.php" id="cart-link">
+                            <i class="fas fa-shopping-cart"></i> Koszyk 
+                            (<span id="cart-count">
+                                <?= array_sum(array_column($_SESSION['koszyk'] ?? [], 'ilosc')) ?>
+                            </span>)
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
     </header>
 
-  <section class="sekcja-koszyka">
+    <!-- 35. GŁÓWNA SEKCJA Z KOSZYKIEM -->
+    <section class="sekcja-koszyka">
         <div class="kontener-koszyka">
             <h2>Twój koszyk</h2>
             
+            <!-- 36. WYŚWIETLANIE BŁĘDÓW -->
             <?php if(isset($_SESSION['blad_zamowienia'])): ?>
                 <div class="blad">
                     <?= $_SESSION['blad_zamowienia'] ?>
@@ -335,6 +392,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                 <?php unset($_SESSION['blad_zamowienia']); ?>
             <?php endif; ?>
             
+            <!-- 37. SPRAWDZENIE CZY KOSZYK JEST PUSTY -->
             <?php if(empty($_SESSION['koszyk'])): ?>
                 <div class="koszyk-pusty">
                     <i class="fas fa-shopping-cart"></i>
@@ -342,7 +400,9 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                     <a href="sklep.php" class="przycisk-sklep">Przejdź do sklepu</a>
                 </div>
             <?php else: ?>
+                <!-- 38. FORMULARZ KOSZYKA -->
                 <form method="post">
+                    <!-- 39. TABELA Z PRODUKTAMI -->
                     <table class="tabela-koszyka">
                         <thead>
                             <tr>
@@ -355,22 +415,38 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                         </thead>
                         <tbody>
                             <?php 
-                            $suma = 0;
+                            $suma = 0; // Inicjalizacja sumy
+                            
+                            // 40. PĘTLA PRZEZ PRODUKTY W KOSZYKU
                             foreach($_SESSION['koszyk'] as $produkt): 
                                 $wartosc = $produkt['cena'] * $produkt['ilosc'];
                                 $suma += $wartosc;
                             ?>
                             <tr>
+                                <!-- 41. NAZWA PRODUKTU (zabezpieczona przed XSS) -->
                                 <td><?= htmlspecialchars($produkt['nazwa']) ?></td>
+                                
+                                <!-- 42. CENA JEDNOSTKOWA (sformatowana) -->
                                 <td><?= number_format($produkt['cena'], 2) ?> zł/kg</td>
+                                
+                                <!-- 43. POLE DO EDYCJI ILOŚCI -->
                                 <td>
-                                    <input type="number" name="ilosc[<?= $produkt['id'] ?>]" 
-                                           value="<?= $produkt['ilosc'] ?>" min="0.1" step="0.1" 
+                                    <input type="number" 
+                                           name="ilosc[<?= $produkt['id'] ?>]" 
+                                           value="<?= $produkt['ilosc'] ?>" 
+                                           min="0.1" 
+                                           step="0.1" 
                                            class="ilosc-input">
                                 </td>
+                                
+                                <!-- 44. WARTOŚĆ CAŁKOWITA PRODUKTU -->
                                 <td><?= number_format($wartosc, 2) ?> zł</td>
+                                
+                                <!-- 45. PRZYCISK USUWANIA -->
                                 <td>
-                                    <a href="koszyk.php?usun=<?= $produkt['id'] ?>" class="usun-produkt" title="Usuń produkt">
+                                    <a href="koszyk.php?usun=<?= $produkt['id'] ?>" 
+                                       class="usun-produkt" 
+                                       title="Usuń produkt">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>
@@ -379,6 +455,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                         </tbody>
                     </table>
                     
+                    <!-- 46. SEKCJA PODSUMOWANIA -->
                     <div class="podsumowanie-koszyka">
                         <div class="karta-podsumowania">
                             <div class="wiersz-podsumowania">
@@ -392,36 +469,37 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                         </div>
                     </div>
                     
-                    <div class="przyciski-koszyka">
-                        <a href="sklep.php" class="przycisk-koszyk" style="background: #555; text-decoration: none;">
-                            <i class="fas fa-arrow-left"></i> Kontynuuj zakupy
-                        </a>
-                        <button type="submit" name="aktualizuj_koszyk" class="przycisk-koszyk">
-                            <i class="fas fa-sync-alt"></i> Aktualizuj koszyk
-                        </button>
-                        <button type="submit" name="zloz_zamowienie" class="przycisk-koszyk">
-                            <i class="fas fa-check"></i> Złóż zamówienie
-                        </button>
+                    <!-- 47. PRZYCISKI AKCJI -->
+                    <div class="przyciski-wrapper">
+                        <a href="sklep.php" class="przycisk">Kontynuuj zakupy</a>
+                        <button type="submit" name="zloz_zamowienie" class="przycisk">Złóż zamówienie</button>
                     </div>
                 </form>
             <?php endif; ?>
         </div>
     </section>
+
+    <!-- 48. STOPKA STRONY -->
     <footer>
         <div class="kontener">
             <div class="zawartosc-stopki">
+                <!-- 49. DANE KONTAKTOWE -->
                 <div class="kolumna-stopki">
                     <h3>Kontakt</h3>
                     <p><i class="fas fa-map-marker-alt"></i> ul. Mięsna 14, 69-420 Radomyśl Wielki</p>
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
                     <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
+                
+                <!-- 50. GODZINY OTWARCIA -->
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
                     <p>Pon-Pt: 6:00 - 22:00</p>
                     <p>Sob: 7:00 - 14:00</p>
                     <p>Niedz: Zamknięte</p>
                 </div>
+                
+                <!-- 51. LINKI DO SOCIAL MEDIÓW -->
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
                     <div class="linki-spolecznosciowe">
@@ -431,6 +509,8 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                     </div>
                 </div>
             </div>
+            
+            <!-- 52. PRAWA AUTORSKIE -->
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
             </div>
