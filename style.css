@@ -1,0 +1,374 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Ustawia obliczanie szerokości i wysokości z uwzględnieniem paddingu i obramowania */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+    /* Zwiększa odstęp między liniami tekstu dla lepszej czytelności */
+}
+
+.kontener {
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Wyśrodkowuje element poziomo */
+    padding: 0 20px;
+}
+
+/* === Header === */
+header {
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Dodaje cień pod nagłówkiem */
+    position: sticky;
+    /* Przykleja nagłówek do górnej krawędzi ekranu podczas przewijania */
+    top: 0;
+    z-index: 100;
+    /* Zapewnia, że nagłówek będzie na wierzchu względem innych elementów */
+}
+
+.naglowek-kontener {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    flex-wrap: wrap;
+    /* Umożliwia zawijanie elementów, np. na mniejszych ekranach */
+}
+
+.logo img {
+    height: 50px;
+    margin-right: 10px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    /* Odstęp między elementami listy */
+    justify-content: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    transition: 0.3s;
+    /* Płynna zmiana stylu podczas najechania kursorem */
+}
+
+nav a:hover {
+    color: #c00;
+    /* Zmiana koloru linku przy najechaniu */
+}
+
+/* === Hero === */
+.sekcja-glowna {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('miecho_tlo.jpg') center/cover;
+    /* Nakłada półprzezroczysty gradient na tło obrazkowe */
+    height: 500px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    padding: 0 20px;
+}
+
+.sekcja-glowna h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    /* Cień tekstu dla lepszej widoczności na tle */
+}
+
+.sekcja-glowna p {
+    font-size: 20px;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+.kontener-przyciskow {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* Przycisk może zawijać się do nowej linii */
+    gap: 15px;
+    /* Odstęp między przyciskami */
+}
+
+.przycisk {
+    padding: 12px 30px;
+    background: #c00;
+    color: #fff;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+    /* Płynna animacja podczas najechania */
+    text-align: center;
+}
+
+.przycisk:hover {
+    background: transparent;
+    /* Przycisk staje się przezroczysty */
+    border-color: #fff;
+    color: #fff;
+    /* Zmiana koloru tekstu na biały przy najechaniu */
+}
+
+/* === Sekcja "O nas" === */
+.sekcja-o-nas,
+.sekcja-opinie {
+    padding: 80px 0;
+}
+
+.sekcja-o-nas {
+    background: #fff;
+}
+
+.tytul-sekcji {
+    text-align: center;
+    color: #c00;
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+.tytul-sekcji::after {
+    content: "";
+    /* Tworzy dodatkowy element graficzny (czerwony pasek pod nagłówkiem) */
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: #c00;
+    margin: 15px auto 0;
+}
+
+.zawartosc-o-nas {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    /* Zawijanie elementów, np. na małych ekranach */
+    align-items: center;
+}
+
+.tekst-o-nas {
+    flex: 1;
+}
+
+.tekst-o-nas p {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.obraz-o-nas {
+    flex: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Ukrywa wszystko, co wychodzi poza ramkę obrazka */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* Dodaje cień wokół obrazka */
+}
+
+.obraz-o-nas img {
+    width: 100%;
+    display: block;
+}
+
+/* === Opinie === */
+.sekcja-opinie {
+    background: #f5f5f5;
+}
+
+.siatka-opinii {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* Tworzy responsywną siatkę kart opinii */
+    gap: 30px;
+}
+
+.karta-opinii {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    /* Dodaje delikatny cień do kart opinii */
+}
+
+.karta-opinii::before {
+    font-size: 60px;
+    color: rgba(204, 0, 0, 0.1);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-family: Georgia, serif;
+    /* Przygotowanie do dodania ozdobnego elementu, np. cudzysłowu, ale brakuje "content:" */
+}
+
+.tresc-opinii {
+    font-style: italic;
+    margin-bottom: 20px;
+    position: relative;
+    /* Wymagane do użycia pseudo-elementów ::before lub ::after */
+}
+
+.autor-opinii {
+    font-weight: 600;
+    color: #c00;
+}
+
+/* === Stopka === */
+footer {
+    background: #222;
+    color: #bbb;
+    padding: 60px 0 20px;
+}
+
+.zawartosc-stopki {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    /* Stopka z kolumnami, które same dostosowują szerokość */
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.kolumna-stopki h3 {
+    color: #c00;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.kolumna-stopki p,
+.kolumna-stopki a {
+    margin-bottom: 10px;
+    color: #bbb;
+    text-decoration: none;
+    transition: 0.3s;
+    /* Płynna zmiana koloru przy najechaniu */
+}
+
+.kolumna-stopki a:hover {
+    color: #fff;
+    /* Zmiana koloru linku na biały przy najechaniu */
+}
+
+.linki-spolecznosciowe {
+    display: flex;
+    gap: 15px;
+}
+
+.linki-spolecznosciowe a {
+    width: 40px;
+    height: 40px;
+    background: #c00;
+    color: #fff;
+    border-radius: 50%;
+    /* Tworzy okrągłe przyciski */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    /* Płynna animacja zmiany koloru */
+}
+
+.linki-spolecznosciowe a:hover {
+    background: #fff;
+    color: #c00;
+    /* Zmiana tła na białe i koloru ikony na czerwony */
+}
+
+.prawa-autorskie {
+    text-align: center;
+    border-top: 1px solid #444;
+    /* Linia oddzielająca tekst praw autorskich */
+    padding-top: 20px;
+    font-size: 14px;
+}
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+  }
+  
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  
+  button[type="submit"] {
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  .kontakt-osoba {
+      text-align: center;
+      padding: 25px;
+  }
+  
+  .kontakt-avatar {
+      width: 120px;
+      height: 120px;
+      background-color: #c00;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+  }
+  
+  .kontakt-ikona {
+      font-size: 48px;
+  }
+  
+  .kontakt-dane {
+      margin: 10px 0;
+  }
+  
+  .kontakt-formularz {
+      max-width: 800px;
+      margin: 50px auto 0;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .kontakt-formularz h3 {
+      text-align: center;
+      color: #c00;
+      margin-bottom: 30px;
+  }
+  
+  .kontakt-formularz select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+  }
+
