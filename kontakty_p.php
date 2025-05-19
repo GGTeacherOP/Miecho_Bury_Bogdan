@@ -25,10 +25,16 @@ sprawdzStanowisko(['Kierownik', 'Specjalista HR', 'Logistyk', 'Księgowy']);
 // - imię i nazwisko pracownika przypisanego do zgłoszenia
 // Wyniki sortowane od najnowszych zgłoszeń
 $kontakty = $conn->query("
+    SELECT k.*, 
+           CONCAT(p.imie, ' ', p.nazwisko) as pracownik,
+           CASE 
+               WHEN LENGTH(k.wiadomosc) > 50 THEN CONCAT(SUBSTRING(k.wiadomosc, 1, 50), '...')
+               ELSE k.wiadomosc
+           END as wiadomosc_przycieta
+           
+    FROM kontakty k
     SELECT k.*, CONCAT(p.imie, ' ', p.nazwisko) as pracownik
-
 FROM kontakty
-
     LEFT JOIN pracownicy p ON k.pracownik_id = p.id
     ORDER BY k.data_zgloszenia DESC
 ")->fetch_all(MYSQLI_ASSOC); // Pobranie wszystkich wyników jako tablicy asocjacyjnej
@@ -283,6 +289,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                         <th>Data</th>
                         <th>Nadawca</th>
                         <th>Temat</th>
+                        <th>Wiadomość</th>
                         <th>Status</th>
                         <th>Pracownik</th>
                         <th>Akcje</th>
@@ -297,6 +304,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                         <td><?= date('d.m.Y H:i', strtotime($k['data_zgloszenia'])) ?></td> <!-- Data w formacie dzień.miesiąc.rok godzina:minuta -->
                         <td><?= htmlspecialchars($k['imie']) ?></td> <!-- Nazwa nadawcy (zabezpieczona przed XSS) -->
                         <td><?= htmlspecialchars($k['temat']) ?></td> <!-- Temat zgłoszenia -->
+                        <td class="wiadomosc-kontener">  <!-- Kontener dla całej wiadomości -->
+                            <!-- Pełna wiadomość (pokazywana po najechaniu/kliknięciu) -->
+                            <div class="wiadomosc-pełna">
+                            <?= nl2br(htmlspecialchars($k['wiadomosc'])) ?>
+                            </div>
+                        </td>
+                       
                         <td class="status-<?= str_replace(' ', '', $k['status']) ?>"> <!-- Klasa CSS w zależności od statusu -->
                             <?= $k['status'] ?> <!-- Wyświetlenie statusu -->
                         </td>
