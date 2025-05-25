@@ -1,0 +1,399 @@
+/* ===== OGÓLNE STYLE ===== */
+.sekcja-produkty,
+.sekcja-koszyk,
+.sekcja-zamowienia {
+    padding: 60px 0;
+    /* Dodaje odstęp góra-dół dla sekcji */
+}
+
+.tytul-sekcji {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 15px;
+    color: #c00;
+    /* Czerwony kolor tytułu */
+}
+
+.tytul-sekcji::after {
+    content: "";
+    /* Tworzy pseudo-element po tytule */
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: #c00;
+    margin: 15px auto 30px;
+    /* Wyśrodkowanie czerwonej kreski pod tytułem */
+}
+
+.podtytul {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+/* ===== FILTRY I SORTOWANIE ===== */
+.filtry {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    /* Zawija elementy w nowy wiersz na małych ekranach */
+    gap: 20px;
+    /* Odstęp między filtrami */
+}
+
+.kategorie,
+.sortowanie {
+    flex: 1;
+    /* Obie kolumny zajmują tyle samo miejsca */
+    min-width: 200px;
+    /* Minimalna szerokość kolumny */
+}
+
+.filtry select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* ===== SIATKA PRODUKTÓW ===== */
+.siatka-produktow {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* Tworzy responsywną siatkę kart */
+    gap: 30px;
+}
+
+/* ===== KARTA PRODUKTU ===== */
+.karta-produktu {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    /* Lekki cień */
+    transition: transform 0.3s, box-shadow 0.3s;
+    /* Animacja przy najechaniu */
+}
+
+.karta-produktu:hover {
+    transform: translateY(-5px);
+    /* Unosi kartę */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    /* Zwiększa cień */
+}
+
+.obraz-produktu {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.obraz-produktu img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Zdjęcie wypełnia kontener bez zniekształceń */
+    transition: transform 0.3s;
+}
+
+.karta-produktu:hover .obraz-produktu img {
+    transform: scale(1.05);
+    /* Powiększa zdjęcie przy najechaniu */
+}
+
+.promocja {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #c00;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.info-produktu {
+    padding: 20px;
+}
+
+.nazwa-produktu {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.ceny {
+    margin-bottom: 15px;
+}
+
+.cena-produktu {
+    font-size: 20px;
+    font-weight: 700;
+    color: #c00;
+}
+
+.cena-stara {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+
+/* ===== WYBÓR ILOŚCI PRODUKTU ===== */
+.ilosc-container {
+    margin-bottom: 15px;
+}
+
+.ilosc-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.ilosc {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* ===== PRZYCISK DODAJ DO KOSZYKA ===== */
+.przycisk-koszyk {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #c00;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.przycisk-koszyk:hover {
+    background: #a00;
+}
+
+/* ===== MODAL LOGOWANIA ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Przyciemnione tło */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 500px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* ===== ZAKŁADKI MODALU ===== */
+.auth-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    position: relative;
+}
+
+.tab-button.active {
+    color: #c00;
+}
+
+.tab-button.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #c00;
+}
+
+/* ===== FORMULARZE LOGOWANIA I REJESTRACJI ===== */
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* ===== SEKCJA KOSZYKA ===== */
+.sekcja-koszyk {
+    background: #f5f5f5;
+    display: none;
+}
+
+.koszyk-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+#koszyk-tabela {
+    overflow-x: auto;
+    /* Scroll w poziomie przy małych ekranach */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #f9f9f9;
+    font-weight: 600;
+}
+
+.koszyk-akcje {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.koszyk-akcje .przycisk {
+    flex: 1;
+}
+
+/* ===== FORMULARZ ZAMÓWIENIA ===== */
+.sekcja-zamowienia {
+    background: #f5f5f5;
+    display: none;
+}
+
+.zamowienie-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.zamowienie-columns {
+    display: flex;
+    gap: 40px;
+}
+
+.dane-uzytkownika,
+.podsumowanie-zamowienia {
+    flex: 1;
+}
+
+.dane-uzytkownika h3,
+.podsumowanie-zamowienia h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: vertical;
+}
+
+/* ===== OPCJE DOSTAWY I PŁATNOŚCI ===== */
+.dostawa-options,
+.platnosc-options {
+    margin-bottom: 30px;
+}
+
+.dostawa-option,
+.platnosc-option {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.dostawa-option:hover,
+.platnosc-option:hover {
+    background: #f9f9f9;
+}
+
+/* ===== PODSUMOWANIE ZAMÓWIENIA ===== */
+.podsumowanie-cena {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.wiersz {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.wiersz.suma {
+    font-weight: 600;
+    font-size: 18px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
