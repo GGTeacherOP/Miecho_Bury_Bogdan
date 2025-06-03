@@ -31,10 +31,7 @@ $kontakty = $conn->query("
                WHEN LENGTH(k.wiadomosc) > 50 THEN CONCAT(SUBSTRING(k.wiadomosc, 1, 50), '...')
                ELSE k.wiadomosc
            END as wiadomosc_przycieta
-           
     FROM kontakty k
-    SELECT k.*, CONCAT(p.imie, ' ', p.nazwisko) as pracownik
-FROM kontakty
     LEFT JOIN pracownicy p ON k.pracownik_id = p.id
     ORDER BY k.data_zgloszenia DESC
 ")->fetch_all(MYSQLI_ASSOC); // Pobranie wszystkich wyników jako tablicy asocjacyjnej
@@ -45,23 +42,24 @@ FROM kontakty
 
 // Sprawdzenie czy formularz został wysłany (metoda POST)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
-
-    
     // Zabezpieczenie danych wejściowych:
-    $id = $conn->real_escape_string($_POST['id']); // ID zgłoszenia
-    $status = $conn->real_escape_string($_POST['status']); // Nowy status
+    $id = $conn->real_escape_string($_POST['id']);
+    $status = $conn->real_escape_string($_POST['status']); 
     
-
-    // Zapytanie SQL aktualizujące:
-    $conn->query("UPDATE kontakty SET 
-                status = '$status',
-                pracownik_id = {$_SESSION['user_id']}, // Przypisanie do aktualnego pracownika
-                data_zakonczenia = " . ($status == 'zamknieta' ? "NOW()" : "NULL") . " // Ustawienie daty zamknięcia jeśli status=zamknieta
-                WHERE id = $id");
+    // Budowanie zapytania SQL
+    $data_zakonczenia = ($status == 'zamknieta') ? "NOW()" : "NULL";
+    $sql = "UPDATE kontakty SET 
+            status = '$status',
+            pracownik_id = '{$_SESSION['user_id']}',
+            data_zakonczenia = $data_zakonczenia
+            WHERE id = $id";
+    
+    // Wykonanie zapytania
+    $conn->query($sql);
 
     // Przekierowanie z powrotem z komunikatem o sukcesie
     header("Location: kontakty_p.php?updated=1");
-    exit; // Zakończenie skryptu
+    exit;
 }
 ?>
 
