@@ -153,7 +153,7 @@ if (isset($_POST['dodaj_do_koszyka'])) { // Sprawdzenie, czy formularz z przycis
                     <?php else: ?>
                         <li><a href="logowanie.php" id="login-link"><i class="fas fa-user"></i> Logowanie</a></li>
                     <?php endif; ?>
-                    <li><a href="koszyk.php" id="cart-link"><i class="fas fa-shopping-cart"></i> Koszyk (<span id="cart-count"><?= array_sum(array_column($_SESSION['koszyk'], 'ilosc')) ?></span>)</a></li>
+                    <li><a href="koszyk.php" id="cart-link"><i class="fas fa-shopping-cart"></i> Koszyk (<span id="cart-count"><?= count($_SESSION['koszyk']) ?></span>)</a></li>
                 </ul>
             </nav>
         </div>
