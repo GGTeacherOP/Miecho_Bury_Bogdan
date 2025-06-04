@@ -45,7 +45,9 @@ $kontakty = $conn->query("
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
     // Zabezpieczenie danych wejściowych:
     $id = $conn->real_escape_string($_POST['id']);
+
     $status = $conn->real_escape_string($_POST['status']);
+
 
     // Budowanie zapytania SQL
     $data_zakonczenia = ($status == 'zamknieta') ? "NOW()" : "NULL";
@@ -93,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .sekcja-zamowienia {
 
+
             padding: 80px 0;
             /* Wewnętrzny odstęp góra-dół */
             background: #f5f5f5;
@@ -115,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             /* Subtelny cień */
 
+
         }
 
         /* 
@@ -123,12 +127,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         h2 {
 
+
             color: #c00;
             /* Czerwony kolor MeatMaster */
             margin-bottom: 30px;
             /* Odstęp od dołu */
             text-align: center;
             /* Wyśrodkowanie */
+
 
         }
 
@@ -138,12 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         table {
 
+
             width: 100%;
             /* Pełna szerokość kontenera */
             border-collapse: collapse;
             /* Łączenie obramowań */
             margin-bottom: 30px;
             /* Odstęp od dołu */
+
         }
 
         th,
@@ -164,8 +172,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         }
 
         tr:hover {
+
             background-color: #f5f5f5;
             /* Podświetlenie wiersza przy najechaniu */
+
 
         }
 
@@ -175,6 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .formularz-edycji {
 
+
             background: #f9f9f9;
             /* Jasne tło */
             padding: 20px;
@@ -183,6 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             /* Zaokrąglone rogi */
             margin-top: 20px;
             /* Odstęp od góry */
+
         }
 
         .formularz-grupa {
@@ -226,8 +238,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         }
 
         .przycisk-edycji:hover {
+
             background: #a00;
             /* Ciemniejszy czerwony przy najechaniu */
+
 
         }
 
@@ -237,12 +251,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .alert {
 
+
             padding: 15px;
             /* Wewnętrzny odstęp */
             margin-bottom: 20px;
             /* Odstęp od dołu */
             border-radius: 4px;
             /* Zaokrąglone rogi */
+
         }
 
         .alert-success {
@@ -253,10 +269,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         }
 
         .alert-error {
+
             background-color: #f2dede;
             /* Jasnoczerwone tło */
             color: #a94442;
             /* Ciemnoczerwony tekst */
+
 
         }
 
@@ -265,6 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Kolorystyka dla różnych statusów
         */
         .status-nowa {
+
 
             color: #ff9800;
             /* Pomarańczowy */
@@ -276,13 +295,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             color: #2196f3;
             /* Niebieski */
 
+
             font-weight: bold;
         }
 
         .status-zamknieta {
 
+
             color: #4caf50;
             /* Zielony */
+
 
             font-weight: bold;
         }
@@ -350,6 +372,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                     <!-- Pętla przez wszystkie zgłoszenia -->
                     <?php foreach ($kontakty as $k): ?>
 
+
                         <tr>
                             <td><?= $k['id'] ?></td> <!-- ID zgłoszenia -->
                             <td><?= date('d.m.Y H:i', strtotime($k['data_zgloszenia'])) ?></td> <!-- Data w formacie dzień.miesiąc.rok godzina:minuta -->
@@ -373,6 +396,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                                 </button>
                             </td>
                         </tr>
+
 
                     <?php endforeach; ?>
                 </tbody>

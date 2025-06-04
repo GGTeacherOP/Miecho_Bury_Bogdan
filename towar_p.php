@@ -105,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
     <link rel="icon" type="image/png" href="icon.png"> <!-- Favicon -->
 
 
+
     <!-- Biblioteka ikon Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -113,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         /* Główny kontener sekcji */
         .sekcja-towary {
 
+
             padding: 80px 0;
             /* Wewnętrzny odstęp */
             background: #f5f5f5;
@@ -120,10 +122,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             min-height: calc(100vh - 300px);
             /* Minimalna wysokość */
 
+
         }
 
         /* Kontener z zawartością */
         .kontener-towary {
+
 
             max-width: 1000px;
             /* Maksymalna szerokość */
@@ -138,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             /* Cień */
 
+
         }
 
         /* Tabela z towarami */
@@ -150,15 +155,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             margin-bottom: 30px;
             /* Odstęp od dołu */
 
+
         }
 
         /* Nagłówki tabeli */
         th {
 
+
             background-color: #c00;
             /* Czerwone tło */
             color: white;
             /* Biały tekst */
+
         }
 
         /* Komórki tabeli */
@@ -174,13 +182,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
         /* Efekt hover na wierszach */
         tr:hover {
+
             background-color: #f5f5f5;
             /* Jasnoszare tło */
+
 
         }
 
         /* Formularz edycji */
         .formularz-edycji {
+
 
             background: #f9f9f9;
             /* Jasne tło */
@@ -191,18 +202,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             margin-top: 20px;
             /* Odstęp od góry */
 
+
         }
 
         /* Grupy pól formularza */
         .formularz-grupa {
 
+
             margin-bottom: 15px;
             /* Odstęp między grupami */
+
 
         }
 
         /* Przyciski */
         .przycisk-edycji {
+
 
             background: #c00;
             /* Czerwony kolor */
@@ -213,10 +228,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
         }
 
+
+        background: #c00;
+        /* Czerwony kolor */
+        color: white;
+        /* Biały tekst */
+        transition: background 0.3s;
+        /* Efekt przejścia */
+
+        }
+
         .przycisk-edycji:hover {
+
 
             background: #a00;
             /* Ciemniejszy czerwony */
+
 
         }
     </style>

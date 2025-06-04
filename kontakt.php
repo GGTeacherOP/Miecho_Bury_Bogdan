@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************
  * SEKCJA 1: INICJALIZACJA 
  ***********************************************/
@@ -26,7 +27,7 @@ $dane_user = [
 if (isset($_SESSION['zalogowany'])) {
     // Pobieramy dane użytkownika z bazy
     $result = $db->query("SELECT imie, nazwisko, email FROM klienci WHERE id = {$_SESSION['user_id']}");
-    
+
     // Jeśli znaleziono użytkownika, aktualizujemy dane
     if ($row = $result->fetch_assoc()) {
         $dane_user['imie'] = $row['imie'] . ' ' . $row['nazwisko'];
@@ -45,22 +46,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $imie = $db->real_escape_string($_POST['imie'] ?? '');
     $email = $db->real_escape_string($_POST['email'] ?? '');
     $wiadomosc = $db->real_escape_string($_POST['wiadomosc'] ?? '');
-    
+
     // Sprawdzamy czy wymagane pola są wypełnione
     if (!empty($imie) && !empty($email) && !empty($wiadomosc)) {
         // Ustalamy ID użytkownika (NULL dla niezalogowanych)
         $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'NULL';
-        
+
         // Wstawiamy wiadomość do bazy danych
         $db->query("INSERT INTO kontakty (klient_id, imie, email, wiadomosc) 
                    VALUES ($user_id, '$imie', '$email', '$wiadomosc')");
-        
+
         // Ustawiamy komunikat w sesji
         $_SESSION['komunikat'] = $db->error ? 'Błąd wysyłania!' : 'Wysłano!';
     } else {
         $_SESSION['komunikat'] = 'Wypełnij wszystkie pola!';
     }
-    
+
     // Przekierowujemy z powrotem do formularza
     header('Location: kontakt.php');
     exit;
@@ -83,6 +84,7 @@ if (isset($_SESSION['komunikat'])) {
  -->
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <!-- 
         SEKCJA METADANYCH 
@@ -91,7 +93,7 @@ if (isset($_SESSION['komunikat'])) {
     <meta charset="UTF-8"> <!-- Kodowanie znaków (obsługa polskich znaków) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsywność na urządzeniach mobilnych -->
     <title>Kontakt - MeatMaster</title> <!-- Tytuł strony (widoczny w zakładce przeglądarki) -->
-    
+
     <!-- 
         ARKUSZE STYLÓW 
         - Podłączanie zewnętrznych zasobów CSS
@@ -99,7 +101,7 @@ if (isset($_SESSION['komunikat'])) {
     <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów strony -->
     <link rel="icon" type="image/png" href="icon.png"> <!-- Favicon (ikona strony) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Biblioteka ikon FontAwesome -->
-    
+
     <!-- 
         STYLE WEWNĘTRZNE 
         - CSS specyficzny tylko dla tej strony
@@ -110,17 +112,22 @@ if (isset($_SESSION['komunikat'])) {
             - Style dla powiadomień systemowych
         */
         .komunikat-sukces {
-            background-color: #d4edda; /* Zielone tło dla sukcesu */
-            color: #155724; /* Ciemnozielony tekst */
+            background-color: #d4edda;
+            /* Zielone tło dla sukcesu */
+            color: #155724;
+            /* Ciemnozielony tekst */
             padding: 10px;
             margin: 15px 0;
             border-radius: 5px;
-            border: 1px solid #c3e6cb; /* Subtelna obramówka */
+            border: 1px solid #c3e6cb;
+            /* Subtelna obramówka */
         }
-        
+
         .komunikat-blad {
-            background-color: #f8d7da; /* Czerwone tło dla błędów */
-            color: #721c24; /* Ciemnoczerwony tekst */
+            background-color: #f8d7da;
+            /* Czerwone tło dla błędów */
+            color: #721c24;
+            /* Ciemnoczerwony tekst */
             padding: 10px;
             margin: 15px 0;
             border-radius: 5px;
@@ -132,60 +139,80 @@ if (isset($_SESSION['komunikat'])) {
             - Style dla elementów formularza
         */
         .kontakt-formularz {
-            max-width: 600px; /* Maksymalna szerokość formularza */
-            margin: 0 auto; /* Wyśrodkowanie */
+            max-width: 600px;
+            /* Maksymalna szerokość formularza */
+            margin: 0 auto;
+            /* Wyśrodkowanie */
             padding: 20px;
-            background: #f9f9f9; /* Jasne tło */
-            border-radius: 8px; /* Zaokrąglone rogi */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtelny cień */
+            background: #f9f9f9;
+            /* Jasne tło */
+            border-radius: 8px;
+            /* Zaokrąglone rogi */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /* Subtelny cień */
         }
 
         /* Grupa pól formularza */
         .form-group {
-            margin-bottom: 15px; /* Odstęp między grupami */
+            margin-bottom: 15px;
+            /* Odstęp między grupami */
         }
 
         /* Etykiety pól */
         .form-group label {
-            display: block; /* Etykieta nad polem */
+            display: block;
+            /* Etykieta nad polem */
             margin-bottom: 5px;
-            font-weight: bold; /* Pogrubienie tekstu */
+            font-weight: bold;
+            /* Pogrubienie tekstu */
         }
 
         /* Wspólne style dla input/select/textarea */
         .form-group input,
         .form-group select,
         .form-group textarea {
-            width: 100%; /* Pełna szerokość kontenera */
+            width: 100%;
+            /* Pełna szerokość kontenera */
             padding: 8px;
-            border: 1px solid #ddd; /* Szara obramówka */
-            border-radius: 4px; /* Lekko zaokrąglone rogi */
-            box-sizing: border-box; /* Prawidłowe obliczanie szerokości */
+            border: 1px solid #ddd;
+            /* Szara obramówka */
+            border-radius: 4px;
+            /* Lekko zaokrąglone rogi */
+            box-sizing: border-box;
+            /* Prawidłowe obliczanie szerokości */
         }
 
         /* Specyficzny styl dla pola tekstowego */
         .form-group textarea {
-            min-height: 150px; /* Minimalna wysokość */
-            resize: vertical; /* Zezwól tylko na pionową zmianę rozmiaru */
+            min-height: 150px;
+            /* Minimalna wysokość */
+            resize: vertical;
+            /* Zezwól tylko na pionową zmianę rozmiaru */
         }
 
         /* Przycisk wysyłania */
         .przycisk-wyslij {
-            background-color: #c00; /* Czerwony kolor MeatMaster */
+            background-color: #c00;
+            /* Czerwony kolor MeatMaster */
             color: white;
             padding: 10px 15px;
-            border: none; /* Brak obramowania */
+            border: none;
+            /* Brak obramowania */
             border-radius: 4px;
-            cursor: pointer; /* Kursor wskazujący */
-            transition: background 0.3s; /* Animacja hover */
+            cursor: pointer;
+            /* Kursor wskazujący */
+            transition: background 0.3s;
+            /* Animacja hover */
         }
 
         /* Efekt hover dla przycisku */
         .przycisk-wyslij:hover {
-            background-color: #a00; /* Ciemniejszy czerwony */
+            background-color: #a00;
+            /* Ciemniejszy czerwony */
         }
     </style>
 </head>
+
 <body>
     <!-- 
         NAGŁÓWEK STRONY 
@@ -197,7 +224,7 @@ if (isset($_SESSION['komunikat'])) {
             <div class="logo">
                 <img src="Logo.png" alt="MeatMaster Logo">
             </div>
-            
+
             <!-- Główne menu -->
             <nav>
                 <ul>
@@ -209,7 +236,7 @@ if (isset($_SESSION['komunikat'])) {
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="aktualnosci.php">Aktualności</a></li>
                     <li><a href="opinie.php">Opinie</a></li>
-                    
+
                     <!-- Link do profilu/logowania (warunkowy) -->
                     <?php if (isset($_SESSION['zalogowany']) && $_SESSION['zalogowany'] === true): ?>
                         <li><a href="profil.php"><i class="fas fa-user"></i> Profil</a></li>
@@ -229,10 +256,10 @@ if (isset($_SESSION['komunikat'])) {
         <section class="sekcja-o-nas">
             <div class="kontener">
                 <h2 class="tytul-sekcji">Nasz zespół kontaktowy</h2>
-                
+
                 <!-- Wyświetlenie komunikatu (jeśli istnieje) -->
                 <?php if (isset($komunikat)) echo $komunikat; ?>
-                
+
                 <!-- Karty kontaktowe pracowników -->
                 <div class="siatka-opinii">
                     <!-- Karta 1 -->
@@ -270,38 +297,38 @@ if (isset($_SESSION['komunikat'])) {
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Formularz kontaktowy -->
                 <div class="kontakt-formularz">
                     <h3><i class="fas fa-envelope"></i> Formularz kontaktowy</h3>
                     <form method="POST" class="contact-form">
                         <!-- Ukryte pola z danymi użytkownika (dla zalogowanych) -->
-                        <input type="hidden" name="imie" value="<?= htmlspecialchars($dane_uzytkownika['imie']) ?>">
-                        <input type="hidden" name="email" value="<?= htmlspecialchars($dane_uzytkownika['email']) ?>">
-                        <input type="hidden" name="telefon" value="<?= htmlspecialchars($dane_uzytkownika['telefon']) ?>">
-                        
-                        <!-- Pole wyboru tematu -->
-                        <div class="form-group">
-                            <label for="temat">Temat wiadomości</label>
-                            <select id="temat" name="temat" required>
-                                <option value="">-- Wybierz temat --</option>
-                                <option value="zamowienie">Zamówienie</option>
-                                <option value="reklamacja">Reklamacja</option>
-                                <option value="wspolpraca">Współpraca</option>
-                                <option value="inne">Inne</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Pole tekstowe wiadomości -->
-                        <div class="form-group">
-                            <label for="wiadomosc">Treść wiadomości</label>
-                            <textarea id="wiadomosc" name="wiadomosc" rows="5" required></textarea>
-                        </div>
-                        
-                        <!-- Przycisk wysyłania -->
-                        <button type="submit" class="przycisk-wyslij">
-                            <i class="fas fa-paper-plane"></i> Wyślij wiadomość
-                        </button>
+                        <<input type="hidden" name="imie" value="<?= htmlspecialchars($dane_user['imie']) ?>">
+                            <input type="hidden" name="email" value="<?= htmlspecialchars($dane_user['email']) ?>">
+                            <input type="hidden" name="telefon" value="<?= htmlspecialchars($dane_user['telefon'] ?? '') ?>">
+
+                            <!-- Pole wyboru tematu -->
+                            <div class="form-group">
+                                <label for="temat">Temat wiadomości</label>
+                                <select id="temat" name="temat" required>
+                                    <option value="">-- Wybierz temat --</option>
+                                    <option value="zamowienie">Zamówienie</option>
+                                    <option value="reklamacja">Reklamacja</option>
+                                    <option value="wspolpraca">Współpraca</option>
+                                    <option value="inne">Inne</option>
+                                </select>
+                            </div>
+
+                            <!-- Pole tekstowe wiadomości -->
+                            <div class="form-group">
+                                <label for="wiadomosc">Treść wiadomości</label>
+                                <textarea id="wiadomosc" name="wiadomosc" rows="5" required></textarea>
+                            </div>
+
+                            <!-- Przycisk wysyłania -->
+                            <button type="submit" class="przycisk-wyslij">
+                                <i class="fas fa-paper-plane"></i> Wyślij wiadomość
+                            </button>
                     </form>
                 </div>
             </div>
@@ -349,4 +376,5 @@ if (isset($_SESSION['komunikat'])) {
         </div>
     </footer>
 </body>
+
 </html>
