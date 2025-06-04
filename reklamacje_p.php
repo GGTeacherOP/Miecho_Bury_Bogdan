@@ -1,8 +1,10 @@
 <?php
-// 1. WŁĄCZENIE WYMAGANYCH PLIKÓW
 require_once "sesje.php";
-// Sprawdzenie czy użytkownik ma odpowiednie stanowisko
-sprawdzStanowisko(['Pracownik linii pakowania', 'Magazynier', 'Księgowy', 'Specjalista HR', 'Logistyk']);
+// Sprawdzenie czy użytkownik ma odpowiednie uprawnienia - dodajemy właściciela
+if (!czyWlasciciel() && !in_array($_SESSION['stanowisko'], ['Pracownik linii pakowania', 'Magazynier', 'Księgowy', 'Specjalista HR', 'Logistyk'])) {
+    header("Location: brak_dostepu.php");
+    exit();
+}
 
 require_once "db.php";
 
@@ -43,12 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <!-- Podstawowe meta tagi -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MeatMaster - Przegląd reklamacji</title>
-    
+
     <!-- Podpięcie zewnętrznych zasobów -->
     <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów -->
     <link rel="icon" type="image/png" href="icon.png"> <!-- Favicon -->
@@ -60,22 +63,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         .sekcja-reklamacje {
             padding: 80px 0;
             background: #f5f5f5;
-            min-height: calc(100vh - 300px); /* Minimalna wysokość */
+            min-height: calc(100vh - 300px);
+            /* Minimalna wysokość */
         }
 
         /* Kontener główny */
         .kontener-reklamacje {
-            max-width: 1200px; /* Maksymalna szerokość */
-            margin: 0 auto; /* Wyśrodkowanie */
-            background: #fff; /* Białe tło */
-            padding: 40px; /* Wewnętrzny odstęp */
-            border-radius: 8px; /* Zaokrąglone rogi */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+            max-width: 1200px;
+            /* Maksymalna szerokość */
+            margin: 0 auto;
+            /* Wyśrodkowanie */
+            background: #fff;
+            /* Białe tło */
+            padding: 40px;
+            /* Wewnętrzny odstęp */
+            border-radius: 8px;
+            /* Zaokrąglone rogi */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            /* Subtelny cień */
         }
 
         /* Nagłówek strony */
         h2 {
-            color: #c00; /* Czerwony kolor */
+            color: #c00;
+            /* Czerwony kolor */
             margin-bottom: 30px;
             text-align: center;
         }
@@ -83,31 +94,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         /* Tabela z reklamacjami */
         table {
             width: 100%;
-            border-collapse: collapse; /* Usunięcie podwójnych obramowań */
+            border-collapse: collapse;
+            /* Usunięcie podwójnych obramowań */
             margin-bottom: 30px;
         }
 
         /* Komórki tabeli */
-        th, td {
+        th,
+        td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd; /* Szara linia oddzielająca */
+            border-bottom: 1px solid #ddd;
+            /* Szara linia oddzielająca */
         }
 
         /* Nagłówki kolumn */
         th {
-            background-color: #c00; /* Czerwone tło */
-            color: white; /* Biały tekst */
+            background-color: #c00;
+            /* Czerwone tło */
+            color: white;
+            /* Biały tekst */
         }
 
         /* Efekt hover na wierszach */
         tr:hover {
-            background-color: #f5f5f5; /* Jasnoszare tło */
+            background-color: #f5f5f5;
+            /* Jasnoszare tło */
         }
 
         /* Formularz edycji */
         .formularz-edycji {
-            background: #f9f9f9; /* Bardzo jasne szare tło */
+            background: #f9f9f9;
+            /* Bardzo jasne szare tło */
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
@@ -137,14 +155,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         /* Textarea - większa wysokość */
         .formularz-grupa textarea {
             min-height: 100px;
-            resize: vertical; /* Zezwól tylko na pionowy resize */
+            resize: vertical;
+            /* Zezwól tylko na pionowy resize */
         }
 
         /* Przycisk zapisu */
         .przycisk-edycji {
             padding: 10px 15px;
-            background: #c00; /* Czerwony kolor */
-            color: white; /* Biały tekst */
+            background: #c00;
+            /* Czerwony kolor */
+            color: white;
+            /* Biały tekst */
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -152,7 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
         /* Efekt hover na przycisku */
         .przycisk-edycji:hover {
-            background: #a00; /* Ciemniejszy czerwony */
+            background: #a00;
+            /* Ciemniejszy czerwony */
         }
 
         /* Komunikaty systemowe */
@@ -164,31 +186,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
         /* Komunikat sukcesu */
         .alert-success {
-            background-color: #dff0d8; /* Jasnozielone tło */
-            color: #3c763d; /* Ciemnozielony tekst */
+            background-color: #dff0d8;
+            /* Jasnozielone tło */
+            color: #3c763d;
+            /* Ciemnozielony tekst */
         }
 
         /* Komunikat błędu */
         .alert-error {
-            background-color: #f2dede; /* Jasnoczerwone tło */
-            color: #a94442; /* Ciemnoczerwony tekst */
+            background-color: #f2dede;
+            /* Jasnoczerwone tło */
+            color: #a94442;
+            /* Ciemnoczerwony tekst */
         }
 
         /* Kolory statusów reklamacji */
         .status-otwarta {
-            color: #ff9800; /* Pomarańczowy */
+            color: #ff9800;
+            /* Pomarańczowy */
             font-weight: bold;
         }
+
         .status-w_trakcie {
-            color: #2196f3; /* Niebieski */
+            color: #2196f3;
+            /* Niebieski */
             font-weight: bold;
         }
+
         .status-rozpatrzona {
-            color: #4caf50; /* Zielony */
+            color: #4caf50;
+            /* Zielony */
             font-weight: bold;
         }
+
         .status-odrzucona {
-            color: #f44336; /* Czerwony */
+            color: #f44336;
+            /* Czerwony */
             font-weight: bold;
         }
     </style>
@@ -344,7 +377,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
             // Pokazanie formularza
             document.getElementById('formularz-edycji').style.display = 'block';
-            
+
             // Płynne przewinięcie do formularza
             window.scrollTo({
                 top: document.getElementById('formularz-edycji').offsetTop,

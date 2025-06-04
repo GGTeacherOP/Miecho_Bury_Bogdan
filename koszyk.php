@@ -199,17 +199,23 @@ if (isset($_POST['aktualizuj_koszyk'])) {
         
         /* 16. KOMÓRKI TABELI */
         .tabela-koszyka td {
-            padding: 12px; /* Wewnętrzny odstęp */
-            border-bottom: 1px solid #eee; /* Linia oddzielająca */
-            vertical-align: middle; /* Wyrównanie pionowe */
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .tabela-koszyka td:first-child {
+            text-align: left;
         }
         
         /* 17. POLE DO WPROWADZANIA ILOŚCI */
         .ilosc-input {
-            width: 70px; /* Szerokość */
-            padding: 8px; /* Wewnętrzny odstęp */
-            border: 1px solid #ddd; /* Szara obramówka */
-            border-radius: 4px; /* Lekko zaokrąglone rogi */
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
         }
         
         /* 18. PRZYCISK USUWANIA */
@@ -370,7 +376,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                         <a href="koszyk.php" id="cart-link">
                             <i class="fas fa-shopping-cart"></i> Koszyk 
                             (<span id="cart-count">
-                                <?= array_sum(array_column($_SESSION['koszyk'] ?? [], 'ilosc')) ?>
+                                <?= count($_SESSION['koszyk'] ?? []) ?>
                             </span>)
                         </a>
                     </li>
@@ -401,14 +407,14 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                 </div>
             <?php else: ?>
                 <!-- 38. FORMULARZ KOSZYKA -->
-                <form method="post">
+                <form method="post" id="form-koszyk">
                     <!-- 39. TABELA Z PRODUKTAMI -->
                     <table class="tabela-koszyka">
                         <thead>
                             <tr>
                                 <th>Produkt</th>
                                 <th>Cena</th>
-                                <th>Ilość</th>
+                                <th>Waga (kg)</th>
                                 <th>Wartość</th>
                                 <th>Akcje</th>
                             </tr>
@@ -429,18 +435,21 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                                 <!-- 42. CENA JEDNOSTKOWA (sformatowana) -->
                                 <td><?= number_format($produkt['cena'], 2) ?> zł/kg</td>
                                 
-                                <!-- 43. POLE DO EDYCJI ILOŚCI -->
+                                <!-- 43. POLE DO EDYCJI WAGI -->
                                 <td>
                                     <input type="number" 
                                            name="ilosc[<?= $produkt['id'] ?>]" 
                                            value="<?= $produkt['ilosc'] ?>" 
                                            min="0.1" 
                                            step="0.1" 
-                                           class="ilosc-input">
+                                           class="ilosc-input"
+                                           onchange="aktualizujWartosc(this)">
                                 </td>
                                 
                                 <!-- 44. WARTOŚĆ CAŁKOWITA PRODUKTU -->
-                                <td><?= number_format($wartosc, 2) ?> zł</td>
+                                <td class="wartosc-produktu">
+                                    <?= number_format($wartosc, 2) ?> zł
+                                </td>
                                 
                                 <!-- 45. PRZYCISK USUWANIA -->
                                 <td>
@@ -460,11 +469,11 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                         <div class="karta-podsumowania">
                             <div class="wiersz-podsumowania">
                                 <span>Wartość produktów:</span>
-                                <span><?= number_format($suma, 2) ?> zł</span>
+                                <span id="wartosc-produktow"><?= number_format($suma, 2) ?> zł</span>
                             </div>
                             <div class="wiersz-podsumowania razem">
                                 <span>Do zapłaty:</span>
-                                <span><?= number_format($suma, 2) ?> zł</span>
+                                <span id="suma-zamowienia"><?= number_format($suma, 2) ?> zł</span>
                             </div>
                         </div>
                     </div>
@@ -473,6 +482,7 @@ if (isset($_POST['aktualizuj_koszyk'])) {
                     <div class="przyciski-wrapper">
                         <a href="sklep.php" class="przycisk">Kontynuuj zakupy</a>
                         <button type="submit" name="zloz_zamowienie" class="przycisk">Złóż zamówienie</button>
+                        <button type="submit" name="aktualizuj_koszyk" class="przycisk" style="display:none;">Aktualizuj koszyk</button>
                     </div>
                 </form>
             <?php endif; ?>
@@ -516,5 +526,32 @@ if (isset($_POST['aktualizuj_koszyk'])) {
             </div>
         </div>
     </footer>
+
+    <script>
+        // Funkcja aktualizująca wartość produktu
+        function aktualizujWartosc(input) {
+            const row = input.closest('tr');
+            const cena = parseFloat(row.querySelector('td:nth-child(2)').textContent.replace(' zł/kg', ''));
+            const ilosc = parseFloat(input.value);
+            const wartosc = cena * ilosc;
+            
+            row.querySelector('.wartosc-produktu').textContent = wartosc.toFixed(2) + ' zł';
+            
+            // Aktualizacja podsumowania
+            let suma = 0;
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const wartosc = parseFloat(row.querySelector('.wartosc-produktu').textContent.replace(' zł', ''));
+                suma += wartosc;
+            });
+            
+            document.getElementById('wartosc-produktow').textContent = suma.toFixed(2) + ' zł';
+            document.getElementById('suma-zamowienia').textContent = suma.toFixed(2) + ' zł';
+            
+            // Automatyczne wysłanie formularza po 1 sekundzie
+            setTimeout(() => {
+                document.querySelector('button[name="aktualizuj_koszyk"]').click();
+            }, 1000);
+        }
+    </script>
 </body>
 </html>

@@ -7,14 +7,14 @@
 /******************************************************
  * 1. INICJALIZACJA I AUTORYZACJA
  ******************************************************/
+require_once "sesje.php";
+// Sprawdzenie uprawnień - właściciel lub określone stanowiska
+if (!czyWlasciciel() && !in_array($_SESSION['stanowisko'], ['Kierownik', 'Specjalista HR', 'Logistyk', 'Księgowy'])) {
+    header("Location: brak_dostepu.php");
+    exit();
+}
 
-// Dołączenie plików konfiguracyjnych
-require_once "sesje.php";  // Plik z funkcjami sesyjnymi
-require_once "db.php";     // Plik z połączeniem do bazy danych
-
-// Sprawdzenie czy użytkownik ma wymagane uprawnienia
-// Dopuszczalne stanowiska: Kierownik, Specjalista HR, Logistyk, Księgowy
-sprawdzStanowisko(['Kierownik', 'Specjalista HR', 'Logistyk', 'Księgowy']);
+require_once "db.php";
 
 /******************************************************
  * 2. POBRANIE ZGŁOSZEŃ Z BAZY DANYCH
@@ -25,11 +25,17 @@ sprawdzStanowisko(['Kierownik', 'Specjalista HR', 'Logistyk', 'Księgowy']);
 // - imię i nazwisko pracownika przypisanego do zgłoszenia
 // Wyniki sortowane od najnowszych zgłoszeń
 $kontakty = $conn->query("
-    SELECT k.*, CONCAT(p.imie, ' ', p.nazwisko) as pracownik
-FROM kontakty
+    SELECT k.*, 
+           CONCAT(p.imie, ' ', p.nazwisko) as pracownik,
+           CASE 
+               WHEN LENGTH(k.wiadomosc) > 50 THEN CONCAT(SUBSTRING(k.wiadomosc, 1, 50), '...')
+               ELSE k.wiadomosc
+           END as wiadomosc_przycieta
+    FROM kontakty k
     LEFT JOIN pracownicy p ON k.pracownik_id = p.id
     ORDER BY k.data_zgloszenia DESC
 ")->fetch_all(MYSQLI_ASSOC); // Pobranie wszystkich wyników jako tablicy asocjacyjnej
+
 
 /******************************************************
  * 3. OBSŁUGA ZMIANY STATUSU ZGŁOSZENIA
@@ -37,21 +43,24 @@ FROM kontakty
 
 // Sprawdzenie czy formularz został wysłany (metoda POST)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
-
     // Zabezpieczenie danych wejściowych:
-    $id = $conn->real_escape_string($_POST['id']); // ID zgłoszenia
-    $status = $conn->real_escape_string($_POST['status']); // Nowy status
+    $id = $conn->real_escape_string($_POST['id']);
+    $status = $conn->real_escape_string($_POST['status']);
 
-    // Zapytanie SQL aktualizujące:
-    $conn->query("UPDATE kontakty SET 
-                status = '$status',
-                pracownik_id = {$_SESSION['user_id']}, // Przypisanie do aktualnego pracownika
-                data_zakonczenia = " . ($status == 'zamknieta' ? "NOW()" : "NULL") . " // Ustawienie daty zamknięcia jeśli status=zamknieta
-                WHERE id = $id");
+    // Budowanie zapytania SQL
+    $data_zakonczenia = ($status == 'zamknieta') ? "NOW()" : "NULL";
+    $sql = "UPDATE kontakty SET 
+            status = '$status',
+            pracownik_id = '{$_SESSION['user_id']}',
+            data_zakonczenia = $data_zakonczenia
+            WHERE id = $id";
+
+    // Wykonanie zapytania
+    $conn->query($sql);
 
     // Przekierowanie z powrotem z komunikatem o sukcesie
     header("Location: kontakty_p.php?updated=1");
-    exit; // Zakończenie skryptu
+    exit;
 }
 ?>
 
@@ -83,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Stylizacja kontenera i tła
         */
         .sekcja-zamowienia {
+
             padding: 80px 0;
             /* Wewnętrzny odstęp góra-dół */
             background: #f5f5f5;
@@ -104,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             /* Zaokrąglone rogi */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             /* Subtelny cień */
+
         }
 
         /* 
@@ -111,12 +122,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Style tekstowe
         */
         h2 {
+
             color: #c00;
             /* Czerwony kolor MeatMaster */
             margin-bottom: 30px;
             /* Odstęp od dołu */
             text-align: center;
             /* Wyśrodkowanie */
+
         }
 
         /* 
@@ -124,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Stylizacja tabeli i jej elementów
         */
         table {
+
             width: 100%;
             /* Pełna szerokość kontenera */
             border-collapse: collapse;
@@ -152,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         tr:hover {
             background-color: #f5f5f5;
             /* Podświetlenie wiersza przy najechaniu */
+
         }
 
         /* 
@@ -159,6 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Stylizacja formularza edycji
         */
         .formularz-edycji {
+
             background: #f9f9f9;
             /* Jasne tło */
             padding: 20px;
@@ -212,6 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .przycisk-edycji:hover {
             background: #a00;
             /* Ciemniejszy czerwony przy najechaniu */
+
         }
 
         /* 
@@ -219,6 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Style dla powiadomień
         */
         .alert {
+
             padding: 15px;
             /* Wewnętrzny odstęp */
             margin-bottom: 20px;
@@ -239,6 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             /* Jasnoczerwone tło */
             color: #a94442;
             /* Ciemnoczerwony tekst */
+
         }
 
         /* 
@@ -246,6 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             - Kolorystyka dla różnych statusów
         */
         .status-nowa {
+
             color: #ff9800;
             /* Pomarańczowy */
             font-weight: bold;
@@ -255,12 +275,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .status-w_trakcie {
             color: #2196f3;
             /* Niebieski */
+
             font-weight: bold;
         }
 
         .status-zamknieta {
+
             color: #4caf50;
             /* Zielony */
+
             font-weight: bold;
         }
     </style>
@@ -317,6 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                         <th>Data</th>
                         <th>Nadawca</th>
                         <th>Temat</th>
+                        <th>Wiadomość</th>
                         <th>Status</th>
                         <th>Pracownik</th>
                         <th>Akcje</th>
@@ -325,11 +349,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                 <tbody>
                     <!-- Pętla przez wszystkie zgłoszenia -->
                     <?php foreach ($kontakty as $k): ?>
+
                         <tr>
                             <td><?= $k['id'] ?></td> <!-- ID zgłoszenia -->
                             <td><?= date('d.m.Y H:i', strtotime($k['data_zgloszenia'])) ?></td> <!-- Data w formacie dzień.miesiąc.rok godzina:minuta -->
                             <td><?= htmlspecialchars($k['imie']) ?></td> <!-- Nazwa nadawcy (zabezpieczona przed XSS) -->
                             <td><?= htmlspecialchars($k['temat']) ?></td> <!-- Temat zgłoszenia -->
+                            <td class="wiadomosc-kontener"> <!-- Kontener dla całej wiadomości -->
+                                <!-- Pełna wiadomość (pokazywana po najechaniu/kliknięciu) -->
+                                <div class="wiadomosc-pełna">
+                                    <?= nl2br(htmlspecialchars($k['wiadomosc'])) ?>
+                                </div>
+                            </td>
+
                             <td class="status-<?= str_replace(' ', '', $k['status']) ?>"> <!-- Klasa CSS w zależności od statusu -->
                                 <?= $k['status'] ?> <!-- Wyświetlenie statusu -->
                             </td>
@@ -341,6 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                                 </button>
                             </td>
                         </tr>
+
                     <?php endforeach; ?>
                 </tbody>
             </table>

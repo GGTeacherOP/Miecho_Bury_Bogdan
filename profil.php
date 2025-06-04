@@ -40,9 +40,11 @@ $uzytkownik = [
 if ($_SESSION['rola'] === 'klient' && isset($_SESSION['user_id'])) {
     $user_id = (int)$_SESSION['user_id'];
 
+
     // Liczba zamówień
     $wynik = $conn->query("SELECT COUNT(*) as liczba FROM zamowienia WHERE klient_id = $user_id");
     $uzytkownik['zamowienia'] = $wynik->fetch_assoc()['liczba'];
+
 
     // Wartość zamówień
     $wynik = $conn->query("SELECT SUM(z.ilosc_kg * z.cena_zl_kg) as wartosc 
@@ -60,8 +62,10 @@ if ($_SESSION['rola'] === 'pracownik') {
 
 // 8. Generowanie inicjałów
 $inicjaly = mb_strtoupper(
+
     mb_substr($uzytkownik['imie'], 0, 1) .
         mb_substr($uzytkownik['nazwisko'], 0, 1),
+
     'UTF-8'
 );
 ?>
@@ -378,7 +382,9 @@ $inicjaly = mb_strtoupper(
 </head>
 
 <body>
+
     <!-- 12. NAGŁÓWEK STRONY (menu nawigacyjne) -->
+
     <header>
         <div class="kontener naglowek-kontener">
             <div class="logo">
@@ -456,7 +462,6 @@ $inicjaly = mb_strtoupper(
                     </div>
                 </div>
 
-                <!-- 13.4. SEKCJA DLA PRACOWNIKÓW (warunkowa) -->
                 <?php if ($_SESSION['rola'] === 'pracownik'): ?>
                     <div class="grupa-danych">
                         <h3>Informacje o pracowniku</h3>
@@ -467,29 +472,42 @@ $inicjaly = mb_strtoupper(
 
                         <!-- Przyciski funkcjonalności pracowniczych -->
                         <div class="przyciski-pracownika">
-                            <?php if (in_array($_SESSION['stanowisko'], ['Kierownik'])): ?>
+                            <?php if (czyWlasciciel()): ?>
+                                <!-- Przyciski dla właściciela - dostęp do wszystkiego -->
                                 <a href="pracownicy_p.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
                                 <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
-                            <?php endif; ?>
-
-                            <?php if (in_array($_SESSION['stanowisko'], ['Kierownik', 'Specjalista HR', 'Logistyk'])): ?>
                                 <a href="kontakty_p.php" class="przycisk-pracownika">Zgłoszenia kontaktowe</a>
-                            <?php endif; ?>
-
-                            <?php if (!in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
                                 <a href="reklamacje_p.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
                                 <a href="zamowienia_p.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
+                            <?php elseif (czyKierownik()): ?>
+                                <!-- Przyciski dla kierownika - tylko towar i kontakty -->
+                                <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
+                                <a href="kontakty_p.php" class="przycisk-pracownika">Zgłoszenia kontaktowe</a>
+                            <?php else: ?>
+                                <!-- Dla innych pracowników - standardowe przyciski -->
+                                <?php if (in_array($_SESSION['stanowisko'], ['Kierownik'])): ?>
+                                    <a href="pracownicy_p.php" class="przycisk-pracownika">Zarządzaj pracownikami</a>
+                                    <a href="towar_p.php" class="przycisk-pracownika">Zarządzaj towarem</a>
+                                <?php endif; ?>
+
+                                <?php if (in_array($_SESSION['stanowisko'], ['Kierownik', 'Specjalista HR', 'Logistyk'])): ?>
+                                    <a href="kontakty_p.php" class="przycisk-pracownika">Zgłoszenia kontaktowe</a>
+                                <?php endif; ?>
+
+                                <?php if (!in_array($_SESSION['stanowisko'], ['Kierownik', 'Programista'])): ?>
+                                    <a href="reklamacje_p.php" class="przycisk-pracownika">Przeglądaj reklamacje</a>
+                                    <a href="zamowienia_p.php" class="przycisk-pracownika">Przeglądaj zamówienia</a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
-            </div>
 
-            <!-- 13.5. FORMULARZ WYLOGOWANIA -->
-            <form method="post">
-                <button type="submit" name="wyloguj" class="przycisk-wyloguj">Wyloguj się</button>
-            </form>
-        </div>
+                <!-- 13.5. FORMULARZ WYLOGOWANIA -->
+                <form method="post">
+                    <button type="submit" name="wyloguj" class="przycisk-wyloguj">Wyloguj się</button>
+                </form>
+            </div>
     </section>
 
     <!-- 14. STOPKA STRONY -->

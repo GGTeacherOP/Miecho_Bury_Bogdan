@@ -1,19 +1,19 @@
 <?php
-/**
- * PLIK: zarzadzanie_pracownikami.php
- * AUTOR: [Twój Nick]
- * DATA: [Data]
- * 
- * Skrypt do zarządzania pracownikami w systemie MeatMaster
- * Wymaga uprawnień Kierownika
- */
-
 // 1. ŁADOWANIE WYMAGANYCH PLIKÓW
-require_once "sesje.php"; // Plik z funkcjami do obsługi sesji
-require_once "db.php";    // Plik z połączeniem do bazy danych
+require_once "sesje.php";
+// Sprawdzenie uprawnień - właściciel lub kierownik
+if (!czyWlasciciel() && !czyKierownik()) {
+    header("Location: brak_dostepu.php");
+    exit();
+}
 
-// 2. SPRAWDZENIE UPRAWNIEŃ
-sprawdzStanowisko(['Kierownik']); // Tylko kierownik ma dostęp
+require_once "db.php";
+
+// 2. SPRAWDZENIE UPRAWNIEŃ - tylko właściciel lub kierownik
+if (!czyWlasciciel()) {
+    header("Location: brak_dostepu.php");
+    exit();
+}
 
 // 3. OBSŁUGA DODAWANIA PRACOWNIKA
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dodaj'])) {
@@ -102,165 +102,246 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
 <!-- 8. STRUKTURA HTML -->
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <!-- 8.1. METADANE -->
     <meta charset="UTF-8"> <!-- Kodowanie znaków UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsywność -->
     <title>MeatMaster - Zarządzanie pracownikami</title> <!-- Tytuł strony -->
-    
+
     <!-- 8.2. LINKI DO ZASOBÓW -->
     <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów -->
     <link rel="icon" type="image/png" href="icon.png"> <!-- Ikona strony -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Ikony FontAwesome -->
-    
+
     <!-- 8.3. STYLE WEWNĘTRZNE -->
     <style>
         /* 8.3.1. SEKCJA PRACOWNIKÓW */
         .sekcja-pracownicy {
-            padding: 80px 0; /* Wewnętrzny odstęp góra-dół */
-            background: #f5f5f5; /* Kolor tła */
-            min-height: calc(100vh - 300px); /* Minimalna wysokość */
+            padding: 80px 0;
+            /* Wewnętrzny odstęp góra-dół */
+            background: #f5f5f5;
+            /* Kolor tła */
+            min-height: calc(100vh - 300px);
+            /* Minimalna wysokość */
         }
 
         /* 8.3.2. KONTENER GŁÓWNY */
         .kontener-pracownicy {
-            max-width: 1200px; /* Maksymalna szerokość */
-            margin: 0 auto; /* Wyśrodkowanie */
-            background: #fff; /* Kolor tła */
-            padding: 40px; /* Wewnętrzny odstęp */
-            border-radius: 8px; /* Zaokrąglone rogi */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Cień */
+            max-width: 1200px;
+            /* Maksymalna szerokość */
+            margin: 0 auto;
+            /* Wyśrodkowanie */
+            background: #fff;
+            /* Kolor tła */
+            padding: 40px;
+            /* Wewnętrzny odstęp */
+            border-radius: 8px;
+            /* Zaokrąglone rogi */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            /* Cień */
         }
 
         /* 8.3.3. NAGŁÓWKI */
         h2 {
-            color: #c00; /* Kolor tekstu */
-            margin-bottom: 30px; /* Odstęp od dołu */
-            text-align: center; /* Wyśrodkowanie */
+            color: #c00;
+            /* Kolor tekstu */
+            margin-bottom: 30px;
+            /* Odstęp od dołu */
+            text-align: center;
+            /* Wyśrodkowanie */
         }
 
         /* 8.3.4. TABELA */
         table {
-            width: 100%; /* Pełna szerokość */
-            border-collapse: collapse; /* Łączenie obramowań */
-            margin-bottom: 30px; /* Odstęp od dołu */
+            width: 100%;
+            /* Pełna szerokość */
+            border-collapse: collapse;
+            /* Łączenie obramowań */
+            margin-bottom: 30px;
+            /* Odstęp od dołu */
         }
 
         /* 8.3.5. KOMÓRKI TABELI */
-        th, td {
-            padding: 12px 15px; /* Wewnętrzny odstęp */
-            text-align: left; /* Wyrównanie tekstu */
-            border-bottom: 1px solid #ddd; /* Linia oddzielająca */
+        th,
+        td {
+            padding: 12px 15px;
+            /* Wewnętrzny odstęp */
+            text-align: left;
+            /* Wyrównanie tekstu */
+            border-bottom: 1px solid #ddd;
+            /* Linia oddzielająca */
         }
 
         /* 8.3.6. NAGŁÓWKI TABELI */
         th {
-            background-color: #c00; /* Kolor tła */
-            color: white; /* Kolor tekstu */
+            background-color: #c00;
+            /* Kolor tła */
+            color: white;
+            /* Kolor tekstu */
         }
 
         /* 8.3.7. EFEKT HOVER NA WIERSZACH */
         tr:hover {
-            background-color: #f5f5f5; /* Kolor tła po najechaniu */
+            background-color: #f5f5f5;
+            /* Kolor tła po najechaniu */
         }
 
         /* 8.3.8. FORMULARZE */
         .formularz {
-            background: #f9f9f9; /* Kolor tła */
-            padding: 20px; /* Wewnętrzny odstęp */
-            border-radius: 8px; /* Zaokrąglone rogi */
-            margin-top: 20px; /* Odstęp od góry */
+            background: #f9f9f9;
+            /* Kolor tła */
+            padding: 20px;
+            /* Wewnętrzny odstęp */
+            border-radius: 8px;
+            /* Zaokrąglone rogi */
+            margin-top: 20px;
+            /* Odstęp od góry */
         }
 
         /* 8.3.9. GRUPY FORMULARZA */
         .formularz-grupa {
-            margin-bottom: 15px; /* Odstęp od dołu */
-            display: flex; /* Układ flex */
-            flex-wrap: wrap; /* Zawijanie wierszy */
-            gap: 15px; /* Odstęp między elementami */
+            margin-bottom: 15px;
+            /* Odstęp od dołu */
+            display: flex;
+            /* Układ flex */
+            flex-wrap: wrap;
+            /* Zawijanie wierszy */
+            gap: 15px;
+            /* Odstęp między elementami */
         }
 
         /* 8.3.10. ELEMENTY FORMULARZA */
-        .formularz-grupa > div {
-            flex: 1; /* Rozciąganie do dostępnej przestrzeni */
-            min-width: 200px; /* Minimalna szerokość */
+        .formularz-grupa>div {
+            flex: 1;
+            /* Rozciąganie do dostępnej przestrzeni */
+            min-width: 200px;
+            /* Minimalna szerokość */
         }
 
         /* 8.3.11. ETYKIETY FORMULARZA */
         .formularz-grupa label {
-            display: block; /* Element blokowy */
-            margin-bottom: 5px; /* Odstęp od dołu */
-            font-weight: bold; /* Pogrubienie tekstu */
+            display: block;
+            /* Element blokowy */
+            margin-bottom: 5px;
+            /* Odstęp od dołu */
+            font-weight: bold;
+            /* Pogrubienie tekstu */
         }
 
         /* 8.3.12. POLA FORMULARZA */
         .formularz-grupa input,
         .formularz-grupa select {
-            width: 100%; /* Pełna szerokość */
-            padding: 8px; /* Wewnętrzny odstęp */
-            border: 1px solid #ddd; /* Obramowanie */
-            border-radius: 4px; /* Zaokrąglone rogi */
+            width: 100%;
+            /* Pełna szerokość */
+            padding: 8px;
+            /* Wewnętrzny odstęp */
+            border: 1px solid #ddd;
+            /* Obramowanie */
+            border-radius: 4px;
+            /* Zaokrąglone rogi */
         }
 
         /* 8.3.13. PRZYCISKI */
         .przycisk {
-            padding: 10px 15px; /* Wewnętrzny odstęp */
-            color: white; /* Kolor tekstu */
-            border: none; /* Brak obramowania */
-            border-radius: 4px; /* Zaokrąglone rogi */
-            cursor: pointer; /* Kursor wskazujący */
-            text-align: center; /* Wyśrodkowanie tekstu */
-            text-decoration: none; /* Brak podkreślenia */
+            padding: 10px 15px;
+            /* Wewnętrzny odstęp */
+            color: white;
+            /* Kolor tekstu */
+            border: none;
+            /* Brak obramowania */
+            border-radius: 4px;
+            /* Zaokrąglone rogi */
+            cursor: pointer;
+            /* Kursor wskazujący */
+            text-align: center;
+            /* Wyśrodkowanie tekstu */
+            text-decoration: none;
+            /* Brak podkreślenia */
         }
 
         /* 8.3.14. KOLORY PRZYCISKÓW */
-        .przycisk-dodaj { background: #4CAF50; } /* Zielony */
-        .przycisk-edytuj { background: #2196F3; } /* Niebieski */
-        .przycisk-usun { background: #f44336; } /* Czerwony */
-        .przycisk-anuluj { background: #9E9E9E; } /* Szary */
+        .przycisk-dodaj {
+            background: #4CAF50;
+        }
+
+        /* Zielony */
+        .przycisk-edytuj {
+            background: #2196F3;
+        }
+
+        /* Niebieski */
+        .przycisk-usun {
+            background: #f44336;
+        }
+
+        /* Czerwony */
+        .przycisk-anuluj {
+            background: #9E9E9E;
+        }
+
+        /* Szary */
 
         /* 8.3.15. EFEKT HOVER NA PRZYCISKACH */
         .przycisk:hover {
-            opacity: 0.8; /* Lekkie przyciemnienie */
+            opacity: 0.8;
+            /* Lekkie przyciemnienie */
         }
 
         /* 8.3.16. KOMUNIKATY */
         .alert {
-            padding: 15px; /* Wewnętrzny odstęp */
-            margin-bottom: 20px; /* Odstęp od dołu */
-            border-radius: 4px; /* Zaokrąglone rogi */
+            padding: 15px;
+            /* Wewnętrzny odstęp */
+            margin-bottom: 20px;
+            /* Odstęp od dołu */
+            border-radius: 4px;
+            /* Zaokrąglone rogi */
         }
 
         /* 8.3.17. KOMUNIKAT SUKCESU */
         .alert-success {
-            background-color: #dff0d8; /* Kolor tła */
-            color: #3c763d; /* Kolor tekstu */
+            background-color: #dff0d8;
+            /* Kolor tła */
+            color: #3c763d;
+            /* Kolor tekstu */
         }
 
         /* 8.3.18. KOMUNIKAT BŁĘDU */
         .alert-error {
-            background-color: #f2dede; /* Kolor tła */
-            color: #a94442; /* Kolor tekstu */
+            background-color: #f2dede;
+            /* Kolor tła */
+            color: #a94442;
+            /* Kolor tekstu */
         }
 
         /* 8.3.19. PRZYCISK NOWEGO PRACOWNIKA */
         .przycisk-nowy {
-            display: inline-block; /* Element liniowo-blokowy */
-            padding: 10px 15px; /* Wewnętrzny odstęp */
-            background: #4CAF50; /* Kolor tła */
-            color: white; /* Kolor tekstu */
-            border: none; /* Brak obramowania */
-            border-radius: 4px; /* Zaokrąglone rogi */
-            cursor: pointer; /* Kursor wskazujący */
-            margin-bottom: 20px; /* Odstęp od dołu */
+            display: inline-block;
+            /* Element liniowo-blokowy */
+            padding: 10px 15px;
+            /* Wewnętrzny odstęp */
+            background: #4CAF50;
+            /* Kolor tła */
+            color: white;
+            /* Kolor tekstu */
+            border: none;
+            /* Brak obramowania */
+            border-radius: 4px;
+            /* Zaokrąglone rogi */
+            cursor: pointer;
+            /* Kursor wskazujący */
+            margin-bottom: 20px;
+            /* Odstęp od dołu */
         }
 
         /* 8.3.20. EFEKT HOVER NA PRZYCISKU NOWEGO */
         .przycisk-nowy:hover {
-            opacity: 0.8; /* Lekkie przyciemnienie */
+            opacity: 0.8;
+            /* Lekkie przyciemnienie */
         }
     </style>
 </head>
+
 <body>
     <!-- 9. NAGŁÓWEK STRONY -->
     <header>
@@ -269,7 +350,7 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
             <div class="logo">
                 <img src="Logo.png" alt="MeatMaster Logo">
             </div>
-            
+
             <!-- 9.2. NAWIGACJA GŁÓWNA -->
             <nav>
                 <ul>
@@ -329,38 +410,38 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
                 -->
                 <tbody>
                     <?php foreach ($pracownicy as $pracownik): ?>
-                    <tr>
-                        <!-- ID PRACOWNIKA -->
-                        <td><?= $pracownik['id'] ?></td>
-                        
-                        <!-- IMIĘ PRACOWNIKA (z zabezpieczeniem XSS) -->
-                        <td><?= htmlspecialchars($pracownik['imie']) ?></td>
-                        
-                        <!-- NAZWISKO PRACOWNIKA (z zabezpieczeniem XSS) -->
-                        <td><?= htmlspecialchars($pracownik['nazwisko']) ?></td>
-                        
-                        <!-- EMAIL PRACOWNIKA (z zabezpieczeniem XSS) -->
-                        <td><?= htmlspecialchars($pracownik['email']) ?></td>
-                        
-                        <!-- TELEFON PRACOWNIKA (z zabezpieczeniem XSS) -->
-                        <td><?= htmlspecialchars($pracownik['telefon'] ?? '-') ?></td>
-                        
-                        <!-- STANOWISKO PRACOWNIKA (z zabezpieczeniem XSS) -->
-                        <td><?= htmlspecialchars($pracownik['stanowisko']) ?></td>
-                        
-                        <!-- DATA ZATRUDNIENIA (sformatowana) -->
-                        <td><?= date('d.m.Y', strtotime($pracownik['data_zatrudnienia'])) ?></td>
-                        
-                        <!-- WYNAGRODZENIE (sformatowane) -->
-                        <td><?= number_format($pracownik['wynagrodzenie'], 2) ?> zł</td>
-                        
-                        <!-- PRZYCISKI AKCJI -->
-                        <td>
-                            <!-- 
+                        <tr>
+                            <!-- ID PRACOWNIKA -->
+                            <td><?= $pracownik['id'] ?></td>
+
+                            <!-- IMIĘ PRACOWNIKA (z zabezpieczeniem XSS) -->
+                            <td><?= htmlspecialchars($pracownik['imie']) ?></td>
+
+                            <!-- NAZWISKO PRACOWNIKA (z zabezpieczeniem XSS) -->
+                            <td><?= htmlspecialchars($pracownik['nazwisko']) ?></td>
+
+                            <!-- EMAIL PRACOWNIKA (z zabezpieczeniem XSS) -->
+                            <td><?= htmlspecialchars($pracownik['email']) ?></td>
+
+                            <!-- TELEFON PRACOWNIKA (z zabezpieczeniem XSS) -->
+                            <td><?= htmlspecialchars($pracownik['telefon'] ?? '-') ?></td>
+
+                            <!-- STANOWISKO PRACOWNIKA (z zabezpieczeniem XSS) -->
+                            <td><?= htmlspecialchars($pracownik['stanowisko']) ?></td>
+
+                            <!-- DATA ZATRUDNIENIA (sformatowana) -->
+                            <td><?= date('d.m.Y', strtotime($pracownik['data_zatrudnienia'])) ?></td>
+
+                            <!-- WYNAGRODZENIE (sformatowane) -->
+                            <td><?= number_format($pracownik['wynagrodzenie'], 2) ?> zł</td>
+
+                            <!-- PRZYCISKI AKCJI -->
+                            <td>
+                                <!-- 
                               PRZYCISK EDYCJI 
                               - Wywołuje funkcję JS z parametrami pracownika
                             -->
-                            <button onclick="pokazFormularzEdycji(
+                                <button onclick="pokazFormularzEdycji(
                                 '<?= $pracownik['id'] ?>',
                                 '<?= htmlspecialchars($pracownik['imie'], ENT_QUOTES) ?>',
                                 '<?= htmlspecialchars($pracownik['nazwisko'], ENT_QUOTES) ?>',
@@ -370,14 +451,14 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
                                 '<?= $pracownik['data_zatrudnienia'] ?>',
                                 '<?= $pracownik['wynagrodzenie'] ?>'
                             )">Edytuj</button>
-                            
-                            <!-- 
+
+                                <!-- 
                               PRZYCISK USUWANIA 
                               - Wywołuje funkcję JS z ID pracownika
                             -->
-                            <button onclick="potwierdzUsuniecie(<?= $pracownik['id'] ?>)">Usuń</button>
-                        </td>
-                    </tr>
+                                <button onclick="potwierdzUsuniecie(<?= $pracownik['id'] ?>)">Usuń</button>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
@@ -552,7 +633,7 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
                     <p><i class="fas fa-phone"></i> +48 694 202 137</p>
                     <p><i class="fas fa-envelope"></i> kontakt@meatmaster.pl</p>
                 </div>
-                
+
                 <!-- KOLUMNA 2: GODZINY OTWARCIA -->
                 <div class="kolumna-stopki">
                     <h3>Godziny otwarcia</h3>
@@ -560,7 +641,7 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
                     <p>Sob: 7:00 - 14:00</p>
                     <p>Niedz: Zamknięte</p>
                 </div>
-                
+
                 <!-- KOLUMNA 3: LINKI DO SOCIAL MEDIA -->
                 <div class="kolumna-stopki">
                     <h3>Śledź nas</h3>
@@ -571,7 +652,7 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
                     </div>
                 </div>
             </div>
-            
+
             <!-- INFORMACJA O PRAWACH AUTORSKICH -->
             <div class="prawa-autorskie">
                 <p>&copy; 2025 MeatMaster - Hurtownia Mięsa. Wszelkie prawa zastrzeżone.</p>
@@ -651,4 +732,5 @@ $stanowiska = ['Kierownik', 'Programista', 'Pracownik linii pakowania', 'Magazyn
         }
     </script>
 </body>
+
 </html>

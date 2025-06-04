@@ -13,12 +13,12 @@
 
 // Załączenie mechanizmu sesji i kontroli dostępu
 require_once "sesje.php";
+// Weryfikacja czy użytkownik ma uprawnienia - właściciel lub kierownik
+if (!czyWlasciciel() && !czyKierownik()) {
+    header("Location: brak_dostepu.php");
+    exit();
+}
 
-// Weryfikacja czy użytkownik ma uprawnienia kierownika
-// Funkcja automatycznie przekieruje na stronę logowania jeśli brak dostępu
-sprawdzStanowisko(['Kierownik']);
-
-// Załączenie konfiguracji połączenia z bazą danych MySQL
 require_once "db.php";
 
 // =============================================================================
@@ -54,10 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
                     cena_zl_kg = ?,     -- Parametr 2: Cena za kg
                     kategoria = ?,      -- Parametr 3: Kategoria
                     dostepnosc = ?      -- Parametr 4: Status dostępności
+
                     WHERE id = ?";
 
     // Inicjalizacja prepared statement
     $stmt = $conn->prepare($update_query);
+
 
     // Powiązanie parametrów (typów):
     // s - string (nazwa)
@@ -94,12 +96,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
     <!-- Informacje nagłówkowe -->
     <title>MeatMaster | Panel zarządzania towarami</title>
 
     <!-- Załączenie arkuszy stylów -->
     <link rel="stylesheet" href="style.css"> <!-- Główny arkusz stylów -->
     <link rel="icon" type="image/png" href="icon.png"> <!-- Favicon -->
+
 
     <!-- Biblioteka ikon Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -108,16 +112,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
     <style>
         /* Główny kontener sekcji */
         .sekcja-towary {
+
             padding: 80px 0;
             /* Wewnętrzny odstęp */
             background: #f5f5f5;
             /* Kolor tła */
             min-height: calc(100vh - 300px);
             /* Minimalna wysokość */
+
         }
 
         /* Kontener z zawartością */
         .kontener-towary {
+
             max-width: 1000px;
             /* Maksymalna szerokość */
             margin: 0 auto;
@@ -130,20 +137,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             /* Zaokrąglone rogi */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             /* Cień */
+
         }
 
         /* Tabela z towarami */
         table {
+
             width: 100%;
             /* Pełna szerokość */
             border-collapse: collapse;
             /* Usunięcie podwójnych obramowań */
             margin-bottom: 30px;
             /* Odstęp od dołu */
+
         }
 
         /* Nagłówki tabeli */
         th {
+
             background-color: #c00;
             /* Czerwone tło */
             color: white;
@@ -165,10 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         tr:hover {
             background-color: #f5f5f5;
             /* Jasnoszare tło */
+
         }
 
         /* Formularz edycji */
         .formularz-edycji {
+
             background: #f9f9f9;
             /* Jasne tło */
             padding: 20px;
@@ -177,27 +190,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             /* Zaokrąglone rogi */
             margin-top: 20px;
             /* Odstęp od góry */
+
         }
 
         /* Grupy pól formularza */
         .formularz-grupa {
+
             margin-bottom: 15px;
             /* Odstęp między grupami */
+
         }
 
         /* Przyciski */
         .przycisk-edycji {
+
             background: #c00;
             /* Czerwony kolor */
             color: white;
             /* Biały tekst */
             transition: background 0.3s;
             /* Efekt przejścia */
+
         }
 
         .przycisk-edycji:hover {
+
             background: #a00;
             /* Ciemniejszy czerwony */
+
         }
     </style>
 </head>
