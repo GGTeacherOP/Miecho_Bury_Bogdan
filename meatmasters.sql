@@ -3,7 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+
 -- Generation Time: Cze 04, 2025 at 09:12 PM
+
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -152,6 +154,24 @@ INSERT INTO `kontakty` (`id`, `klient_id`, `pracownik_id`, `imie`, `email`, `tel
 (4, 7, 2, 'Agnieszka Dąbrowska', 'rezerwacje@podkogutem.pl', '508123456', 'zamowienie', 'Pilnie potrzebujemy 20kg mięsa do kebabu na weekend.', 'zamknieta', '2025-05-18 08:30:00', '2025-05-18 10:15:00'),
 (5, 12, NULL, 'Grzegorz Lewandowski', 'pizza@bellaitalia.pl', '603987654', 'inne', 'Czy prowadzą Państwo szkolenia z przygotowania mięsa dla restauracji?', 'nowa', '2025-05-20 13:10:00', NULL),
 (6, 5, 1, 'Katarzyna Wójcik', 'office@elektroplus.com', '605987654', 'reklamacja', 'Otrzymaliśmy niepełną dostawę w zamówieniu nr 245.', 'w_trakcie', '2025-05-21 10:45:00', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Zastąpiona struktura widoku `kontakty_widok`
+-- (See below for the actual view)
+--
+CREATE TABLE `kontakty_widok` (
+`id_kontaktu` int(11)
+,`data_zgloszenia` datetime
+,`nadawca` varchar(67)
+,`firma` varchar(100)
+,`temat` enum('zamowienie','reklamacja','wspolpraca','inne')
+,`wiadomosc_skrocona` varchar(50)
+,`status` enum('nowa','w_trakcie','zamknieta')
+,`pracownik_odpowiedzialny` varchar(101)
+,`data_zakonczenia` datetime
+);
 
 -- --------------------------------------------------------
 
@@ -396,6 +416,15 @@ CREATE TABLE `zamowienia_widok` (
 ,`status` enum('oczekujące','w realizacji','wysłane','zrealizowane','anulowane')
 ,`uwagi` varchar(255)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `kontakty_widok`
+--
+DROP TABLE IF EXISTS `kontakty_widok`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `kontakty_widok`  AS SELECT `k`.`id` AS `id_kontaktu`, `k`.`data_zgloszenia` AS `data_zgloszenia`, concat(`k`.`imie`,if(`k`.`klient_id` is not null,concat(' (ID:',`k`.`klient_id`,')'),'')) AS `nadawca`, ifnull(`kl`.`nazwa_firmy`,'-') AS `firma`, `k`.`temat` AS `temat`, substr(`k`.`wiadomosc`,1,50) AS `wiadomosc_skrocona`, `k`.`status` AS `status`, ifnull(concat(`p`.`imie`,' ',`p`.`nazwisko`),'Nieprzypisane') AS `pracownik_odpowiedzialny`, `k`.`data_zakonczenia` AS `data_zakonczenia` FROM ((`kontakty` `k` left join `pracownicy` `p` on(`k`.`pracownik_id` = `p`.`id`)) left join `klienci` `kl` on(`k`.`klient_id` = `kl`.`id`)) ORDER BY `k`.`data_zgloszenia` DESC ;
 
 -- --------------------------------------------------------
 
