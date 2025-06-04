@@ -96,9 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .sekcja-zamowienia {
 
 
-            padding: 80px 0; /* Wewnętrzny odstęp góra-dół */
-            background: #f5f5f5; /* Kolor tła */
-            min-height: calc(100vh - 300px); /* Minimalna wysokość (strona - header - footer) */
+
+            padding: 80px 0;
+            /* Wewnętrzny odstęp góra-dół */
+            background: #f5f5f5;
+            /* Kolor tła */
+            min-height: calc(100vh - 300px);
+            /* Minimalna wysokość (strona - header - footer) */
+
+
         }
 
         .kontener-zamowienia {
@@ -110,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtelny cień */
 
 
+
         }
 
         /* 
@@ -119,9 +126,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         h2 {
 
 
+
             color: #c00; /* Czerwony kolor MeatMaster */
             margin-bottom: 30px; /* Odstęp od dołu */
             text-align: center; /* Wyśrodkowanie */
+
+
 
 
         }
@@ -133,9 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         table {
 
 
+
             width: 100%; /* Pełna szerokość kontenera */
             border-collapse: collapse; /* Łączenie obramowań */
             margin-bottom: 30px; /* Odstęp od dołu */
+
 
         }
 
@@ -152,7 +164,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
 
         tr:hover {
 
+
             background-color: #f5f5f5; /* Podświetlenie wiersza przy najechaniu */
+
 
 
         }
@@ -164,10 +178,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .formularz-edycji {
 
 
+
             background: #f9f9f9; /* Jasne tło */
             padding: 20px; /* Wewnętrzny odstęp */
             border-radius: 8px; /* Zaokrąglone rogi */
             margin-top: 20px; /* Odstęp od góry */
+
 
         }
 
@@ -202,6 +218,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
             background: #a00; /* Ciemniejszy czerwony przy najechaniu */
 
 
+
+
         }
 
         /* 
@@ -224,8 +242,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
 
         .alert-error {
 
+
             background-color: #f2dede; /* Jasnoczerwone tło */
             color: #a94442; /* Ciemnoczerwony tekst */
+
 
 
         }
@@ -237,12 +257,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .status-nowa {
 
 
+
             color: #ff9800; /* Pomarańczowy */
             font-weight: bold; /* Pogrubienie */
+
         }
 
         .status-w_trakcie {
             color: #2196f3; /* Niebieski */
+
 
 
             font-weight: bold;
@@ -251,7 +274,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         .status-zamknieta {
 
 
+
             color: #4caf50; /* Zielony */
+
 
 
             font-weight: bold;

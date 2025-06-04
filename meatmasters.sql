@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1
 
--- Generation Time: Maj 19, 2025 at 08:37 PM
+-- Generation Time: Cze 04, 2025 at 09:12 PM
 
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
@@ -101,6 +101,7 @@ CREATE TABLE `klienci` (
 --
 
 INSERT INTO `klienci` (`id`, `imie`, `nazwisko`, `email`, `haslo`, `telefon`, `typ_konta`, `nazwa_firmy`, `nip`, `data_rejestracji`) VALUES
+(0, 'Antoni', 'Augustyn', 'antoni@gmail.com', 'Antoni.123', '000999888', 'klient indywidualny', NULL, NULL, '2025-06-04 18:33:16'),
 (1, 'Jan', 'Kowalski', 'jan.kowalski@email.com', 'haslo1234', '123456789', 'klient indywidualny', NULL, NULL, '2023-01-14 10:00:00'),
 (2, 'Anna', 'Nowak', 'anna.nowak@email.com', 'haslo1233', '987654321', 'klient indywidualny', NULL, NULL, '2023-02-19 11:30:00'),
 (3, 'Piotr', 'Wiśniewski', 'piotr.w@email.com', 'haslo6123', '555111222', 'klient indywidualny', NULL, NULL, '2023-03-09 09:15:00'),
@@ -356,7 +357,10 @@ INSERT INTO `zamowienia` (`id`, `klient_id`, `imie`, `nazwisko`, `firma`, `nip`,
 (6, 5, 'Katarzyna', 'Wójcik', 'ElektroPlus Sp. z o.o.', '9876543210', 'al. Techniczna 15, 40-001 Katowice', '605987654', 'office@elektroplus.com', 'Rostbef wołowy; Karkówka wieprzowa', 12.30, '2025-05-08 13:45:00', 'wysłane', 'Dostawa w godzinach 10-14'),
 (7, 10, 'Adam', 'Mazur', NULL, NULL, 'ul. Leśna 8, 60-001 Poznań', '609876543', 'adam.m@email.com', 'Filet z kurczaka; Udka z kurczaka', 6.25, '2025-05-10 17:30:00', 'zrealizowane', 'Preferowana dostawa w piątek'),
 (8, 8, 'Robert', 'Kozłowski', 'Bistro U Roberta', '9988776655', 'pl. Centralny 2, 70-001 Szczecin', '509876543', 'robert@bistro.pl', 'Mielonka wołowa; Schab wieprzowy', 10.00, '2025-05-11 10:15:00', 'w realizacji', NULL),
-(9, 3, 'Piotr', 'Wiśniewski', NULL, NULL, 'ul. Ogrodowa 4, 20-001 Lublin', '555111222', 'piotr.w@email.com', 'Rostbef wołowy', 3.75, '2025-05-12 08:45:00', 'oczekujące', 'Preferowane mięso z małą ilością tłuszczu');
+(9, 3, 'Piotr', 'Wiśniewski', NULL, NULL, 'ul. Ogrodowa 4, 20-001 Lublin', '555111222', 'piotr.w@email.com', 'Rostbef wołowy', 3.75, '2025-05-12 08:45:00', 'oczekujące', 'Preferowane mięso z małą ilością tłuszczu'),
+(10, 0, 'Antoni', 'Augustyn', NULL, NULL, NULL, '000999888', 'antoni@gmail.com', 'Udka z kurczaka; Mieszanka do kebaba', 92.00, '2025-06-04 20:33:59', 'oczekujące', NULL),
+(11, 0, 'Antoni', 'Augustyn', NULL, NULL, NULL, '000999888', 'antoni@gmail.com', 'Mięso do kebaba drobiowe; Karkówka wieprzowa', 21.70, '2025-06-04 20:34:48', 'wysłane', NULL),
+(12, 0, 'Antoni', 'Augustyn', NULL, NULL, NULL, '000999888', 'antoni@gmail.com', 'Udka z kurczaka', 2.00, '2025-06-04 21:00:12', 'oczekujące', NULL);
 
 -- --------------------------------------------------------
 
@@ -389,7 +393,8 @@ INSERT INTO `zamowienia_towary` (`zamowienie_id`, `towar_id`, `ilosc_kg`, `cena_
 (5, 1, 5.00, 85.00),
 (5, 7, 20.00, 27.50),
 (6, 2, 10.00, 27.99),
-(6, 4, 5.00, 34.99);
+(6, 4, 5.00, 34.99),
+(11, 5, 0.50, 27.99);
 
 -- --------------------------------------------------------
 
@@ -542,7 +547,7 @@ ALTER TABLE `dostawy`
 -- AUTO_INCREMENT for table `kontakty`
 --
 ALTER TABLE `kontakty`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `reklamacje`
@@ -560,7 +565,7 @@ ALTER TABLE `towary`
 -- AUTO_INCREMENT for table `zamowienia`
 --
 ALTER TABLE `zamowienia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables

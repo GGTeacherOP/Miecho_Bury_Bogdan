@@ -105,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
     
 
 
+
     <!-- Biblioteka ikon Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -114,9 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         .sekcja-towary {
 
 
+
             padding: 80px 0; /* Wewnętrzny odstęp */
             background: #f5f5f5; /* Kolor tła */
             min-height: calc(100vh - 300px); /* Minimalna wysokość */
+
 
 
         }
@@ -125,12 +128,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         .kontener-towary {
 
 
+
             max-width: 1000px; /* Maksymalna szerokość */
             margin: 0 auto; /* Wyśrodkowanie */
             background: #fff; /* Białe tło */
             padding: 40px; /* Wewnętrzne odstępy */
             border-radius: 8px; /* Zaokrąglone rogi */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Cień */
+
+
 
 
         }
@@ -143,6 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             margin-bottom: 30px; /* Odstęp od dołu */
 
 
+
         }
 
         /* Nagłówki tabeli */
@@ -151,6 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
             background-color: #c00; /* Czerwone tło */
             color: white; /* Biały tekst */
+
 
         }
 
@@ -167,10 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             background-color: #f5f5f5; /* Jasnoszare tło */
 
 
+
         }
 
         /* Formularz edycji */
         .formularz-edycji {
+
 
 
             background: #f9f9f9; /* Jasne tło */
@@ -179,13 +189,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
             margin-top: 20px; /* Odstęp od góry */
 
 
+
         }
 
         /* Grupy pól formularza */
         .formularz-grupa {
 
 
+
             margin-bottom: 15px; /* Odstęp między grupami */
+
+
 
 
         }
@@ -204,6 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
         }
 
 
+
             background: #c00; /* Czerwony kolor */
             color: white; /* Biały tekst */
             transition: background 0.3s; /* Efekt przejścia */
@@ -213,6 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edytuj'])) {
 
 
             background: #a00; /* Ciemniejszy czerwony */
+
 
 
         }
