@@ -45,7 +45,9 @@ $kontakty = $conn->query("
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
     // Zabezpieczenie danych wejściowych:
     $id = $conn->real_escape_string($_POST['id']);
+
     $status = $conn->real_escape_string($_POST['status']);
+
 
     // Budowanie zapytania SQL
     $data_zakonczenia = ($status == 'zamknieta') ? "NOW()" : "NULL";
@@ -93,27 +95,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .sekcja-zamowienia {
 
-            padding: 80px 0;
-            /* Wewnętrzny odstęp góra-dół */
-            background: #f5f5f5;
-            /* Kolor tła */
-            min-height: calc(100vh - 300px);
-            /* Minimalna wysokość (strona - header - footer) */
+
+            padding: 80px 0; /* Wewnętrzny odstęp góra-dół */
+            background: #f5f5f5; /* Kolor tła */
+            min-height: calc(100vh - 300px); /* Minimalna wysokość (strona - header - footer) */
         }
 
         .kontener-zamowienia {
-            max-width: 1200px;
-            /* Maksymalna szerokość zawartości */
-            margin: 0 auto;
-            /* Wyśrodkowanie */
-            background: #fff;
-            /* Białe tło */
-            padding: 40px;
-            /* Wewnętrzny odstęp */
-            border-radius: 8px;
-            /* Zaokrąglone rogi */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            /* Subtelny cień */
+            max-width: 1200px; /* Maksymalna szerokość zawartości */
+            margin: 0 auto; /* Wyśrodkowanie */
+            background: #fff; /* Białe tło */
+            padding: 40px; /* Wewnętrzny odstęp */
+            border-radius: 8px; /* Zaokrąglone rogi */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+
 
         }
 
@@ -123,12 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         h2 {
 
-            color: #c00;
-            /* Czerwony kolor MeatMaster */
-            margin-bottom: 30px;
-            /* Odstęp od dołu */
-            text-align: center;
-            /* Wyśrodkowanie */
+
+            color: #c00; /* Czerwony kolor MeatMaster */
+            margin-bottom: 30px; /* Odstęp od dołu */
+            text-align: center; /* Wyśrodkowanie */
+
 
         }
 
@@ -138,34 +132,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         table {
 
-            width: 100%;
-            /* Pełna szerokość kontenera */
-            border-collapse: collapse;
-            /* Łączenie obramowań */
-            margin-bottom: 30px;
-            /* Odstęp od dołu */
+
+            width: 100%; /* Pełna szerokość kontenera */
+            border-collapse: collapse; /* Łączenie obramowań */
+            margin-bottom: 30px; /* Odstęp od dołu */
+
         }
 
-        th,
-        td {
-            padding: 12px 15px;
-            /* Wewnętrzny odstęp */
-            text-align: left;
-            /* Wyrównanie tekstu do lewej */
-            border-bottom: 1px solid #ddd;
-            /* Linia oddzielająca wiersze */
+        th, td {
+            padding: 12px 15px; /* Wewnętrzny odstęp */
+            text-align: left; /* Wyrównanie tekstu do lewej */
+            border-bottom: 1px solid #ddd; /* Linia oddzielająca wiersze */
         }
 
         th {
-            background-color: #c00;
-            /* Czerwone tło nagłówków */
-            color: white;
-            /* Biały tekst */
+            background-color: #c00; /* Czerwone tło nagłówków */
+            color: white; /* Biały tekst */
         }
 
         tr:hover {
-            background-color: #f5f5f5;
-            /* Podświetlenie wiersza przy najechaniu */
+
+            background-color: #f5f5f5; /* Podświetlenie wiersza przy najechaniu */
+
 
         }
 
@@ -175,59 +163,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .formularz-edycji {
 
-            background: #f9f9f9;
-            /* Jasne tło */
-            padding: 20px;
-            /* Wewnętrzny odstęp */
-            border-radius: 8px;
-            /* Zaokrąglone rogi */
-            margin-top: 20px;
-            /* Odstęp od góry */
+
+            background: #f9f9f9; /* Jasne tło */
+            padding: 20px; /* Wewnętrzny odstęp */
+            border-radius: 8px; /* Zaokrąglone rogi */
+            margin-top: 20px; /* Odstęp od góry */
+
         }
 
         .formularz-grupa {
-            margin-bottom: 15px;
-            /* Odstęp między grupami formularza */
+            margin-bottom: 15px; /* Odstęp między grupami formularza */
         }
 
         .formularz-grupa label {
-            display: block;
-            /* Etykieta w nowej linii */
-            margin-bottom: 5px;
-            /* Odstęp od pola */
-            font-weight: bold;
-            /* Pogrubiona etykieta */
+            display: block; /* Etykieta w nowej linii */
+            margin-bottom: 5px; /* Odstęp od pola */
+            font-weight: bold; /* Pogrubiona etykieta */
         }
 
         .formularz-grupa select {
-            width: 100%;
-            /* Pełna szerokość */
-            padding: 8px;
-            /* Wewnętrzny odstęp */
-            border: 1px solid #ddd;
-            /* Szara obramówka */
-            border-radius: 4px;
-            /* Lekko zaokrąglone rogi */
+            width: 100%; /* Pełna szerokość */
+            padding: 8px; /* Wewnętrzny odstęp */
+            border: 1px solid #ddd; /* Szara obramówka */
+            border-radius: 4px; /* Lekko zaokrąglone rogi */
         }
 
         .przycisk-edycji {
-            padding: 10px 15px;
-            /* Wewnętrzny odstęp */
-            background: #c00;
-            /* Czerwony MeatMaster */
-            color: white;
-            /* Biały tekst */
-            border: none;
-            /* Brak obramowania */
-            border-radius: 4px;
-            /* Zaokrąglone rogi */
-            cursor: pointer;
-            /* Kursor wskazujący */
+            padding: 10px 15px; /* Wewnętrzny odstęp */
+            background: #c00; /* Czerwony MeatMaster */
+            color: white; /* Biały tekst */
+            border: none; /* Brak obramowania */
+            border-radius: 4px; /* Zaokrąglone rogi */
+            cursor: pointer; /* Kursor wskazujący */
         }
 
         .przycisk-edycji:hover {
-            background: #a00;
-            /* Ciemniejszy czerwony przy najechaniu */
+
+            background: #a00; /* Ciemniejszy czerwony przy najechaniu */
+
 
         }
 
@@ -237,26 +210,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .alert {
 
-            padding: 15px;
-            /* Wewnętrzny odstęp */
-            margin-bottom: 20px;
-            /* Odstęp od dołu */
-            border-radius: 4px;
-            /* Zaokrąglone rogi */
+
+            padding: 15px; /* Wewnętrzny odstęp */
+            margin-bottom: 20px; /* Odstęp od dołu */
+            border-radius: 4px; /* Zaokrąglone rogi */
+
         }
 
         .alert-success {
-            background-color: #dff0d8;
-            /* Jasnozielone tło */
-            color: #3c763d;
-            /* Ciemnozielony tekst */
+            background-color: #dff0d8; /* Jasnozielone tło */
+            color: #3c763d; /* Ciemnozielony tekst */
         }
 
         .alert-error {
-            background-color: #f2dede;
-            /* Jasnoczerwone tło */
-            color: #a94442;
-            /* Ciemnoczerwony tekst */
+
+            background-color: #f2dede; /* Jasnoczerwone tło */
+            color: #a94442; /* Ciemnoczerwony tekst */
+
 
         }
 
@@ -266,23 +236,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
         */
         .status-nowa {
 
-            color: #ff9800;
-            /* Pomarańczowy */
-            font-weight: bold;
-            /* Pogrubienie */
+
+            color: #ff9800; /* Pomarańczowy */
+            font-weight: bold; /* Pogrubienie */
         }
 
         .status-w_trakcie {
-            color: #2196f3;
-            /* Niebieski */
+            color: #2196f3; /* Niebieski */
+
 
             font-weight: bold;
         }
 
         .status-zamknieta {
 
-            color: #4caf50;
-            /* Zielony */
+
+            color: #4caf50; /* Zielony */
+
 
             font-weight: bold;
         }
@@ -350,6 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                     <!-- Pętla przez wszystkie zgłoszenia -->
                     <?php foreach ($kontakty as $k): ?>
 
+
                         <tr>
                             <td><?= $k['id'] ?></td> <!-- ID zgłoszenia -->
                             <td><?= date('d.m.Y H:i', strtotime($k['data_zgloszenia'])) ?></td> <!-- Data w formacie dzień.miesiąc.rok godzina:minuta -->
@@ -373,6 +344,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['zmien_status'])) {
                                 </button>
                             </td>
                         </tr>
+
 
                     <?php endforeach; ?>
                 </tbody>

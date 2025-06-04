@@ -19,8 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wyloguj'])) {
 }
 
 // 4. Funkcja do bezpiecznego wyświetlania tekstu
-function safeText($text)
-{
+function safeText($text) {
     return htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
@@ -44,6 +43,7 @@ if ($_SESSION['rola'] === 'klient' && isset($_SESSION['user_id'])) {
     // Liczba zamówień
     $wynik = $conn->query("SELECT COUNT(*) as liczba FROM zamowienia WHERE klient_id = $user_id");
     $uzytkownik['zamowienia'] = $wynik->fetch_assoc()['liczba'];
+    
 
 
     // Wartość zamówień
@@ -63,15 +63,15 @@ if ($_SESSION['rola'] === 'pracownik') {
 // 8. Generowanie inicjałów
 $inicjaly = mb_strtoupper(
 
-    mb_substr($uzytkownik['imie'], 0, 1) .
-        mb_substr($uzytkownik['nazwisko'], 0, 1),
+    mb_substr($uzytkownik['imie'], 0, 1) . 
+    mb_substr($uzytkownik['nazwisko'], 0, 1),
+
 
     'UTF-8'
 );
 ?>
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -81,6 +81,7 @@ $inicjaly = mb_strtoupper(
     <link rel="icon" type="image/png" href="icon.png"> <!-- Ikona strony -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Ikony FontAwesome -->
     <style>
+
         /* Główna sekcja profilu - tło i minimalna wysokość */
         .sekcja-profilu {
             padding: 80px 0;
@@ -378,12 +379,14 @@ $inicjaly = mb_strtoupper(
                 /* Pełna szerokość kontenera */
             }
         }
+
     </style>
 </head>
-
 <body>
 
-    <!-- 12. NAGŁÓWEK STRONY (menu nawigacyjne) -->
+
+      <!-- 12. NAGŁÓWEK STRONY (menu nawigacyjne) -->
+
 
     <header>
         <div class="kontener naglowek-kontener">
@@ -548,5 +551,4 @@ $inicjaly = mb_strtoupper(
         </div>
     </footer>
 </body>
-
 </html>
