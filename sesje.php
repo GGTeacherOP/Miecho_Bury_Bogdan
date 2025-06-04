@@ -1,3 +1,4 @@
+
 <?php
 // Rozpoczęcie sesji - musi być na początku przed jakimkolwiek outputem
 session_start();
@@ -43,6 +44,24 @@ function sprawdzStanowisko($wymaganeStanowiska)
 }
 
 /**
+ * Sprawdza czy użytkownik jest właścicielem
+ * @return bool True jeśli jest właścicielem, false w przeciwnym wypadku
+ */
+function czyWlasciciel()
+{
+    return czyZalogowany() && $_SESSION['rola'] === 'pracownik' && $_SESSION['stanowisko'] === 'Właściciel';
+}
+
+/**
+ * Sprawdza czy użytkownik jest kierownikiem
+ * @return bool True jeśli jest kierownikiem, false w przeciwnym wypadku
+ */
+function czyKierownik()
+{
+    return czyZalogowany() && $_SESSION['rola'] === 'pracownik' && $_SESSION['stanowisko'] === 'Kierownik';
+}
+
+/**
  * Pobiera typ konta klienta (tylko dla roli 'klient')
  * @return string|null Typ konta klienta lub null jeśli nie dotyczy
  */
@@ -79,7 +98,7 @@ function wyloguj()
 
     // Zniszcz sesję
     session_destroy();
-    
+
     // Przekieruj na stronę logowania
     header("Location: logowanie.php");
     exit(); // Zakończ wykonanie skryptu

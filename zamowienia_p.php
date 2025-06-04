@@ -1,10 +1,12 @@
 <?php
 require_once "sesje.php";
-// Sprawdza czy użytkownik ma odpowiednie stanowisko do dostępu
-sprawdzStanowisko(['Pracownik linii pakowania', 'Magazynier', 'Księgowy', 'Specjalista HR', 'Logistyk']);
+// Sprawdza czy użytkownik ma odpowiednie stanowisko do dostępu - dodajemy właściciela
+if (!czyWlasciciel() && !in_array($_SESSION['stanowisko'], ['Pracownik linii pakowania', 'Magazynier', 'Księgowy', 'Specjalista HR', 'Logistyk'])) {
+    header("Location: brak_dostepu.php");
+    exit();
+}
 
 require_once "db.php";
-
 // Pobiera dane zamówień z bazy danych
 $query = "SELECT * FROM zamowienia_widok";
 $result = $conn->query($query);

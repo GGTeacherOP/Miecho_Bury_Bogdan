@@ -3,7 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+
 -- Generation Time: Maj 19, 2025 at 08:37 PM
+
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -193,7 +195,7 @@ CREATE TABLE `pracownicy` (
 --
 
 INSERT INTO `pracownicy` (`id`, `imie`, `nazwisko`, `email`, `haslo`, `telefon`, `stanowisko`, `data_zatrudnienia`, `wynagrodzenie`) VALUES
-(1, 'Jan', 'Kowalski', 'j.kowalski@meatmasters.pl', 'Jan.123', '501234567', 'Kierownik', '2020-03-15', 8500.00),
+(1, 'Jan', 'Kowalski', 'j.kowalski@meatmasters.pl', 'Jan.123', '501234567', 'Właściciel', '2020-03-15', 8500.00),
 (2, 'Anna', 'Nowak', 'a.nowak@meatmasters.pl', 'Anna.123', '502345678', 'Kierownik', '2019-05-12', 8700.00),
 (3, 'Piotr', 'Wiśniewski', 'p.wisniewski@meatmasters.pl', 'Piotr.123', '503456789', 'Programista', '2021-06-20', 9500.00),
 (4, 'Katarzyna', 'Dąbrowska', 'k.dabrowska@meatmasters.pl', 'Katarzyna.123', '504567890', 'Programista', '2022-01-10', 9200.00),
